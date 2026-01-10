@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { WorkflowTrigger } from '@/types/workflow';
+import { WorkflowTrigger, WebhookTriggerConfig, CronTriggerConfig, EmailTriggerConfig } from '@/types/workflow';
 
 interface TriggerSelectorProps {
   trigger: WorkflowTrigger;
@@ -43,7 +43,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
               <Label htmlFor="webhook-url" className="mb-3 block">URL</Label>
               <Input
                 id="webhook-url"
-                value={(trigger.config as any).url || ''}
+                value={(trigger.config as WebhookTriggerConfig).url || ''}
                 onChange={(e) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, url: e.target.value }
@@ -54,8 +54,8 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
             <div>
               <Label htmlFor="webhook-method" className="mb-3 block">Метод</Label>
               <Select
-                value={(trigger.config as any).method || 'POST'}
-                onValueChange={(value) => onTriggerChange({
+                value={(trigger.config as WebhookTriggerConfig).method || 'POST'}
+                onValueChange={(value: WebhookTriggerConfig['method']) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, method: value }
                 })}
@@ -82,7 +82,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
               <Label htmlFor="cron-schedule">Расписание (cron)</Label>
               <Input
                 id="cron-schedule"
-                value={(trigger.config as any).schedule || ''}
+                value={(trigger.config as CronTriggerConfig).schedule || ''}
                 onChange={(e) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, schedule: e.target.value }
@@ -97,7 +97,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
               <Label htmlFor="cron-timezone">Часовой пояс</Label>
               <Input
                 id="cron-timezone"
-                value={(trigger.config as any).timezone || 'UTC'}
+                value={(trigger.config as CronTriggerConfig).timezone || 'UTC'}
                 onChange={(e) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, timezone: e.target.value }
@@ -116,7 +116,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
                 <Label htmlFor="email-from">От кого</Label>
                 <Input
                   id="email-from"
-                  value={(trigger.config as any).from || ''}
+                  value={(trigger.config as EmailTriggerConfig).from || ''}
                   onChange={(e) => onTriggerChange({
                     ...trigger,
                     config: { ...trigger.config, from: e.target.value }
@@ -128,7 +128,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
                 <Label htmlFor="email-subject">Тема</Label>
                 <Input
                   id="email-subject"
-                  value={(trigger.config as any).subject || ''}
+                  value={(trigger.config as EmailTriggerConfig).subject || ''}
                   onChange={(e) => onTriggerChange({
                     ...trigger,
                     config: { ...trigger.config, subject: e.target.value }
@@ -141,7 +141,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
               <Label htmlFor="email-body">Текст письма</Label>
               <Input
                 id="email-body"
-                value={(trigger.config as any).body || ''}
+                value={(trigger.config as EmailTriggerConfig).body || ''}
                 onChange={(e) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, body: e.target.value }

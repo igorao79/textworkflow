@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
-  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
@@ -15,7 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { WorkflowAction, WorkflowTrigger } from '@/types/workflow';
@@ -30,11 +28,11 @@ interface WorkflowEditorProps {
     trigger: WorkflowTrigger;
     actions: WorkflowAction[];
   };
-  onWorkflowChange: (data: any) => void;
+  onWorkflowChange: (data: WorkflowEditorProps['workflowData']) => void;
 }
 
 // Компонент для drop зоны
-function DropZone({ children, onDrop }: { children: React.ReactNode, onDrop: () => void }) {
+function DropZone({ children }: { children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({
     id: 'drop-zone',
     data: {
@@ -57,7 +55,9 @@ function DropZone({ children, onDrop }: { children: React.ReactNode, onDrop: () 
   );
 }
 
+
 export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEditorProps) {
+  const actionCounterRef = useRef(0);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -67,7 +67,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
     })
   );
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = () => {
     // Drag start handled by useSortable in WorkflowNode
   };
 
@@ -84,10 +84,14 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
     // Если перетаскиваем новый action в рабочую область
     if (activeType === 'palette-item' && overId === 'drop-zone') {
 
+      const activeData = active.data.current;
+      if (!activeData) return;
+
+      actionCounterRef.current += 1;
       const newAction: WorkflowAction = {
-        id: `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        type: active.data.current.actionType,
-        config: getDefaultConfig(active.data.current.actionType),
+        id: `action_${actionCounterRef.current}`,
+        type: activeData.actionType,
+        config: getDefaultConfig(activeData.actionType) as WorkflowAction['config'],
         position: { x: 100, y: 100 }
       };
 
@@ -203,7 +207,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
               </div>
 
               {/* Зона перетаскивания */}
-              <DropZone onDrop={() => {}}>
+              <DropZone>
                 {/* Анимированная шестеренка всегда на фоне */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
                   <svg
@@ -276,7 +280,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                               action={action}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
-                              position={index}
                             />
 
                             {/* Стрелка вправо */}
@@ -351,7 +354,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                               action={action}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
-                              position={index}
                             />
 
                             {/* Стрелка вправо */}
@@ -425,7 +427,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                               action={action}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
-                              position={index}
                             />
 
                             {/* Стрелка вправо */}

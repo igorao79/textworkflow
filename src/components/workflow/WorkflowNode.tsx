@@ -39,13 +39,9 @@ interface WorkflowNodeProps {
   action: WorkflowAction;
   onUpdate: (actionId: string, updates: Partial<WorkflowAction>) => void;
   onDelete: (actionId: string) => void;
-  isFirst?: boolean;
-  isLast?: boolean;
-  index?: number;
-  position?: number;
 }
 
-export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLast = false, index, position }: WorkflowNodeProps) {
+export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) {
 
 
 
@@ -284,7 +280,7 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
       >
         {/* Номер задачи */}
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm border-2 border-card">
-          {typeof position === 'number' ? position + 1 : '?'}
+          {action.id.split('_').pop() || '?'}
         </div>
 
 

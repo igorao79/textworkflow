@@ -55,7 +55,7 @@ interface DraggableActionProps {
 }
 
 function DraggableAction({ action }: DraggableActionProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `palette-${action.id}`,
     data: {
       type: 'palette-item',
