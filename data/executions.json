@@ -1,0 +1,457 @@
+[
+  {
+    "id": "exec_1768068941019_mfld70823",
+    "workflowId": "wf_1768068708009_q0i591k7a",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:15:41.019Z",
+    "logs": [
+      {
+        "id": "log_1768068941020_xvppuhzeq",
+        "timestamp": "2026-01-10T18:15:41.020Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768068941701_9bqj7t9kr",
+        "timestamp": "2026-01-10T18:15:41.701Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      },
+      {
+        "id": "log_1768068941702_pcf8nwqit",
+        "timestamp": "2026-01-10T18:15:41.702Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:15:41.702Z"
+  },
+  {
+    "id": "exec_1768068941028_17b16lrrq",
+    "workflowId": "wf_1768068762256_nqrn9prtd",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:15:41.028Z",
+    "logs": [
+      {
+        "id": "log_1768068941030_srpg5w096",
+        "timestamp": "2026-01-10T18:15:41.030Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768068727007_oqi5avuna"
+      },
+      {
+        "id": "log_1768068941875_k499pd3ye",
+        "timestamp": "2026-01-10T18:15:41.875Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+        "actionId": "action_1768068727007_oqi5avuna"
+      },
+      {
+        "id": "log_1768068941875_k06y9up2f",
+        "timestamp": "2026-01-10T18:15:41.875Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:15:41.875Z"
+  },
+  {
+    "id": "exec_1768069192608_9ldkx63uk",
+    "workflowId": "wf_1768068959549_0u7tpow73",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:19:52.608Z",
+    "logs": [
+      {
+        "id": "log_1768069192612_vn8vexj4z",
+        "timestamp": "2026-01-10T18:19:52.612Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768068944935_lefzfk58f"
+      },
+      {
+        "id": "log_1768069193100_jak5h5qsq",
+        "timestamp": "2026-01-10T18:19:53.100Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+        "actionId": "action_1768068944935_lefzfk58f"
+      },
+      {
+        "id": "log_1768069193101_t2j4os77v",
+        "timestamp": "2026-01-10T18:19:53.101Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:19:53.101Z"
+  },
+  {
+    "id": "exec_1768069536577_ivlitoq6u",
+    "workflowId": "wf_1768069303523_2ms675t06",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.577Z",
+    "logs": [
+      {
+        "id": "log_1768069536578_30gr84dzj",
+        "timestamp": "2026-01-10T18:25:36.578Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069289158_ih6anqusf"
+      },
+      {
+        "id": "log_1768069537058_ts1pe57s4",
+        "timestamp": "2026-01-10T18:25:37.058Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field.",
+        "actionId": "action_1768069289158_ih6anqusf"
+      },
+      {
+        "id": "log_1768069537058_kzqm4mzz0",
+        "timestamp": "2026-01-10T18:25:37.058Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:37.058Z"
+  },
+  {
+    "id": "exec_1768069536582_rw8gsa1bm",
+    "workflowId": "wf_1768069344596_c693oem4l",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.582Z",
+    "logs": [
+      {
+        "id": "log_1768069536582_1llu69sy5",
+        "timestamp": "2026-01-10T18:25:36.582Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069333870_isina8ycf"
+      },
+      {
+        "id": "log_1768069537550_1d0nk6wab",
+        "timestamp": "2026-01-10T18:25:37.550Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069333870_isina8ycf"
+      },
+      {
+        "id": "log_1768069537550_bijc2d5r5",
+        "timestamp": "2026-01-10T18:25:37.550Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:25:37.550Z"
+  },
+  {
+    "id": "exec_1768069536583_qd082xzcn",
+    "workflowId": "wf_1768069376513_0948mkat2",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.583Z",
+    "logs": [
+      {
+        "id": "log_1768069536583_6o4ocwnzb",
+        "timestamp": "2026-01-10T18:25:36.583Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069366678_s7nfdhheh"
+      },
+      {
+        "id": "log_1768069537736_bs2agc2vh",
+        "timestamp": "2026-01-10T18:25:37.736Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069366678_s7nfdhheh"
+      },
+      {
+        "id": "log_1768069537736_x17h8tekq",
+        "timestamp": "2026-01-10T18:25:37.736Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:25:37.736Z"
+  },
+  {
+    "id": "exec_1768069536583_pynq68koz",
+    "workflowId": "wf_1768069411418_jekav7b5z",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.583Z",
+    "logs": [
+      {
+        "id": "log_1768069536583_sbjrs06wj",
+        "timestamp": "2026-01-10T18:25:36.583Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069389574_f6gm69pz9"
+      },
+      {
+        "id": "log_1768069537221_wates3nu6",
+        "timestamp": "2026-01-10T18:25:37.221Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field.",
+        "actionId": "action_1768069389574_f6gm69pz9"
+      },
+      {
+        "id": "log_1768069537221_e6qvdgmtj",
+        "timestamp": "2026-01-10T18:25:37.221Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:37.221Z"
+  },
+  {
+    "id": "exec_1768069547950_mmvgigt8f",
+    "workflowId": "wf_1768069547949_tiintnso5",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:47.950Z",
+    "logs": [
+      {
+        "id": "log_1768069547951_yekfr58fz",
+        "timestamp": "2026-01-10T18:25:47.951Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069548320_q4zpx6ux2",
+        "timestamp": "2026-01-10T18:25:48.320Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field."
+      },
+      {
+        "id": "log_1768069548320_cntf7glkt",
+        "timestamp": "2026-01-10T18:25:48.320Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:48.320Z"
+  },
+  {
+    "id": "exec_1768069560560_n6pfem9id",
+    "workflowId": "wf_1768069560558_enj1mgbfm",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:26:00.560Z",
+    "logs": [
+      {
+        "id": "log_1768069560561_78lb446la",
+        "timestamp": "2026-01-10T18:26:00.561Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069560985_ty9d1zha1",
+        "timestamp": "2026-01-10T18:26:00.985Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain."
+      },
+      {
+        "id": "log_1768069560985_kyq4eojiv",
+        "timestamp": "2026-01-10T18:26:00.985Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain."
+      }
+    ],
+    "error": "Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.",
+    "completedAt": "2026-01-10T18:26:00.985Z"
+  },
+  {
+    "id": "exec_1768069584950_nfn1ziyb5",
+    "workflowId": "wf_1768069584949_qtddgt2lm",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:26:24.950Z",
+    "logs": [
+      {
+        "id": "log_1768069584951_tqaa0xbjk",
+        "timestamp": "2026-01-10T18:26:24.951Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069585380_ip2n8lv7n",
+        "timestamp": "2026-01-10T18:26:25.380Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069585380_dqjt5221v",
+        "timestamp": "2026-01-10T18:26:25.380Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:26:25.380Z"
+  },
+  {
+    "id": "exec_1768069634478_a4h85osvo",
+    "workflowId": "wf_1768069634477_tuc3mjn5j",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:27:14.478Z",
+    "logs": [
+      {
+        "id": "log_1768069634478_epqi4kfsh",
+        "timestamp": "2026-01-10T18:27:14.478Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069612982_qdg83m15d"
+      },
+      {
+        "id": "log_1768069634847_8e4xgi7hl",
+        "timestamp": "2026-01-10T18:27:14.847Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1768069612982_qdg83m15d"
+      },
+      {
+        "id": "log_1768069634847_h770xdvx6",
+        "timestamp": "2026-01-10T18:27:14.847Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069613725_ci56ndpvl"
+      },
+      {
+        "id": "log_1768069635104_hdxhbg92g",
+        "timestamp": "2026-01-10T18:27:15.104Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069613725_ci56ndpvl"
+      },
+      {
+        "id": "log_1768069635104_m7udu3agl",
+        "timestamp": "2026-01-10T18:27:15.104Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:27:15.104Z"
+  },
+  {
+    "id": "exec_1768069708058_cvf8puoef",
+    "workflowId": "wf_1768069708056_gibcpuykr",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:28:28.058Z",
+    "logs": [
+      {
+        "id": "log_1768069708059_jgbv7xnv0",
+        "timestamp": "2026-01-10T18:28:28.059Z",
+        "level": "info",
+        "message": "Executing action: telegram"
+      },
+      {
+        "id": "log_1768069708183_nfmg1i3mk",
+        "timestamp": "2026-01-10T18:28:28.183Z",
+        "level": "info",
+        "message": "Action telegram completed successfully"
+      },
+      {
+        "id": "log_1768069708183_6nuk7308y",
+        "timestamp": "2026-01-10T18:28:28.183Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:28:28.183Z"
+  },
+  {
+    "id": "exec_1768069713723_icm0xi976",
+    "workflowId": "wf_1768069713721_uaffs90iu",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:28:33.723Z",
+    "logs": [
+      {
+        "id": "log_1768069713724_z90vi7y4e",
+        "timestamp": "2026-01-10T18:28:33.724Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069714101_yl3w4bq3f",
+        "timestamp": "2026-01-10T18:28:34.101Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069714101_s3xmq9sko",
+        "timestamp": "2026-01-10T18:28:34.101Z",
+        "level": "info",
+        "message": "Executing action: telegram"
+      },
+      {
+        "id": "log_1768069714211_rtyakqwaa",
+        "timestamp": "2026-01-10T18:28:34.211Z",
+        "level": "info",
+        "message": "Action telegram completed successfully"
+      },
+      {
+        "id": "log_1768069714211_ymni9bjgy",
+        "timestamp": "2026-01-10T18:28:34.211Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:28:34.211Z"
+  },
+  {
+    "id": "exec_1768069892175_je6lpjnf1",
+    "workflowId": "wf_1768069892174_q1dtpiylu",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:31:32.175Z",
+    "logs": [
+      {
+        "id": "log_1768069892175_mpjzk2k8y",
+        "timestamp": "2026-01-10T18:31:32.175Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069892559_nzb9mpetk",
+        "timestamp": "2026-01-10T18:31:32.559Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069892559_3qw6lb4ix",
+        "timestamp": "2026-01-10T18:31:32.559Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:31:32.559Z"
+  },
+  {
+    "id": "exec_1768070558311_z8vesdqkz",
+    "workflowId": "wf_1768070558310_4jxjznsj8",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:42:38.311Z",
+    "logs": [
+      {
+        "id": "log_1768070558311_2u9yv23vx",
+        "timestamp": "2026-01-10T18:42:38.311Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768070558674_mh8rdrq3m",
+        "timestamp": "2026-01-10T18:42:38.674Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768070558674_215t1o1e5",
+        "timestamp": "2026-01-10T18:42:38.674Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:42:38.674Z"
+  }
+]
