@@ -10,7 +10,7 @@ export default function ApiDocsPage() {
   const openApiSpec = {
     openapi: '3.0.0',
     info: {
-      title: 'Workflow Builder API',
+      title: 'FlowForge API',
       version: '1.0.0',
       description: 'API для управления workflow и их выполнениями'
     },
@@ -313,7 +313,7 @@ export default function ApiDocsPage() {
             API Documentation
           </h1>
           <p className="text-muted-foreground">
-            Полная документация REST API для Workflow Builder
+            Полная документация REST API для FlowForge
           </p>
         </div>
 

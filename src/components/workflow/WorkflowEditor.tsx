@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
-  DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
@@ -59,8 +58,6 @@ function DropZone({ children, onDrop }: { children: React.ReactNode, onDrop: () 
 }
 
 export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEditorProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [draggedItem, setDraggedItem] = useState<any>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -71,16 +68,13 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-    setDraggedItem(event.active.data.current);
+    // Drag start handled by useSortable in WorkflowNode
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over) {
-      setActiveId(null);
-      setDraggedItem(null);
       return;
     }
 
@@ -102,9 +96,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
         actions: [...workflowData.actions, newAction]
       });
     }
-
-    setActiveId(null);
-    setDraggedItem(null);
   };
 
   const getDefaultConfig = (actionType: string) => {
@@ -472,19 +463,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
         </div>
       </div>
 
-      {/* Drag Overlay */}
-      <DragOverlay>
-        {activeId && draggedItem?.type === 'palette-item' ? (
-          <Card className="w-48 opacity-80">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-primary"></div>
-                <span className="text-sm font-medium">{draggedItem.title}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ) : null}
-      </DragOverlay>
     </DndContext>
   );
 }

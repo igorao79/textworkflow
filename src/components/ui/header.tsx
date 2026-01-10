@@ -18,7 +18,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2 font-bold text-lg">
               <BarChart3 className="w-5 h-5" />
-              <span className="hidden sm:inline">Workflow Builder</span>
+              <span className="hidden sm:inline">FlowForge</span>
             </Link>
           </div>
 

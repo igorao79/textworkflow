@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,32 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { WorkflowAction, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { Trash2, Settings, Mail, Send, Globe, Database, RefreshCw, Wrench } from 'lucide-react';
+
+// Вспомогательные функции для иконок и названий
+export const getActionIcon = (type: string) => {
+  switch (type) {
+    case 'email': return Mail;
+    case 'telegram': return Send;
+    case 'http': return Globe;
+    case 'database': return Database;
+    case 'transform': return RefreshCw;
+    default: return Wrench;
+  }
+};
+
+export const getActionTitle = (type: string) => {
+  switch (type) {
+    case 'email': return 'Отправить Email';
+    case 'telegram': return 'Отправить Telegram';
+    case 'http': return 'HTTP запрос';
+    case 'database': return 'База данных';
+    case 'transform': return 'Трансформация';
+    default: return 'Действие';
+  }
+};
 
 interface WorkflowNodeProps {
   action: WorkflowAction;
@@ -22,7 +46,6 @@ interface WorkflowNodeProps {
 }
 
 export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLast = false, index, position }: WorkflowNodeProps) {
-  const [isEditing, setIsEditing] = useState(false);
 
 
 
@@ -44,41 +67,17 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: 1,
   };
 
-  const getActionIcon = (type: string) => {
-    switch (type) {
-      case 'email': return Mail;
-      case 'telegram': return Send;
-      case 'http': return Globe;
-      case 'database': return Database;
-      case 'transform': return RefreshCw;
-      default: return Wrench;
-    }
-  };
-
-  const getActionTitle = (type: string) => {
-    switch (type) {
-      case 'email': return 'Отправить Email';
-      case 'telegram': return 'Отправить Telegram';
-      case 'http': return 'HTTP запрос';
-      case 'database': return 'База данных';
-      case 'transform': return 'Трансформация';
-      default: return 'Действие';
-    }
-  };
 
   const renderActionConfig = () => {
     switch (action.type) {
       case 'email':
         return (
           <div className="space-y-3">
-            <div className="p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
-              💡 Использует: email из формы как получатель, имя в теме, сообщение в тексте
-            </div>
             <div>
-              <Label htmlFor={`email-from-${action.id}`}>Отправитель (опционально)</Label>
+              <Label htmlFor={`email-from-${action.id}`} className="mb-4 block">Отправитель (опционально)</Label>
               <Input
                 id={`email-from-${action.id}`}
                 value={(action.config as EmailActionConfig).from || ''}
@@ -92,7 +91,7 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
               </p>
             </div>
             <div>
-              <Label htmlFor={`email-to-${action.id}`}>Получатель (опционально)</Label>
+              <Label htmlFor={`email-to-${action.id}`} className="mb-4 block">Получатель (опционально)</Label>
               <Input
                 id={`email-to-${action.id}`}
                 value={(action.config as EmailActionConfig).to || ''}
@@ -103,7 +102,7 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
               />
             </div>
             <div>
-              <Label htmlFor={`email-subject-${action.id}`}>Тема</Label>
+              <Label htmlFor={`email-subject-${action.id}`} className="mb-4 block">Тема</Label>
               <Input
                 id={`email-subject-${action.id}`}
                 value={(action.config as EmailActionConfig).subject || ''}
@@ -114,7 +113,7 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
               />
             </div>
             <div>
-              <Label htmlFor={`email-body-${action.id}`}>Текст</Label>
+              <Label htmlFor={`email-body-${action.id}`} className="mb-4 block">Текст</Label>
               <Textarea
                 id={`email-body-${action.id}`}
                 value={(action.config as EmailActionConfig).body || ''}
@@ -131,14 +130,6 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
       case 'telegram':
         return (
           <div className="space-y-3">
-            <div className="p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-              💡 Использует: имя и сообщение из формы для отправки в Telegram группу
-            </div>
-            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm text-green-800">
-                ✅ Сообщение будет отправлено в группу Workflow Bot
-              </p>
-            </div>
             <div>
               <Label htmlFor={`telegram-message-${action.id}`}>Сообщение (опционально)</Label>
               <Textarea
@@ -288,7 +279,6 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
           flex flex-col items-center justify-center gap-1
           hover:shadow-md hover:border-primary transition-all duration-200 group
           ${isDragging ? 'shadow-lg scale-110 border-primary' : ''}
-          ${isEditing ? 'ring-2 ring-primary' : ''}
         `}
         {...listeners}
       >
@@ -305,17 +295,28 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
 
         {/* Кнопки управления */}
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-6 h-6 p-0 hover:bg-secondary"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(!isEditing);
-            }}
-          >
-            <Settings className="w-3 h-3" />
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-6 h-6 p-0 hover:bg-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <Settings className="w-3 h-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
+              </DialogHeader>
+              <div className="max-h-96 overflow-y-auto">
+                {renderActionConfig()}
+              </div>
+            </DialogContent>
+          </Dialog>
           <Button
             variant="ghost"
             size="sm"
@@ -331,25 +332,6 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
 
       </div>
 
-      {/* Панель редактирования */}
-      {isEditing && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium text-card-foreground">{getActionTitle(action.type)}</h4>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditing(false)}
-              className="hover:bg-secondary"
-            >
-              ✕
-            </Button>
-          </div>
-          <div className="max-h-96 overflow-y-auto">
-            {renderActionConfig()}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
