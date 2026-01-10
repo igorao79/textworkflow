@@ -12,6 +12,9 @@ export default function DashboardPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentWorkflowsPage, setCurrentWorkflowsPage] = useState(1);
+  const [currentExecutionsPage, setCurrentExecutionsPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     loadData();
@@ -27,11 +30,13 @@ export default function DashboardPage() {
       if (workflowsRes.ok) {
         const workflowsData = await workflowsRes.json();
         setWorkflows(workflowsData);
+        setCurrentWorkflowsPage(1); // Сброс на первую страницу при загрузке новых данных
       }
 
       if (executionsRes.ok) {
         const executionsData = await executionsRes.json();
         setExecutions(executionsData);
+        setCurrentExecutionsPage(1); // Сброс на первую страницу при загрузке новых данных
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
@@ -81,6 +86,26 @@ export default function DashboardPage() {
       case 'email': return 'Email';
       default: return type;
     }
+  };
+
+  // Пагинация для workflows
+  const workflowsTotalPages = Math.ceil(workflows.length / itemsPerPage);
+  const workflowsStartIndex = (currentWorkflowsPage - 1) * itemsPerPage;
+  const workflowsEndIndex = workflowsStartIndex + itemsPerPage;
+  const currentWorkflows = workflows.slice(workflowsStartIndex, workflowsEndIndex);
+
+  const goToWorkflowsPage = (page: number) => {
+    setCurrentWorkflowsPage(Math.max(1, Math.min(page, workflowsTotalPages)));
+  };
+
+  // Пагинация для executions
+  const executionsTotalPages = Math.ceil(executions.length / itemsPerPage);
+  const executionsStartIndex = (currentExecutionsPage - 1) * itemsPerPage;
+  const executionsEndIndex = executionsStartIndex + itemsPerPage;
+  const currentExecutions = executions.slice(executionsStartIndex, executionsEndIndex);
+
+  const goToExecutionsPage = (page: number) => {
+    setCurrentExecutionsPage(Math.max(1, Math.min(page, executionsTotalPages)));
   };
 
   if (loading) {
@@ -208,7 +233,7 @@ export default function DashboardPage() {
                   <p className="text-muted-foreground">Нет созданных workflow</p>
                 ) : (
                   <div className="space-y-4">
-                    {workflows.map((workflow) => (
+                    {currentWorkflows.map((workflow) => (
                       <div key={workflow.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-medium">{workflow.name}</h3>
@@ -231,6 +256,78 @@ export default function DashboardPage() {
                         </div>
                       </div>
                     ))}
+
+                    {/* Пагинация для workflows */}
+                    {workflowsTotalPages > 1 && (
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 pt-4 border-t gap-4">
+                        <div className="text-sm text-muted-foreground hidden sm:block">
+                          Показано {workflowsStartIndex + 1}-{Math.min(workflowsEndIndex, workflows.length)} из {workflows.length} workflow
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => goToWorkflowsPage(currentWorkflowsPage - 1)}
+                            disabled={currentWorkflowsPage === 1}
+                            className="px-3"
+                          >
+                            <span className="hidden sm:inline">Предыдущая</span>
+                            <span className="sm:hidden">←</span>
+                          </Button>
+
+                          {/* Номера страниц - адаптивно */}
+                          <div className="flex items-center gap-1">
+                            {/* Показываем 3 кнопки на мобильных, 5 на десктопе */}
+                            <div className="hidden sm:flex gap-1">
+                              {Array.from({ length: Math.min(5, workflowsTotalPages) }, (_, i) => {
+                                const pageNum = Math.max(1, Math.min(workflowsTotalPages - 4, currentWorkflowsPage - 2)) + i;
+                                if (pageNum > workflowsTotalPages) return null;
+                                return (
+                                  <Button
+                                    key={`desktop-${pageNum}`}
+                                    variant={pageNum === currentWorkflowsPage ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => goToWorkflowsPage(pageNum)}
+                                    className="w-8 h-8 p-0"
+                                  >
+                                    {pageNum}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                            {/* Показываем 3 кнопки на мобильных */}
+                            <div className="flex sm:hidden gap-1">
+                              {Array.from({ length: Math.min(3, workflowsTotalPages) }, (_, i) => {
+                                const pageNum = Math.max(1, Math.min(workflowsTotalPages - 2, currentWorkflowsPage - 1)) + i;
+                                if (pageNum > workflowsTotalPages) return null;
+                                return (
+                                  <Button
+                                    key={`mobile-${pageNum}`}
+                                    variant={pageNum === currentWorkflowsPage ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => goToWorkflowsPage(pageNum)}
+                                    className="w-8 h-8 p-0"
+                                  >
+                                    {pageNum}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => goToWorkflowsPage(currentWorkflowsPage + 1)}
+                            disabled={currentWorkflowsPage === workflowsTotalPages}
+                            className="px-3"
+                          >
+                            <span className="hidden sm:inline">Следующая</span>
+                            <span className="sm:hidden">→</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -247,7 +344,7 @@ export default function DashboardPage() {
                   <p className="text-muted-foreground">Нет выполнений workflow</p>
                 ) : (
                   <div className="space-y-4">
-                    {executions.slice(0, 50).map((execution) => (
+                    {currentExecutions.map((execution) => (
                       <div key={execution.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -294,6 +391,78 @@ export default function DashboardPage() {
                         </div>
                       </div>
                     ))}
+
+                    {/* Пагинация */}
+                    {executionsTotalPages > 1 && (
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 pt-4 border-t gap-4">
+                        <div className="text-sm text-muted-foreground hidden sm:block">
+                          Показано {executionsStartIndex + 1}-{Math.min(executionsEndIndex, executions.length)} из {executions.length} выполнений
+                        </div>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => goToExecutionsPage(currentExecutionsPage - 1)}
+                            disabled={currentExecutionsPage === 1}
+                            className="px-3"
+                          >
+                            <span className="hidden sm:inline">Предыдущая</span>
+                            <span className="sm:hidden">←</span>
+                          </Button>
+
+                          {/* Номера страниц - адаптивно */}
+                          <div className="flex items-center gap-1">
+                            {/* Показываем 3 кнопки на мобильных, 5 на десктопе */}
+                            <div className="hidden sm:flex gap-1">
+                              {Array.from({ length: Math.min(5, executionsTotalPages) }, (_, i) => {
+                                const pageNum = Math.max(1, Math.min(executionsTotalPages - 4, currentExecutionsPage - 2)) + i;
+                                if (pageNum > executionsTotalPages) return null;
+                                return (
+                                  <Button
+                                    key={`desktop-${pageNum}`}
+                                    variant={pageNum === currentExecutionsPage ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => goToExecutionsPage(pageNum)}
+                                    className="w-8 h-8 p-0"
+                                  >
+                                    {pageNum}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                            {/* Показываем 3 кнопки на мобильных */}
+                            <div className="flex sm:hidden gap-1">
+                              {Array.from({ length: Math.min(3, executionsTotalPages) }, (_, i) => {
+                                const pageNum = Math.max(1, Math.min(executionsTotalPages - 2, currentExecutionsPage - 1)) + i;
+                                if (pageNum > executionsTotalPages) return null;
+                                return (
+                                  <Button
+                                    key={`mobile-${pageNum}`}
+                                    variant={pageNum === currentExecutionsPage ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => goToExecutionsPage(pageNum)}
+                                    className="w-8 h-8 p-0"
+                                  >
+                                    {pageNum}
+                                  </Button>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => goToExecutionsPage(currentExecutionsPage + 1)}
+                            disabled={currentExecutionsPage === executionsTotalPages}
+                            className="px-3"
+                          >
+                            <span className="hidden sm:inline">Следующая</span>
+                            <span className="sm:hidden">→</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

@@ -76,6 +76,7 @@ function DraggableAction({ action }: DraggableActionProps) {
       {...listeners}
       {...attributes}
       className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      suppressHydrationWarning={true}
     >
       <CardContent className="p-3">
         <div className="flex items-center gap-3">

@@ -40,7 +40,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="webhook-url">URL</Label>
+              <Label htmlFor="webhook-url" className="mb-3 block">URL</Label>
               <Input
                 id="webhook-url"
                 value={(trigger.config as any).url || ''}
@@ -52,7 +52,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
               />
             </div>
             <div>
-              <Label htmlFor="webhook-method">Метод</Label>
+              <Label htmlFor="webhook-method" className="mb-3 block">Метод</Label>
               <Select
                 value={(trigger.config as any).method || 'POST'}
                 onValueChange={(value) => onTriggerChange({
@@ -162,7 +162,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
       <CardContent className="p-4">
         <div className="space-y-4">
           <div>
-            <Label htmlFor="trigger-type">Тип триггера</Label>
+            <Label htmlFor="trigger-type" className="mb-3 block">Тип триггера</Label>
             <Select
               value={trigger.type}
               onValueChange={handleTypeChange}

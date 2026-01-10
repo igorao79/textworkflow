@@ -25,6 +25,7 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
   const [isEditing, setIsEditing] = useState(false);
 
 
+
   const {
     attributes,
     listeners,
@@ -293,13 +294,9 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
       >
         {/* Номер задачи */}
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm border-2 border-card">
-          {position !== undefined ? position + 1 : '?'}
+          {typeof position === 'number' ? position + 1 : '?'}
         </div>
 
-        {/* Точки подключения - видны только при hover или редактировании */}
-        {!isFirst && (
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-primary rounded-full border-2 border-card shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-        )}
 
         {/* Иконка действия */}
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
@@ -332,10 +329,6 @@ export function WorkflowNode({ action, onUpdate, onDelete, isFirst = false, isLa
           </Button>
         </div>
 
-        {/* Точка подключения снизу - видна только при hover или редактировании */}
-        {!isLast && (
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-primary rounded-full border-2 border-card shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-        )}
       </div>
 
       {/* Панель редактирования */}
