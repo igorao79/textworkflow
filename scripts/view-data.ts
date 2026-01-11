@@ -12,7 +12,7 @@ if (fs.existsSync(WORKFLOWS_FILE)) {
   console.log('📋 WORKFLOWS:');
   try {
     const workflows = JSON.parse(fs.readFileSync(WORKFLOWS_FILE, 'utf8'));
-    workflows.forEach((workflow, index) => {
+    workflows.forEach((workflow: any, index: number) => {
       console.log(`${index + 1}. ${workflow.name} (${workflow.id})`);
       console.log(`   Статус: ${workflow.isActive ? 'Активен' : 'Неактивен'}`);
       console.log(`   Действий: ${workflow.actions.length}`);
@@ -21,7 +21,7 @@ if (fs.existsSync(WORKFLOWS_FILE)) {
       console.log('');
     });
   } catch (error) {
-    console.error('Ошибка чтения workflows:', error.message);
+    console.error('Ошибка чтения workflows:', error instanceof Error ? error.message : String(error));
   }
 } else {
   console.log('📋 WORKFLOWS: Нет сохраненных workflow');
@@ -32,7 +32,7 @@ if (fs.existsSync(EXECUTIONS_FILE)) {
   console.log('\n⚡ EXECUTIONS:');
   try {
     const executions = JSON.parse(fs.readFileSync(EXECUTIONS_FILE, 'utf8'));
-    executions.slice(-10).forEach((execution, index) => { // Показываем последние 10
+    executions.slice(-10).forEach((execution: any, index: number) => { // Показываем последние 10
       console.log(`${index + 1}. ${execution.id.slice(-8)} - ${execution.status.toUpperCase()}`);
       console.log(`   Workflow: ${execution.workflowId.slice(-8)}`);
       console.log(`   Начало: ${new Date(execution.startedAt).toLocaleString('ru-RU')}`);
@@ -46,7 +46,7 @@ if (fs.existsSync(EXECUTIONS_FILE)) {
       console.log('');
     });
   } catch (error) {
-    console.error('Ошибка чтения executions:', error.message);
+    console.error('Ошибка чтения executions:', error instanceof Error ? error.message : String(error));
   }
 } else {
   console.log('\n⚡ EXECUTIONS: Нет сохраненных выполнений');

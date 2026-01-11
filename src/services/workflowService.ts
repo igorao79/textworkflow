@@ -1,6 +1,9 @@
+import 'server-only';
+
 import { Resend } from 'resend';
 import axios from 'axios';
 import { Telegraf } from 'telegraf';
+import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 import {
@@ -18,6 +21,21 @@ import {
 // Инициализация сервисов (только если есть API ключи)
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const telegramBot = process.env.TELEGRAM_BOT_TOKEN ? new Telegraf(process.env.TELEGRAM_BOT_TOKEN) : null;
+
+// Инициализация подключения к PostgreSQL
+const dbPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Обработчик ошибок подключения к БД
+dbPool?.on('error', (err: Error) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
 
 // Папка для хранения данных
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -336,10 +354,206 @@ async function executeTelegramAction(config: TelegramActionConfig, data: Record<
 }
 
 async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<string, unknown>): Promise<void> {
-  // Простая имитация работы с БД (в продакшене использовать реальную БД)
+  console.log('🔍 Database operation starting:', {
+    operation: config.operation,
+    table: config.table,
+    data: config.data,
+    where: config.where
+  });
 
-  // Имитация результата
-  data.dbResult = { affectedRows: 1, insertId: Date.now() };
+  const { operation, table, data: actionData, where } = config;
+
+  if (!table || !table.trim()) {
+    throw new Error('Table name is required for database operations');
+  }
+
+  let client;
+  try {
+    console.log('🔌 Connecting to database...');
+    client = await dbPool.connect();
+    console.log('✅ Database connection established');
+
+    switch (operation) {
+      case 'select': {
+        console.log('🔍 Starting SELECT operation');
+        let query = `SELECT * FROM ${table}`;
+        const values: unknown[] = [];
+        let paramIndex = 1;
+
+        if (where && typeof where === 'object') {
+          const conditions = Object.entries(where)
+            .map(([key, value]) => {
+              values.push(value);
+              return `${key} = $${paramIndex++}`;
+            })
+            .join(' AND ');
+
+          if (conditions) {
+            query += ` WHERE ${conditions}`;
+          }
+        }
+
+        console.log('🔧 Executing SELECT query:', query);
+        console.log('📊 WHERE values:', values);
+
+        const result = await client.query(query, values);
+
+        console.log('✅ SELECT completed:', {
+          foundRows: result.rowCount,
+          returnedData: result.rows
+        });
+
+        data.dbResult = {
+          operation: 'select',
+          rows: result.rows,
+          rowCount: result.rowCount
+        };
+        break;
+      }
+
+      case 'insert': {
+        console.log('📥 Starting INSERT operation');
+        if (!actionData || typeof actionData !== 'object') {
+          console.error('❌ No data provided for INSERT');
+          throw new Error('Data object is required for INSERT operation');
+        }
+
+        const columns = Object.keys(actionData);
+        const placeholders = columns.map((_, index) => `$${index + 1}`);
+        const values = Object.values(actionData);
+
+        const query = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`;
+
+        console.log('🔧 Executing INSERT query:', query);
+        console.log('📊 Values:', values);
+
+        const result = await client.query(query, values);
+
+        console.log('✅ INSERT completed:', {
+          affectedRows: result.rowCount,
+          returnedRows: result.rows.length,
+          firstRow: result.rows[0]
+        });
+
+        data.dbResult = {
+          operation: 'insert',
+          rows: result.rows,
+          rowCount: result.rowCount,
+          insertId: result.rows[0]?.id || null
+        };
+        break;
+      }
+
+      case 'update': {
+        console.log('📝 Starting UPDATE operation');
+        if (!actionData || typeof actionData !== 'object') {
+          console.error('❌ No data provided for UPDATE');
+          throw new Error('Data object is required for UPDATE operation');
+        }
+
+        if (!where || typeof where !== 'object') {
+          console.error('❌ No WHERE conditions for UPDATE');
+          throw new Error('WHERE conditions are required for UPDATE operation');
+        }
+
+        const setColumns = Object.keys(actionData);
+        const setPlaceholders = setColumns.map((col, index) => `${col} = $${index + 1}`);
+
+        const whereColumns = Object.keys(where);
+        const whereConditions = whereColumns.map((col, index) => `${col} = $${setColumns.length + index + 1}`);
+
+        const values = [...Object.values(actionData), ...Object.values(where)];
+
+        const query = `UPDATE ${table} SET ${setPlaceholders.join(', ')} WHERE ${whereConditions.join(' AND ')} RETURNING *`;
+
+        console.log('🔧 Executing UPDATE query:', query);
+        console.log('📊 SET values:', Object.values(actionData));
+        console.log('🔍 WHERE values:', Object.values(where));
+
+        const result = await client.query(query, values);
+
+        console.log('✅ UPDATE completed:', {
+          affectedRows: result.rowCount,
+          updatedRows: result.rows.length
+        });
+
+        data.dbResult = {
+          operation: 'update',
+          rows: result.rows,
+          rowCount: result.rowCount
+        };
+        break;
+      }
+
+      case 'delete': {
+        console.log('🗑️ Starting DELETE operation');
+        if (!where || typeof where !== 'object') {
+          console.error('❌ No WHERE conditions for DELETE');
+          throw new Error('WHERE conditions are required for DELETE operation');
+        }
+
+        const whereColumns = Object.keys(where);
+        const whereConditions = whereColumns.map((col, index) => `${col} = $${index + 1}`);
+        const values = Object.values(where);
+
+        const query = `DELETE FROM ${table} WHERE ${whereConditions.join(' AND ')} RETURNING *`;
+
+        console.log('🔧 Executing DELETE query:', query);
+        console.log('🔍 WHERE values:', values);
+
+        const result = await client.query(query, values);
+
+        console.log('✅ DELETE completed:', {
+          affectedRows: result.rowCount,
+          deletedRows: result.rows.length
+        });
+
+        data.dbResult = {
+          operation: 'delete',
+          rows: result.rows,
+          rowCount: result.rowCount
+        };
+        break;
+      }
+
+      default:
+        throw new Error(`Unsupported database operation: ${operation}`);
+    }
+
+    console.log('🎉 Database operation completed successfully:', data.dbResult);
+
+  } catch (error) {
+    console.error('💥 Database operation failed:', error);
+    console.error('Error details:', {
+      operation,
+      table,
+      data: actionData,
+      where,
+      error: error instanceof Error ? error.message : String(error)
+    });
+
+    // Преобразуем технические ошибки в понятные
+    let userFriendlyError = error instanceof Error ? error.message : String(error);
+
+    if (userFriendlyError.includes('duplicate key value violates unique constraint')) {
+      if (userFriendlyError.includes('email_key')) {
+        userFriendlyError = 'Пользователь с таким email уже существует';
+      } else {
+        userFriendlyError = 'Запись с такими данными уже существует';
+      }
+    } else if (userFriendlyError.includes('null value in column')) {
+      userFriendlyError = 'Не заполнены обязательные поля';
+    } else if (userFriendlyError.includes('invalid input syntax')) {
+      userFriendlyError = 'Неверный формат данных';
+    }
+
+    throw new Error(userFriendlyError);
+  } finally {
+    if (client) {
+      console.log('🔌 Releasing database connection');
+      client.release();
+    }
+  }
 }
 
 async function executeTransformAction(config: TransformActionConfig, data: Record<string, unknown>): Promise<void> {

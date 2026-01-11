@@ -1,19 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { WorkflowEditor } from './WorkflowEditor';
+import { Workflow } from '@/types/workflow';
 
 export function WorkflowForm() {
 
-  const [workflowData, setWorkflowData] = useState({
+  const [workflowData, setWorkflowData] = useState<Omit<Workflow, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>>({
     name: '',
     description: '',
-    trigger: { type: 'webhook' as const, config: { url: '' } },
+    trigger: { id: 'trigger_1', type: 'webhook', config: { url: '', method: 'POST', headers: {} } },
     actions: []
   });
 
@@ -23,6 +20,9 @@ export function WorkflowForm() {
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setIsSubmitting(true);
+
+    console.log('🚀 handleSubmit called, sending workflow to API...');
+    console.log('📋 Workflow data:', workflowData);
 
     try {
       // Отправляем данные на сервер для создания и запуска workflow
@@ -47,11 +47,17 @@ export function WorkflowForm() {
 
       const result = await response.json();
 
+      console.log('📡 API response received:', {
+        status: response.status,
+        ok: response.ok,
+        result: result
+      });
+
       if (!response.ok) {
         throw new Error(result.error || result.details || 'Failed to create and run workflow');
       }
 
-      console.log(`Workflow выполнен успешно! ID: ${result.workflowId}`);
+      console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
     } catch (error) {
       console.error('Ошибка при запуске workflow:', error);
     } finally {
@@ -73,6 +79,7 @@ export function WorkflowForm() {
             onWorkflowChange={setWorkflowData}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
+            setIsSubmitting={setIsSubmitting}
           />
         </CardContent>
       </Card>

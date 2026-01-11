@@ -56,9 +56,10 @@ interface DraggableActionProps {
   count?: number;
   onClick?: (actionType: string) => void;
   isMobile?: boolean;
+  maxActionsReached?: boolean;
 }
 
-function DraggableAction({ action, count, onClick, isMobile = false }: DraggableActionProps) {
+function DraggableAction({ action, count, onClick, isMobile = false, maxActionsReached = false }: DraggableActionProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `palette-${action.id}`,
     data: {
@@ -74,7 +75,7 @@ function DraggableAction({ action, count, onClick, isMobile = false }: Draggable
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isMobile && onClick) {
+    if (isMobile && onClick && !maxActionsReached) {
       e.preventDefault();
       e.stopPropagation();
       onClick(action.id);
@@ -83,11 +84,11 @@ function DraggableAction({ action, count, onClick, isMobile = false }: Draggable
 
   return (
     <Card
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={`${isMobile ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'} hover:shadow-md transition-shadow relative`}
+      ref={maxActionsReached ? undefined : setNodeRef}
+      style={maxActionsReached ? {} : style}
+      {...(maxActionsReached ? {} : listeners)}
+      {...(maxActionsReached ? {} : attributes)}
+      className={`${isMobile ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'} hover:shadow-md transition-shadow relative ${maxActionsReached ? 'opacity-50 cursor-not-allowed' : ''}`}
       suppressHydrationWarning={true}
       onClick={handleClick}
     >
@@ -117,9 +118,10 @@ interface ActionPaletteProps {
   actionCounts?: Record<string, number>;
   onAddAction?: (actionType: string) => void;
   isMobile?: boolean;
+  maxActionsReached?: boolean;
 }
 
-export function ActionPalette({ actionCounts = {}, onAddAction, isMobile = false }: ActionPaletteProps) {
+export function ActionPalette({ actionCounts = {}, onAddAction, isMobile = false, maxActionsReached = false }: ActionPaletteProps) {
   return (
     <Card>
       <CardHeader>
@@ -134,6 +136,7 @@ export function ActionPalette({ actionCounts = {}, onAddAction, isMobile = false
               count={actionCounts[action.id]}
               onClick={onAddAction}
               isMobile={isMobile}
+              maxActionsReached={maxActionsReached}
             />
           ))}
         </div>

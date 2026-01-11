@@ -44,8 +44,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { workflowData, triggerData } = req.body;
 
-    console.log('API /workflows/run called with:', { workflowData: !!workflowData, triggerData: !!triggerData });
-    console.log('Workflow data:', { actions: workflowData?.actions?.length, trigger: workflowData?.trigger });
+    console.log('🔥 API /workflows/run called with:', { workflowData: !!workflowData, triggerData: !!triggerData });
+    console.log('📋 Workflow data:', {
+      actions: workflowData?.actions?.length,
+      trigger: workflowData?.trigger,
+      actionsDetails: workflowData?.actions?.map((a: any) => ({ type: a.type, config: a.config }))
+    });
 
     if (!workflowData || !triggerData) {
       return res.status(400).json({ error: 'Missing required fields: workflowData and triggerData' });
@@ -62,8 +66,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Выполняем workflow синхронно (без очереди)
     try {
+      console.log(`🚀 Executing workflow ${workflow.id}...`);
       const { executeWorkflow } = await import('@/services/workflowService');
       const result = await executeWorkflow(workflow.id, triggerData);
+      console.log(`✅ Workflow ${workflow.id} completed successfully`);
 
       res.status(201).json({
         workflowId: workflow.id,
@@ -71,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: 'Workflow executed successfully'
       });
     } catch (executionError) {
-      console.error(`Workflow ${workflow.id} execution failed:`, executionError);
+      console.error(`💥 Workflow ${workflow.id} execution failed:`, executionError);
       res.status(500).json({
         error: 'Workflow execution failed',
         details: executionError instanceof Error ? executionError.message : 'Unknown error'

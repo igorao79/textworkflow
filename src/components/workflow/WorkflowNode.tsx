@@ -40,16 +40,50 @@ interface WorkflowNodeProps {
   index?: number;
   onUpdate: (actionId: string, updates: Partial<WorkflowAction>) => void;
   onDelete: (actionId: string) => void;
+  onChangePosition?: (actionId: string, newPosition: number) => void;
+  totalActions?: number;
 }
 
-export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNodeProps) {
+export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePosition, totalActions = 0 }: WorkflowNodeProps) {
   const [tempConfig, setTempConfig] = React.useState(action.config);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [positionInput, setPositionInput] = React.useState('');
+  const [positionError, setPositionError] = React.useState('');
+
+  // Текущая позиция элемента (1-based)
+  const currentPosition = (index !== undefined ? index + 1 : 1);
 
   // Обновляем tempConfig при изменении action.config
   React.useEffect(() => {
     setTempConfig(action.config);
   }, [action.config]);
+
+  // Синхронизируем positionInput с текущей позицией при открытии модалки
+  React.useEffect(() => {
+    if (isDialogOpen) {
+      console.log('Dialog opened for:', action.id, 'current position:', currentPosition);
+      setPositionInput(currentPosition.toString());
+      setPositionError('');
+    }
+  }, [isDialogOpen, currentPosition, action.id]);
+
+  const handlePositionChange = (value: string) => {
+    setPositionInput(value);
+    setPositionError('');
+
+    const numValue = parseInt(value);
+    if (isNaN(numValue) || numValue < 1 || numValue > 20) {
+      setPositionError('Позиция должна быть числом от 1 до 20');
+      return;
+    }
+
+    if (numValue > totalActions) {
+      setPositionError(`Позиция не может быть больше количества задач (${totalActions})`);
+      return;
+    }
+
+    // Валидация будет выполняться при сохранении
+  };
 
   const {
     attributes,
@@ -74,12 +108,38 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
 
 
   const handleSave = () => {
+    console.log('handleSave called for:', action.id, 'current position:', currentPosition, 'requested position:', positionInput);
+    console.log('Action config being saved:', {
+      type: action.type,
+      config: tempConfig
+    });
+
+    // Проверяем позицию
+    const numPosition = parseInt(positionInput);
+
+    console.log('numPosition:', numPosition, 'currentPosition:', currentPosition);
+
+    if (numPosition !== currentPosition && onChangePosition) {
+      if (numPosition < 1 || numPosition > 20) {
+        setPositionError('Позиция должна быть числом от 1 до 20');
+        return;
+      }
+      if (numPosition > totalActions) {
+        setPositionError(`Позиция не может быть больше количества задач (${totalActions})`);
+        return;
+      }
+      console.log('Calling onChangePosition with:', action.id, numPosition - 1);
+      onChangePosition(action.id, numPosition - 1); // Конвертируем в 0-based индекс
+    }
+
     onUpdate(action.id, { config: tempConfig });
     setIsDialogOpen(false);
   };
 
   const handleCancel = () => {
     setTempConfig(action.config); // Сбрасываем изменения
+    setPositionInput(currentPosition.toString()); // Сбрасываем позицию к текущей
+    setPositionError(''); // Сбрасываем ошибку
     setIsDialogOpen(false);
   };
 
@@ -219,6 +279,52 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
                 placeholder="users"
               />
             </div>
+
+            {/* Поля данных для INSERT и UPDATE */}
+            {(dbConfig.operation === 'insert' || dbConfig.operation === 'update') && (
+              <div>
+                <Label htmlFor={`db-data-${action.id}`} className="mb-2 block">Данные (JSON)</Label>
+                <Textarea
+                  id={`db-data-${action.id}`}
+                  value={dbConfig.data ? JSON.stringify(dbConfig.data, null, 2) : ''}
+                  onChange={(e) => {
+                    try {
+                      const parsed = JSON.parse(e.target.value);
+                      console.log('✅ Data JSON parsed successfully:', parsed);
+                      updateTempConfig({ data: parsed });
+                    } catch (error) {
+                      console.error('❌ Data JSON parse error:', error, 'Input:', e.target.value);
+                      // Не валидный JSON, сохраняем как строку для отображения ошибки
+                      updateTempConfig({ data: e.target.value });
+                    }
+                  }}
+                  placeholder='{"name": "John", "email": "john@example.com"}'
+                  rows={3}
+                />
+              </div>
+            )}
+
+            {/* Поля условий для WHERE (кроме INSERT) */}
+            {dbConfig.operation !== 'insert' && (
+              <div>
+                <Label htmlFor={`db-where-${action.id}`} className="mb-2 block">Условия WHERE (JSON)</Label>
+                <Textarea
+                  id={`db-where-${action.id}`}
+                  value={dbConfig.where ? JSON.stringify(dbConfig.where, null, 2) : ''}
+                  onChange={(e) => {
+                    try {
+                      const parsed = JSON.parse(e.target.value);
+                      updateTempConfig({ where: parsed });
+                    } catch {
+                      // Не валидный JSON, сохраняем как строку для отображения ошибки
+                      updateTempConfig({ where: e.target.value });
+                    }
+                  }}
+                  placeholder='{"id": 123, "status": "active"}'
+                  rows={2}
+                />
+              </div>
+            )}
           </div>
         );
 
@@ -261,6 +367,8 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
         return <p>Настройки для этого действия недоступны</p>;
     }
   };
+
+  console.log('WorkflowNode render:', action.id, 'index:', index, 'display number:', index !== undefined ? index + 1 : '?');
 
   return (
     <div
@@ -314,6 +422,23 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
                 </DialogDescription>
               </DialogHeader>
               <div className="max-h-96 overflow-y-auto px-3">
+                {/* Поле позиции */}
+                <div className="mb-4 pb-4 border-b">
+                  <Label htmlFor={`position-${action.id}`} className="mb-2 block">Позиция</Label>
+                  <Input
+                    id={`position-${action.id}`}
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={positionInput}
+                    onChange={(e) => handlePositionChange(e.target.value)}
+                    className={positionError ? 'border-destructive' : ''}
+                  />
+                  {positionError && (
+                    <p className="text-sm text-destructive mt-1">{positionError}</p>
+                  )}
+                </div>
+
                 {renderActionConfig()}
               </div>
               <div className="flex justify-between items-center pt-4 border-t">
