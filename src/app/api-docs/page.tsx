@@ -299,6 +299,71 @@ export default function ApiDocsPage() {
             }
           }
         }
+      },
+      '/api/queue/stats': {
+        get: {
+          summary: 'Получить статистику очереди задач',
+          responses: {
+            200: {
+              description: 'Статистика очереди',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      waiting: { type: 'number', description: 'Задач в ожидании' },
+                      active: { type: 'number', description: 'Выполняющихся задач' },
+                      completedCount: { type: 'number', description: 'Завершенных задач' },
+                      failedCount: { type: 'number', description: 'Неудачных задач' },
+                      paused: { type: 'boolean', description: 'Очередь приостановлена' },
+                      completed: { type: 'number', description: 'Всего завершенных' },
+                      failed: { type: 'number', description: 'Всего неудачных' },
+                      retries: { type: 'number', description: 'Количество повторных попыток' },
+                      totalJobs: { type: 'number', description: 'Общее количество задач' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/queue/pause': {
+        post: {
+          summary: 'Управление паузой очереди',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    action: {
+                      type: 'string',
+                      enum: ['pause', 'resume'],
+                      description: 'Действие: pause или resume'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: 'Действие выполнено',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   };

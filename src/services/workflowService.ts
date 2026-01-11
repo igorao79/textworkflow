@@ -14,7 +14,6 @@ import {
   DatabaseActionConfig,
   TransformActionConfig
 } from '@/types/workflow';
-import { Job } from 'bull';
 
 // Инициализация сервисов (только если есть API ключи)
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -30,6 +29,68 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+// Функция отправки уведомлений об ошибках
+async function sendErrorNotification(workflowId: string, error: unknown, execution: WorkflowExecution) {
+  const notification = {
+    type: 'workflow_execution_error',
+    workflowId,
+    executionId: execution.id,
+    error: error instanceof Error ? error.message : String(error),
+    attempts: execution.logs.filter(log => log.level === 'error').length,
+    timestamp: new Date().toISOString(),
+  };
+
+  console.error('🚨 Workflow execution error:', notification);
+
+  // Email уведомление (если настроено)
+  if (process.env.RESEND_API_KEY && process.env.ERROR_NOTIFICATION_EMAIL) {
+    try {
+      await resend?.emails.send({
+        from: 'FlowForge <noreply@flowforge.app>',
+        to: process.env.ERROR_NOTIFICATION_EMAIL,
+        subject: `🚨 Ошибка выполнения workflow ${workflowId}`,
+        html: `
+          <h2>Ошибка выполнения workflow</h2>
+          <p><strong>Workflow ID:</strong> ${workflowId}</p>
+          <p><strong>Execution ID:</strong> ${execution.id}</p>
+          <p><strong>Ошибка:</strong> ${error instanceof Error ? error.message : String(error)}</p>
+          <p><strong>Время:</strong> ${new Date().toLocaleString('ru-RU')}</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send email notification:', emailError);
+    }
+  }
+
+  // Telegram уведомление (если настроено)
+  if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ERROR_CHAT_ID) {
+    try {
+      await telegramBot?.telegram.sendMessage(
+        process.env.TELEGRAM_ERROR_CHAT_ID,
+        `🚨 <b>Ошибка выполнения workflow</b>\n\n` +
+        `📋 <b>Workflow:</b> ${workflowId}\n` +
+        `🔢 <b>Execution:</b> ${execution.id}\n` +
+        `❌ <b>Ошибка:</b> ${error instanceof Error ? error.message : String(error)}\n` +
+        `⏰ <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`,
+        { parse_mode: 'HTML' }
+      );
+    } catch (telegramError) {
+      console.error('Failed to send Telegram notification:', telegramError);
+    }
+  }
+}
+
+// Функция паузы выполнения workflow
+export async function pauseWorkflowExecution(workflowId: string, duration: number): Promise<void> {
+  return new Promise((resolve) => {
+    console.log(`⏸️ Pausing workflow ${workflowId} for ${duration}ms`);
+    setTimeout(() => {
+      console.log(`▶️ Resuming workflow ${workflowId}`);
+      resolve();
+    }, duration);
+  });
+}
+
 // Функции для загрузки/сохранения данных
 function loadWorkflows(): Workflow[] {
   try {
@@ -37,7 +98,10 @@ function loadWorkflows(): Workflow[] {
       const data = fs.readFileSync(WORKFLOWS_FILE, 'utf8');
       const parsed = JSON.parse(data);
       // Преобразуем даты обратно в объекты Date
-      return parsed.map((workflow: any) => ({
+      return parsed.map((workflow: Omit<Workflow, 'createdAt' | 'updatedAt'> & {
+        createdAt: string;
+        updatedAt: string;
+      }) => ({
         ...workflow,
         createdAt: new Date(workflow.createdAt),
         updatedAt: new Date(workflow.updatedAt)
@@ -66,11 +130,15 @@ function loadExecutions(): WorkflowExecution[] {
       const data = fs.readFileSync(EXECUTIONS_FILE, 'utf8');
       const parsed = JSON.parse(data);
       // Преобразуем даты обратно в объекты Date
-      return parsed.map((execution: any) => ({
+      return parsed.map((execution: Omit<WorkflowExecution, 'startedAt' | 'completedAt' | 'logs'> & {
+        startedAt: string;
+        completedAt?: string;
+        logs: (Omit<WorkflowExecutionLog, 'timestamp'> & { timestamp: string })[];
+      }) => ({
         ...execution,
         startedAt: new Date(execution.startedAt),
         completedAt: execution.completedAt ? new Date(execution.completedAt) : undefined,
-        logs: execution.logs.map((log: any) => ({
+        logs: execution.logs.map((log: Omit<WorkflowExecutionLog, 'timestamp'> & { timestamp: string }) => ({
           ...log,
           timestamp: new Date(log.timestamp)
         }))
@@ -94,12 +162,12 @@ function saveExecutions(executions: WorkflowExecution[]): void {
 }
 
 // Хранилище workflow с загрузкой из файлов
-let workflows: Workflow[] = loadWorkflows();
-let executions: WorkflowExecution[] = loadExecutions();
+const workflows: Workflow[] = loadWorkflows();
+const executions: WorkflowExecution[] = loadExecutions();
 
 export async function executeWorkflow(
   workflowId: string,
-  triggerData: any
+  triggerData: Record<string, unknown>
 ): Promise<WorkflowExecution> {
   const workflow = workflows.find(w => w.id === workflowId);
   if (!workflow) {
@@ -131,15 +199,18 @@ export async function executeWorkflow(
     addLog(execution, 'info', 'Workflow execution completed successfully');
     saveExecutions(executions);
 
-  } catch (error) {
+  } catch (error: unknown) {
     execution.status = 'failed';
-    execution.error = error instanceof Error ? error.message : 'Unknown error';
+    execution.error = error instanceof Error ? error.message : String(error);
     execution.completedAt = new Date();
 
     addLog(execution, 'error', `Workflow execution failed: ${execution.error}`);
     saveExecutions(executions);
 
     console.error(`Workflow ${workflowId} failed:`, error);
+
+    // Отправляем уведомление об ошибке
+    await sendErrorNotification(workflowId, error, execution);
 
     throw error;
   }
@@ -149,7 +220,7 @@ export async function executeWorkflow(
 
 async function executeAction(
   action: WorkflowAction,
-  triggerData: any,
+  triggerData: Record<string, unknown>,
   execution: WorkflowExecution
 ): Promise<void> {
   try {
@@ -184,20 +255,20 @@ async function executeAction(
   }
 }
 
-async function executeEmailAction(config: EmailActionConfig, data: any): Promise<void> {
+async function executeEmailAction(config: EmailActionConfig, data: Record<string, unknown>): Promise<void> {
   if (!resend) {
     throw new Error('Resend API key not configured. Please add RESEND_API_KEY to your environment variables.');
   }
 
   try {
     // Для тестирования используем email из формы пользователя, если он не указан в действии
-    const recipientEmail = config.to || data.email || 'test@example.com';
+    const recipientEmail = config.to || (typeof data.email === 'string' ? data.email : 'test@example.com');
 
-    const emailData: any = {
+    const emailData = {
       from: 'onboarding@resend.dev', // Всегда указываем from для Resend
       to: recipientEmail,
-      subject: config.subject || `Сообщение от ${data.name || 'Workflow'}`,
-      text: config.body || data.message || 'Тестовое сообщение',
+      subject: config.subject || `Сообщение от ${typeof data.name === 'string' ? data.name : 'Workflow'}`,
+      text: config.body || (typeof data.message === 'string' ? data.message : 'Тестовое сообщение'),
     };
 
     // Если пользователь указал свой from, используем его
@@ -223,7 +294,7 @@ async function executeEmailAction(config: EmailActionConfig, data: any): Promise
   }
 }
 
-async function executeHttpAction(config: HttpActionConfig, data: any): Promise<void> {
+async function executeHttpAction(config: HttpActionConfig, data: Record<string, unknown>): Promise<void> {
   const response = await axios({
     method: config.method,
     url: config.url,
@@ -236,7 +307,7 @@ async function executeHttpAction(config: HttpActionConfig, data: any): Promise<v
   data.httpResponse = response.data;
 }
 
-async function executeTelegramAction(config: TelegramActionConfig, data: any): Promise<void> {
+async function executeTelegramAction(config: TelegramActionConfig, data: Record<string, unknown>): Promise<void> {
   if (!telegramBot) {
     throw new Error('Telegram bot token not configured. Please add TELEGRAM_BOT_TOKEN to your environment variables.');
   }
@@ -245,7 +316,9 @@ async function executeTelegramAction(config: TelegramActionConfig, data: any): P
     // Захардкоженный Chat ID для группы
     const chatId = '-1003520125389';
 
-    const message = config.message || data.message || `Сообщение от ${data.name || 'Workflow'}`;
+    const message = config.message ||
+      (typeof data.message === 'string' ? data.message : undefined) ||
+      `Сообщение от ${typeof data.name === 'string' ? data.name : 'Workflow'}`;
 
     console.log(`Sending Telegram message to chat ${chatId}:`, message);
 
@@ -262,14 +335,14 @@ async function executeTelegramAction(config: TelegramActionConfig, data: any): P
   }
 }
 
-async function executeDatabaseAction(config: DatabaseActionConfig, data: any): Promise<void> {
+async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<string, unknown>): Promise<void> {
   // Простая имитация работы с БД (в продакшене использовать реальную БД)
 
   // Имитация результата
   data.dbResult = { affectedRows: 1, insertId: Date.now() };
 }
 
-async function executeTransformAction(config: TransformActionConfig, data: any): Promise<void> {
+async function executeTransformAction(config: TransformActionConfig, data: Record<string, unknown>): Promise<void> {
   // Простая трансформация данных с помощью Function constructor
   // В продакшене использовать более безопасный подход
   try {

@@ -16,7 +16,7 @@ export function Header() {
         <div className="flex h-14 items-center justify-between">
           {/* Логотип/Название */}
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+            <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
               <BarChart3 className="w-5 h-5" />
               <span className="hidden sm:inline">FlowForge</span>
             </Link>

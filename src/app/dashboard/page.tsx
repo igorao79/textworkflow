@@ -6,11 +6,23 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Workflow, WorkflowExecution } from '@/types/workflow';
-import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle, Pause, Play as PlayIcon } from 'lucide-react';
+import { Tooltip, ResponsiveContainer, PieChart, Pie } from 'recharts';
 
 export default function DashboardPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
+  const [queueStats, setQueueStats] = useState<{
+    waiting: number;
+    active: number;
+    completedCount: number;
+    failedCount: number;
+    paused: boolean;
+    completed: number;
+    failed: number;
+    retries: number;
+    totalJobs: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentWorkflowsPage, setCurrentWorkflowsPage] = useState(1);
   const [currentExecutionsPage, setCurrentExecutionsPage] = useState(1);
@@ -22,26 +34,50 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     try {
-      const [workflowsRes, executionsRes] = await Promise.all([
+      const [workflowsRes, executionsRes, queueStatsRes] = await Promise.all([
         fetch('/api/workflows'),
-        fetch('/api/executions')
+        fetch('/api/executions'),
+        fetch('/api/queue/stats')
       ]);
 
       if (workflowsRes.ok) {
         const workflowsData = await workflowsRes.json();
         setWorkflows(workflowsData);
-        setCurrentWorkflowsPage(1); // Сброс на первую страницу при загрузке новых данных
+        setCurrentWorkflowsPage(1);
       }
 
       if (executionsRes.ok) {
         const executionsData = await executionsRes.json();
         setExecutions(executionsData);
-        setCurrentExecutionsPage(1); // Сброс на первую страницу при загрузке новых данных
+        setCurrentExecutionsPage(1);
+      }
+
+      if (queueStatsRes.ok) {
+        const queueStatsData = await queueStatsRes.json();
+        setQueueStats(queueStatsData);
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleQueuePause = async () => {
+    try {
+      const action = queueStats?.paused ? 'resume' : 'pause';
+      const response = await fetch('/api/queue/pause', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        // Перезагрузить данные
+        await loadData();
+      }
+    } catch (error) {
+      console.error('Error toggling queue pause:', error);
     }
   };
 
@@ -215,6 +251,96 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Статистика очереди */}
+        {queueStats && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Статистика очереди
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span>Статус:</span>
+                    <Badge variant={queueStats.paused ? "destructive" : "default"}>
+                      {queueStats.paused ? "Приостановлена" : "Активна"}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Ожидают</p>
+                      <p className="text-2xl font-bold">{queueStats.waiting}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Выполняются</p>
+                      <p className="text-2xl font-bold">{queueStats.active}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Завершено</p>
+                      <p className="text-2xl font-bold">{queueStats.completedCount}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Ошибок</p>
+                      <p className="text-2xl font-bold">{queueStats.failedCount}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={toggleQueuePause}
+                      variant={queueStats.paused ? "default" : "outline"}
+                      size="sm"
+                      className="flex-1"
+                    >
+                      {queueStats.paused ? (
+                        <>
+                          <PlayIcon className="w-4 h-4 mr-2" />
+                          Возобновить
+                        </>
+                      ) : (
+                        <>
+                          <Pause className="w-4 h-4 mr-2" />
+                          Приостановить
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Распределение задач</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Ожидают', value: queueStats.waiting, fill: '#fbbf24' },
+                        { name: 'Выполняются', value: queueStats.active, fill: '#3b82f6' },
+                        { name: 'Завершено', value: queueStats.completedCount, fill: '#10b981' },
+                        { name: 'Ошибок', value: queueStats.failedCount, fill: '#ef4444' },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={60}
+                      dataKey="value"
+                      label={({ name, value }) => value > 0 ? `${name}: ${value}` : ''}
+                    />
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Таблицы */}
         <Tabs defaultValue="workflows" className="space-y-4">
