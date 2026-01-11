@@ -453,5 +453,237 @@
       }
     ],
     "completedAt": "2026-01-10T18:42:38.674Z"
+  },
+  {
+    "id": "exec_1768156581096_qg9twdbdw",
+    "workflowId": "wf_1768156581095_bw397nzy1",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:21.096Z",
+    "logs": [
+      {
+        "id": "log_1768156581097_uu0862106",
+        "timestamp": "2026-01-11T18:36:21.097Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581987_i7c1hzx5v",
+        "timestamp": "2026-01-11T18:36:21.987Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581987_qfkatf2n5",
+        "timestamp": "2026-01-11T18:36:21.987Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:21.987Z"
+  },
+  {
+    "id": "exec_1768156581117_a2eekccdw",
+    "workflowId": "wf_1768156581116_ovl3o7a03",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:21.117Z",
+    "logs": [
+      {
+        "id": "log_1768156581117_kts2nh5e7",
+        "timestamp": "2026-01-11T18:36:21.117Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581723_8dlempgr4",
+        "timestamp": "2026-01-11T18:36:21.723Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581723_d8gzv0l5t",
+        "timestamp": "2026-01-11T18:36:21.723Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:21.723Z"
+  },
+  {
+    "id": "exec_1768156585377_rbu33fdqv",
+    "workflowId": "wf_1768156585376_i3jz9d79d",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:25.377Z",
+    "logs": [
+      {
+        "id": "log_1768156585378_hquovjtfx",
+        "timestamp": "2026-01-11T18:36:25.378Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585607_8gybnxuh2",
+        "timestamp": "2026-01-11T18:36:25.607Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585607_bs3szap9t",
+        "timestamp": "2026-01-11T18:36:25.607Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:25.607Z"
+  },
+  {
+    "id": "exec_1768156585411_kai0j7jqs",
+    "workflowId": "wf_1768156585410_d6noeafvd",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:25.411Z",
+    "logs": [
+      {
+        "id": "log_1768156585412_66otw3yrt",
+        "timestamp": "2026-01-11T18:36:25.412Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585929_a9yalmg64",
+        "timestamp": "2026-01-11T18:36:25.929Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585929_1bjf3s9e2",
+        "timestamp": "2026-01-11T18:36:25.929Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:25.929Z"
+  },
+  {
+    "id": "exec_1768156586584_5o3gxz2kl",
+    "workflowId": "wf_1768156586582_67e07vhxg",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:26.584Z",
+    "logs": [
+      {
+        "id": "log_1768156586584_mvzzsla65",
+        "timestamp": "2026-01-11T18:36:26.584Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586843_iaghva5ra",
+        "timestamp": "2026-01-11T18:36:26.843Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586843_284kenqma",
+        "timestamp": "2026-01-11T18:36:26.843Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:26.843Z"
+  },
+  {
+    "id": "exec_1768156586609_jypooqr3b",
+    "workflowId": "wf_1768156586608_p5h1llwl8",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:26.609Z",
+    "logs": [
+      {
+        "id": "log_1768156586610_wi3g4psra",
+        "timestamp": "2026-01-11T18:36:26.610Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586852_71oar4w9n",
+        "timestamp": "2026-01-11T18:36:26.852Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586852_hx1sqmwg1",
+        "timestamp": "2026-01-11T18:36:26.852Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:26.852Z"
+  },
+  {
+    "id": "exec_1768156588151_o4at0v5cm",
+    "workflowId": "wf_1768156588150_tlradgbe8",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:28.151Z",
+    "logs": [
+      {
+        "id": "log_1768156588152_yircvxvfo",
+        "timestamp": "2026-01-11T18:36:28.152Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588390_bc5y6fw0l",
+        "timestamp": "2026-01-11T18:36:28.390Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588390_55ib2cnbc",
+        "timestamp": "2026-01-11T18:36:28.390Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:28.390Z"
+  },
+  {
+    "id": "exec_1768156588177_e5y076v4h",
+    "workflowId": "wf_1768156588175_fksk5y4kn",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:28.177Z",
+    "logs": [
+      {
+        "id": "log_1768156588177_ypjnhsei4",
+        "timestamp": "2026-01-11T18:36:28.177Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588420_9j7tj8172",
+        "timestamp": "2026-01-11T18:36:28.420Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588420_kvc3u7xvz",
+        "timestamp": "2026-01-11T18:36:28.420Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:28.420Z"
   }
 ]

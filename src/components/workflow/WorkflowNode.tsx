@@ -37,13 +37,19 @@ export const getActionTitle = (type: string) => {
 
 interface WorkflowNodeProps {
   action: WorkflowAction;
+  index?: number;
   onUpdate: (actionId: string, updates: Partial<WorkflowAction>) => void;
   onDelete: (actionId: string) => void;
 }
 
-export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) {
+export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNodeProps) {
+  const [tempConfig, setTempConfig] = React.useState(action.config);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
-
+  // Обновляем tempConfig при изменении action.config
+  React.useEffect(() => {
+    setTempConfig(action.config);
+  }, [action.config]);
 
   const {
     attributes,
@@ -67,19 +73,32 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
   };
 
 
+  const handleSave = () => {
+    onUpdate(action.id, { config: tempConfig });
+    setIsDialogOpen(false);
+  };
+
+  const handleCancel = () => {
+    setTempConfig(action.config); // Сбрасываем изменения
+    setIsDialogOpen(false);
+  };
+
+  const updateTempConfig = (updates: Partial<EmailActionConfig | TelegramActionConfig | HttpActionConfig | DatabaseActionConfig | TransformActionConfig>) => {
+    setTempConfig(prev => ({ ...prev, ...updates }));
+  };
+
   const renderActionConfig = () => {
     switch (action.type) {
       case 'email':
+        const emailConfig = tempConfig as EmailActionConfig;
         return (
           <div className="space-y-3">
             <div>
-              <Label htmlFor={`email-from-${action.id}`} className="mb-4 block">Отправитель (опционально)</Label>
+              <Label htmlFor={`email-from-${action.id}`} className="mb-2 block">Отправитель (опционально)</Label>
               <Input
                 id={`email-from-${action.id}`}
-                value={(action.config as EmailActionConfig).from || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as EmailActionConfig), from: e.target.value }
-                })}
+                value={emailConfig.from || ''}
+                onChange={(e) => updateTempConfig({ from: e.target.value })}
                 placeholder="noreply@your-verified-domain.com"
               />
               <p className="text-xs text-muted-foreground mt-1">
@@ -87,35 +106,29 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
               </p>
             </div>
             <div>
-              <Label htmlFor={`email-to-${action.id}`} className="mb-4 block">Получатель (опционально)</Label>
+              <Label htmlFor={`email-to-${action.id}`} className="mb-2 block">Получатель (опционально)</Label>
               <Input
                 id={`email-to-${action.id}`}
-                value={(action.config as EmailActionConfig).to || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as EmailActionConfig), to: e.target.value }
-                })}
+                value={emailConfig.to || ''}
+                onChange={(e) => updateTempConfig({ to: e.target.value })}
                 placeholder="Оставьте пустым для использования email из формы"
               />
             </div>
             <div>
-              <Label htmlFor={`email-subject-${action.id}`} className="mb-4 block">Тема</Label>
+              <Label htmlFor={`email-subject-${action.id}`} className="mb-2 block">Тема</Label>
               <Input
                 id={`email-subject-${action.id}`}
-                value={(action.config as EmailActionConfig).subject || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as EmailActionConfig), subject: e.target.value }
-                })}
+                value={emailConfig.subject || ''}
+                onChange={(e) => updateTempConfig({ subject: e.target.value })}
                 placeholder="Тема письма"
               />
             </div>
             <div>
-              <Label htmlFor={`email-body-${action.id}`} className="mb-4 block">Текст</Label>
+              <Label htmlFor={`email-body-${action.id}`} className="mb-2 block">Текст</Label>
               <Textarea
                 id={`email-body-${action.id}`}
-                value={(action.config as EmailActionConfig).body || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as EmailActionConfig), body: e.target.value }
-                })}
+                value={emailConfig.body || ''}
+                onChange={(e) => updateTempConfig({ body: e.target.value })}
                 placeholder="Текст письма"
                 rows={3}
               />
@@ -124,16 +137,15 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
         );
 
       case 'telegram':
+        const telegramConfig = tempConfig as TelegramActionConfig;
         return (
           <div className="space-y-3">
             <div>
-              <Label htmlFor={`telegram-message-${action.id}`}>Сообщение (опционально)</Label>
+              <Label htmlFor={`telegram-message-${action.id}`} className="mb-2 block">Сообщение (опционально)</Label>
               <Textarea
                 id={`telegram-message-${action.id}`}
-                value={(action.config as TelegramActionConfig).message || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as TelegramActionConfig), message: e.target.value }
-                })}
+                value={telegramConfig.message || ''}
+                onChange={(e) => updateTempConfig({ message: e.target.value })}
                 placeholder="Оставьте пустым, чтобы использовать сообщение из формы"
                 rows={2}
               />
@@ -142,16 +154,15 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
         );
 
       case 'http':
+        const httpConfig = tempConfig as HttpActionConfig;
         return (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label htmlFor={`http-method-${action.id}`}>Метод</Label>
+                <Label htmlFor={`http-method-${action.id}`} className="mb-2 block">Метод</Label>
                 <Select
-                  value={(action.config as HttpActionConfig).method || 'GET'}
-                  onValueChange={(value) => onUpdate(action.id, {
-                    config: { ...(action.config as HttpActionConfig), method: value as HttpActionConfig['method'] }
-                  })}
+                  value={httpConfig.method || 'GET'}
+                  onValueChange={(value) => updateTempConfig({ method: value as HttpActionConfig['method'] })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -166,13 +177,11 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
                 </Select>
               </div>
               <div>
-                <Label htmlFor={`http-url-${action.id}`}>URL</Label>
+                <Label htmlFor={`http-url-${action.id}`} className="mb-2 block">URL</Label>
                 <Input
                   id={`http-url-${action.id}`}
-                  value={(action.config as HttpActionConfig).url || ''}
-                  onChange={(e) => onUpdate(action.id, {
-                    config: { ...(action.config as HttpActionConfig), url: e.target.value }
-                  })}
+                  value={httpConfig.url || ''}
+                  onChange={(e) => updateTempConfig({ url: e.target.value })}
                   placeholder="https://api.example.com"
                 />
               </div>
@@ -181,15 +190,14 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
         );
 
       case 'database':
+        const dbConfig = tempConfig as DatabaseActionConfig;
         return (
           <div className="space-y-3">
             <div>
-              <Label htmlFor={`db-operation-${action.id}`}>Операция</Label>
+              <Label htmlFor={`db-operation-${action.id}`} className="mb-2 block">Операция</Label>
               <Select
-                value={(action.config as DatabaseActionConfig).operation || 'select'}
-                onValueChange={(value) => onUpdate(action.id, {
-                  config: { ...(action.config as DatabaseActionConfig), operation: value as DatabaseActionConfig['operation'] }
-                })}
+                value={dbConfig.operation || 'select'}
+                onValueChange={(value) => updateTempConfig({ operation: value as DatabaseActionConfig['operation'] })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -203,13 +211,11 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
               </Select>
             </div>
             <div>
-              <Label htmlFor={`db-table-${action.id}`}>Таблица</Label>
+              <Label htmlFor={`db-table-${action.id}`} className="mb-2 block">Таблица</Label>
               <Input
                 id={`db-table-${action.id}`}
-                value={(action.config as DatabaseActionConfig).table || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as DatabaseActionConfig), table: e.target.value }
-                })}
+                value={dbConfig.table || ''}
+                onChange={(e) => updateTempConfig({ table: e.target.value })}
                 placeholder="users"
               />
             </div>
@@ -217,39 +223,34 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
         );
 
       case 'transform':
+        const transformConfig = tempConfig as TransformActionConfig;
         return (
           <div className="space-y-3">
             <div>
-              <Label htmlFor={`transform-input-${action.id}`}>Входные данные</Label>
+              <Label htmlFor={`transform-input-${action.id}`} className="mb-2 block">Входные данные</Label>
               <Input
                 id={`transform-input-${action.id}`}
-                value={(action.config as TransformActionConfig).input || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as TransformActionConfig), input: e.target.value }
-                })}
+                value={transformConfig.input || ''}
+                onChange={(e) => updateTempConfig({ input: e.target.value })}
                 placeholder="data.email"
               />
             </div>
             <div>
-              <Label htmlFor={`transform-code-${action.id}`}>Код трансформации</Label>
+              <Label htmlFor={`transform-code-${action.id}`} className="mb-2 block">Код трансформации</Label>
               <Textarea
                 id={`transform-code-${action.id}`}
-                value={(action.config as TransformActionConfig).transformation || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as TransformActionConfig), transformation: e.target.value }
-                })}
+                value={transformConfig.transformation || ''}
+                onChange={(e) => updateTempConfig({ transformation: e.target.value })}
                 placeholder="return data.toUpperCase()"
                 rows={2}
               />
             </div>
             <div>
-              <Label htmlFor={`transform-output-${action.id}`}>Выходная переменная</Label>
+              <Label htmlFor={`transform-output-${action.id}`} className="mb-2 block">Выходная переменная</Label>
               <Input
                 id={`transform-output-${action.id}`}
-                value={(action.config as TransformActionConfig).output || ''}
-                onChange={(e) => onUpdate(action.id, {
-                  config: { ...(action.config as TransformActionConfig), output: e.target.value }
-                })}
+                value={transformConfig.output || ''}
+                onChange={(e) => updateTempConfig({ output: e.target.value })}
                 placeholder="transformedData"
               />
             </div>
@@ -280,7 +281,7 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
       >
         {/* Номер задачи */}
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm border-2 border-card">
-          {action.id.split('_').pop() || '?'}
+          {index !== undefined ? index + 1 : action.id.split('_').pop() || '?'}
         </div>
 
 
@@ -291,7 +292,7 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
 
         {/* Кнопки управления */}
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
@@ -299,17 +300,26 @@ export function WorkflowNode({ action, onUpdate, onDelete }: WorkflowNodeProps) 
                 className="w-6 h-6 p-0 hover:bg-secondary"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setIsDialogOpen(true);
                 }}
               >
                 <Settings className="w-3 h-3" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="w-[95vw] max-w-md sm:w-[90vw] md:w-[80vw]">
               <DialogHeader>
                 <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
               </DialogHeader>
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto px-3">
                 {renderActionConfig()}
+              </div>
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t">
+                <Button variant="outline" onClick={handleCancel}>
+                  Отмена
+                </Button>
+                <Button onClick={handleSave}>
+                  Сохранить
+                </Button>
               </div>
             </DialogContent>
           </Dialog>

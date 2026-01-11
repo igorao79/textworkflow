@@ -2,6 +2,7 @@
 
 import { useDraggable } from '@dnd-kit/core';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Mail, Send, Globe, Database, RefreshCw } from 'lucide-react';
 
 const actions = [
@@ -52,9 +53,12 @@ interface Action {
 
 interface DraggableActionProps {
   action: Action;
+  count?: number;
+  onClick?: (actionType: string) => void;
+  isMobile?: boolean;
 }
 
-function DraggableAction({ action }: DraggableActionProps) {
+function DraggableAction({ action, count, onClick, isMobile = false }: DraggableActionProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `palette-${action.id}`,
     data: {
@@ -69,15 +73,31 @@ function DraggableAction({ action }: DraggableActionProps) {
     opacity: 1,
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (isMobile && onClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick(action.id);
+    }
+  };
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      className={`${isMobile ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'} hover:shadow-md transition-shadow relative`}
       suppressHydrationWarning={true}
+      onClick={handleClick}
     >
+      {count && count > 0 && (
+        <div className="absolute -top-2 -right-2 z-10">
+          <Badge variant="secondary" className="text-xs px-2 py-0.5">
+            {count}
+          </Badge>
+        </div>
+      )}
       <CardContent className="p-3">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-full ${action.color} flex items-center justify-center text-white`}>
@@ -93,7 +113,13 @@ function DraggableAction({ action }: DraggableActionProps) {
   );
 }
 
-export function ActionPalette() {
+interface ActionPaletteProps {
+  actionCounts?: Record<string, number>;
+  onAddAction?: (actionType: string) => void;
+  isMobile?: boolean;
+}
+
+export function ActionPalette({ actionCounts = {}, onAddAction, isMobile = false }: ActionPaletteProps) {
   return (
     <Card>
       <CardHeader>
@@ -102,7 +128,13 @@ export function ActionPalette() {
       <CardContent>
         <div className="space-y-3">
           {actions.map((action) => (
-            <DraggableAction key={action.id} action={action} />
+            <DraggableAction
+              key={action.id}
+              action={action}
+              count={actionCounts[action.id]}
+              onClick={onAddAction}
+              isMobile={isMobile}
+            />
           ))}
         </div>
         <div className="mt-4 p-3 bg-muted/50 rounded-lg">

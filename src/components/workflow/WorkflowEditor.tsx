@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { getActionTitle } from './WorkflowNode';
 import {
   DndContext,
   DragEndEvent,
@@ -16,7 +17,9 @@ import {
 } from '@dnd-kit/sortable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { WorkflowAction, WorkflowTrigger } from '@/types/workflow';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
 import { TriggerSelector } from './TriggerSelector';
@@ -29,6 +32,165 @@ interface WorkflowEditorProps {
     actions: WorkflowAction[];
   };
   onWorkflowChange: (data: WorkflowEditorProps['workflowData']) => void;
+  onSubmit?: () => void;
+  isSubmitting?: boolean;
+}
+
+// Компонент для отображения выполнения workflow
+function ExecutionMonitorModal({
+  isOpen,
+  onClose,
+  onExecute,
+  actions,
+  isSubmitting
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onExecute?: () => void;
+  actions: WorkflowAction[];
+  isSubmitting?: boolean;
+}) {
+  const [, setCurrentStep] = useState(0);
+  const [executionSteps, setExecutionSteps] = useState<Array<{
+    id: string;
+    title: string;
+    status: 'pending' | 'running' | 'completed' | 'failed';
+    startTime?: Date;
+    endTime?: Date;
+  }>>([]);
+
+  // Инициализируем шаги выполнения при открытии модального окна
+  React.useEffect(() => {
+    if (isOpen && actions.length > 0) {
+      const steps = actions.map(action => ({
+        id: action.id,
+        title: getActionTitle(action.type),
+        status: 'pending' as const
+      }));
+      setExecutionSteps(steps);
+      setCurrentStep(0);
+
+      // Не запускаем автоматически - пользователь сам нажмет кнопку в модалке
+
+      // Имитируем выполнение шагов
+      let stepIndex = 0;
+      const executeStep = () => {
+        if (stepIndex < steps.length) {
+          setExecutionSteps(prev => prev.map((step, index) => {
+            if (index === stepIndex) {
+              return { ...step, status: 'running', startTime: new Date() };
+            }
+            return step;
+          }));
+
+          // Имитируем время выполнения (случайное от 1 до 3 секунд)
+          const executionTime = Math.random() * 2000 + 1000;
+
+          setTimeout(() => {
+            setExecutionSteps(prev => prev.map((step, index) => {
+              if (index === stepIndex) {
+                return { ...step, status: 'completed', endTime: new Date() };
+              }
+              return step;
+            }));
+
+            stepIndex++;
+            setCurrentStep(stepIndex);
+
+            if (stepIndex < steps.length) {
+              setTimeout(executeStep, 500); // Пауза между шагами
+            } else {
+              // Все шаги завершены, закрываем модальное окно через 2 секунды
+              setTimeout(() => {
+                onClose();
+              }, 2000);
+            }
+          }, executionTime);
+        }
+      };
+
+      setTimeout(executeStep, 1000); // Начинаем через 1 секунду
+    }
+  }, [isOpen, actions, onExecute, onClose]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-500';
+      case 'running': return 'bg-blue-500 animate-pulse';
+      case 'failed': return 'bg-red-500';
+      default: return 'bg-gray-300';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed': return 'Выполнено';
+      case 'running': return 'Выполняется...';
+      case 'failed': return 'Ошибка';
+      default: return 'Ожидает';
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[80vh] overflow-y-auto sm:w-[90vw] md:w-[80vw] lg:w-[70vw]">
+        <DialogHeader>
+          <DialogTitle>Мониторинг выполнения Workflow</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {executionSteps.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p>Подготовка к выполнению...</p>
+              <Button
+                onClick={onExecute}
+                disabled={isSubmitting}
+                className="mt-4"
+                size="lg"
+              >
+                {isSubmitting ? 'Запуск...' : 'Запустить Workflow'}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {executionSteps.map((step) => (
+                <div key={step.id} className="flex items-center space-x-3 p-4 border rounded-lg bg-card">
+                  <div className={`w-4 h-4 rounded-full ${getStatusColor(step.status)}`}></div>
+                  <div className="flex-1">
+                    <div className="font-medium">{step.title}</div>
+                    <div className="text-sm text-muted-foreground">{getStatusText(step.status)}</div>
+                    {step.startTime && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Начало: {step.startTime.toLocaleTimeString()}
+                        {step.endTime && ` • Завершение: ${step.endTime.toLocaleTimeString()}`}
+                      </div>
+                    )}
+                  </div>
+                  {step.status === 'running' && (
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  )}
+                  {step.status === 'completed' && (
+                    <div className="text-green-600">✓</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+            <Button variant="outline" onClick={onClose}>
+              Закрыть
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 // Компонент для drop зоны
@@ -56,8 +218,54 @@ function DropZone({ children }: { children: React.ReactNode }) {
 }
 
 
-export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEditorProps) {
+export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSubmitting }: WorkflowEditorProps) {
   const actionCounterRef = useRef(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  // Подсчет количества действий каждого типа
+  const actionCounts = workflowData.actions.reduce((counts, action) => {
+    counts[action.type] = (counts[action.type] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+
+  // Проверка валидности всех действий
+  const isWorkflowValid = React.useMemo(() => {
+    if (workflowData.actions.length === 0) return false;
+
+    return workflowData.actions.every(action => {
+      switch (action.type) {
+        case 'email':
+          const emailConfig = action.config as EmailActionConfig;
+          return emailConfig.to && emailConfig.subject && emailConfig.body;
+        case 'telegram':
+          const telegramConfig = action.config as TelegramActionConfig;
+          return telegramConfig.message;
+        case 'http':
+          const httpConfig = action.config as HttpActionConfig;
+          return httpConfig.url && httpConfig.method;
+        case 'database':
+          const dbConfig = action.config as DatabaseActionConfig;
+          return dbConfig.operation && dbConfig.table;
+        case 'transform':
+          const transformConfig = action.config as TransformActionConfig;
+          return transformConfig.input && transformConfig.transformation && transformConfig.output;
+        default:
+          return false;
+      }
+    });
+  }, [workflowData.actions]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -117,6 +325,21 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
       default:
         return {};
     }
+  };
+
+  const addAction = (actionType: string) => {
+    actionCounterRef.current += 1;
+    const newAction: WorkflowAction = {
+      id: `action_${actionCounterRef.current}`,
+      type: actionType as WorkflowAction['type'],
+      config: getDefaultConfig(actionType) as WorkflowAction['config'],
+      position: { x: 100, y: 100 }
+    };
+
+    onWorkflowChange({
+      ...workflowData,
+      actions: [...workflowData.actions, newAction]
+    });
   };
 
   const handleActionUpdate = (actionId: string, updates: Partial<WorkflowAction>) => {
@@ -183,7 +406,11 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
       <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6" suppressHydrationWarning={true}>
         {/* Палитра действий */}
         <div className="min-w-0" suppressHydrationWarning={true}>
-          <ActionPalette />
+          <ActionPalette
+            actionCounts={actionCounts}
+            onAddAction={addAction}
+            isMobile={isMobile}
+          />
         </div>
 
         {/* Рабочая область */}
@@ -278,6 +505,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                           >
                             <WorkflowNode
                               action={action}
+                              index={index}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
                             />
@@ -352,6 +580,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                           >
                             <WorkflowNode
                               action={action}
+                              index={index}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
                             />
@@ -384,35 +613,24 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                       })}
                     </div>
 
-                    {/* Мобильная версия - максимум 8 блоков, по 2 в ряд */}
-                    <div className="grid grid-cols-2 gap-6 justify-items-center relative sm:hidden">
-                      {workflowData.actions.slice(0, 8).map((action, index) => {
-                        const row = Math.floor(index / 2);
-                        const isEvenRow = row % 2 === 0;
-                        const colInRow = index % 2;
-                        const actualCol = isEvenRow ? colInRow : 1 - colInRow;
+                    {/* Мобильная версия - адаптивная сетка */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 justify-items-center relative xl:hidden">
+                      {workflowData.actions.map((action, index) => {
+                        // Для мобильной версии используем упрощенную логику - все элементы в одном ряду
+                        const row = 0;
+                        const colInRow = index;
+                        const visualCol = colInRow;
 
-                        const totalItems = Math.min(workflowData.actions.length, 8);
+                        const totalItems = workflowData.actions.length;
 
                         // Определяем направление стрелки
                         let showRightArrow = false;
-                        let showLeftArrow = false;
-                        let showDownArrow = false;
+                        const showLeftArrow = false;
+                        const showDownArrow = false;
 
                         if (index < totalItems - 1) {
-                          if (colInRow < 1) {
-                            // Не последний в ряду
-                            if (isEvenRow) {
-                              // Четный ряд - стрелка вправо
-                              showRightArrow = true;
-                            } else {
-                              // Нечетный ряд - стрелка влево
-                              showLeftArrow = true;
-                            }
-                          } else {
-                            // Последний в ряду - стрелка вниз (если есть следующий ряд)
-                            showDownArrow = true;
-                          }
+                          // В мобильной версии все элементы в одном ряду, поэтому стрелка всегда вправо
+                          showRightArrow = true;
                         }
 
                         return (
@@ -420,36 +638,38 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                             key={action.id}
                             className="relative"
                             style={{
-                              order: row * 2 + actualCol
+                              gridRow: row + 1,
+                              gridColumn: visualCol + 1
                             }}
                           >
                             <WorkflowNode
                               action={action}
+                              index={index}
                               onUpdate={handleActionUpdate}
                               onDelete={handleActionDelete}
                             />
 
                             {/* Стрелка вправо */}
                             {showRightArrow && (
-                              <div className="absolute top-10 -right-3 flex items-center z-10 opacity-70">
+                              <div className="absolute top-10 -right-4 flex items-center z-10 opacity-70">
                                 <div className="w-4 h-0.5 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[2px] border-l-primary border-y-[1px] border-y-transparent"></div>
+                                <div className="w-0 h-0 border-l-[1px] border-l-primary border-y-[0.5px] border-y-transparent"></div>
                               </div>
                             )}
 
                             {/* Стрелка влево */}
                             {showLeftArrow && (
-                              <div className="absolute top-10 -left-3 flex items-center z-10 opacity-70">
-                                <div className="w-0 h-0 border-r-[2px] border-r-primary border-y-[1px] border-y-transparent"></div>
+                              <div className="absolute top-10 -left-4 flex items-center z-10 opacity-70">
+                                <div className="w-0 h-0 border-r-[1px] border-r-primary border-y-[0.5px] border-y-transparent"></div>
                                 <div className="w-4 h-0.5 bg-primary"></div>
                               </div>
                             )}
 
                             {/* Стрелка вниз */}
                             {showDownArrow && (
-                              <div className="absolute -bottom-3 left-10 flex flex-col items-center z-10 opacity-70">
+                              <div className="absolute -bottom-4 left-10 flex flex-col items-center z-10 opacity-70">
                                 <div className="w-0.5 h-4 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[1px] border-l-transparent border-r-[1px] border-r-transparent border-t-[2px] border-t-primary"></div>
+                                <div className="w-0 h-0 border-l-[0.5px] border-l-transparent border-r-[0.5px] border-r-transparent border-t-[1px] border-t-primary"></div>
                               </div>
                             )}
                           </div>
@@ -459,10 +679,38 @@ export function WorkflowEditor({ workflowData, onWorkflowChange }: WorkflowEdito
                   </SortableContext>
                 )}
               </DropZone>
+
+              {/* Кнопка запуска */}
+              {onSubmit && (
+                <div className="flex justify-center mt-6">
+                  <Button
+                    onClick={() => setShowExecutionMonitor(true)}
+                    disabled={isSubmitting || !isWorkflowValid}
+                    size="lg"
+                    className="px-8 py-3 text-lg font-semibold"
+                  >
+                    {isSubmitting ? 'Запуск...' : 'Запустить Workflow'}
+                  </Button>
+                  {!isWorkflowValid && workflowData.actions.length > 0 && (
+                    <p className="text-sm text-muted-foreground mt-2 text-center">
+                      Заполните все поля действий для запуска workflow
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Модальное окно мониторинга выполнения */}
+      <ExecutionMonitorModal
+        isOpen={showExecutionMonitor}
+        onClose={() => setShowExecutionMonitor(false)}
+        onExecute={onSubmit}
+        actions={workflowData.actions}
+        isSubmitting={isSubmitting}
+      />
 
     </DndContext>
   );

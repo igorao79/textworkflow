@@ -20,8 +20,8 @@ export function WorkflowForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setIsSubmitting(true);
 
     try {
@@ -51,10 +51,9 @@ export function WorkflowForm() {
         throw new Error(result.error || result.details || 'Failed to create and run workflow');
       }
 
-      alert(`Workflow выполнен успешно! ID: ${result.workflowId}`);
+      console.log(`Workflow выполнен успешно! ID: ${result.workflowId}`);
     } catch (error) {
       console.error('Ошибка при запуске workflow:', error);
-      alert('Произошла ошибка при запуске workflow');
     } finally {
       setIsSubmitting(false);
     }
@@ -72,21 +71,11 @@ export function WorkflowForm() {
           <WorkflowEditor
             workflowData={workflowData}
             onWorkflowChange={setWorkflowData}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
           />
         </CardContent>
       </Card>
-
-      {/* Кнопка запуска */}
-      <div className="flex justify-center">
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          size="lg"
-          className="px-8 py-3 text-lg font-semibold"
-        >
-          {isSubmitting ? 'Запуск...' : 'Запустить Workflow'}
-        </Button>
-      </div>
     </div>
   );
 }

@@ -4,6 +4,19 @@ import { WorkflowExecution } from '../types/workflow';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
+// Fallback для случаев когда Redis недоступен
+const mockQueueStats = {
+  waiting: 0,
+  active: 0,
+  completedCount: 0,
+  failedCount: 0,
+  paused: false,
+  completed: 0,
+  failed: 0,
+  retries: 0,
+  totalJobs: 0,
+};
+
 // Очередь для выполнения workflow
 export const workflowQueue = new Queue('workflow-execution', REDIS_URL, {
   defaultJobOptions: {
@@ -96,31 +109,49 @@ workflowQueue.on('stalled', (jobId) => {
 
 // Функции управления очередью
 export const pauseQueue = async () => {
-  await workflowQueue.pause();
-  queueStats.paused = true;
-  console.log('⏸️ Queue paused');
+  try {
+    await workflowQueue.pause();
+    queueStats.paused = true;
+    console.log('⏸️ Queue paused');
+  } catch (error) {
+    console.warn('Failed to pause queue (Redis unavailable):', error);
+    // Имитируем паузу локально
+    queueStats.paused = true;
+  }
 };
 
 export const resumeQueue = async () => {
-  await workflowQueue.resume();
-  queueStats.paused = false;
-  console.log('▶️ Queue resumed');
+  try {
+    await workflowQueue.resume();
+    queueStats.paused = false;
+    console.log('▶️ Queue resumed');
+  } catch (error) {
+    console.warn('Failed to resume queue (Redis unavailable):', error);
+    // Имитируем возобновление локально
+    queueStats.paused = false;
+  }
 };
 
 export const getQueueStats = async () => {
-  const waiting = await workflowQueue.getWaiting();
-  const active = await workflowQueue.getActive();
-  const completed = await workflowQueue.getCompleted();
-  const failed = await workflowQueue.getFailed();
+  try {
+    const waiting = await workflowQueue.getWaiting();
+    const active = await workflowQueue.getActive();
+    const completed = await workflowQueue.getCompleted();
+    const failed = await workflowQueue.getFailed();
 
-  return {
-    ...queueStats,
-    waiting: waiting.length,
-    active: active.length,
-    completedCount: completed.length,
-    failedCount: failed.length,
-    totalJobs: waiting.length + active.length + completed.length + failed.length,
-  };
+    return {
+      ...queueStats,
+      waiting: waiting.length,
+      active: active.length,
+      completedCount: completed.length,
+      failedCount: failed.length,
+      totalJobs: waiting.length + active.length + completed.length + failed.length,
+    };
+  } catch (error) {
+    console.warn('Redis/Bull queue unavailable, using mock stats:', error);
+    // Возвращаем mock данные если Redis недоступен
+    return mockQueueStats;
+  }
 };
 
 // Экспорт для API

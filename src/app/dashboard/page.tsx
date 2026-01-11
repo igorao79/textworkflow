@@ -33,32 +33,65 @@ export default function DashboardPage() {
   }, []);
 
   const loadData = async () => {
+    // Добавляем timeout на случай зависания запросов
+    const timeout = setTimeout(() => {
+      console.warn('Dashboard loading timeout, forcing loading=false');
+      setLoading(false);
+    }, 10000); // 10 секунд timeout
+
     try {
-      const [workflowsRes, executionsRes, queueStatsRes] = await Promise.all([
+      // Простая загрузка без AbortController - даем запросам время выполниться
+      const [workflowsRes, executionsRes, queueStatsRes] = await Promise.allSettled([
         fetch('/api/workflows'),
         fetch('/api/executions'),
         fetch('/api/queue/stats')
       ]);
 
-      if (workflowsRes.ok) {
-        const workflowsData = await workflowsRes.json();
-        setWorkflows(workflowsData);
+      // Обрабатываем результаты с Promise.allSettled
+      if (workflowsRes.status === 'fulfilled' && workflowsRes.value.ok) {
+        const workflowsData = await workflowsRes.value.json();
+        setWorkflows(Array.isArray(workflowsData) ? workflowsData : []);
         setCurrentWorkflowsPage(1);
+      } else {
+        console.warn('Failed to load workflows:', workflowsRes.status === 'rejected' ? workflowsRes.reason : 'Response not ok');
+        setWorkflows([]);
       }
 
-      if (executionsRes.ok) {
-        const executionsData = await executionsRes.json();
-        setExecutions(executionsData);
+      if (executionsRes.status === 'fulfilled' && executionsRes.value.ok) {
+        const executionsData = await executionsRes.value.json();
+        setExecutions(Array.isArray(executionsData) ? executionsData : []);
         setCurrentExecutionsPage(1);
+      } else {
+        console.warn('Failed to load executions:', executionsRes.status === 'rejected' ? executionsRes.reason : 'Response not ok');
+        setExecutions([]);
       }
 
-      if (queueStatsRes.ok) {
-        const queueStatsData = await queueStatsRes.json();
+      if (queueStatsRes.status === 'fulfilled' && queueStatsRes.value.ok) {
+        const queueStatsData = await queueStatsRes.value.json();
         setQueueStats(queueStatsData);
+      } else {
+        console.warn('Failed to load queue stats:', queueStatsRes.status === 'rejected' ? queueStatsRes.reason : 'Response not ok');
+        // Fallback значения для queue stats
+        setQueueStats({
+          waiting: 0,
+          active: 0,
+          completedCount: 0,
+          failedCount: 0,
+          paused: false,
+          completed: 0,
+          failed: 0,
+          retries: 0,
+          totalJobs: 0
+        });
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+      // Устанавливаем пустые данные в случае ошибки
+      setWorkflows([]);
+      setExecutions([]);
+      setQueueStats(null);
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   };
