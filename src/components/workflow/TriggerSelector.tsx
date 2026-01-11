@@ -11,6 +11,7 @@ interface TriggerSelectorProps {
   onTriggerChange: (trigger: WorkflowTrigger) => void;
 }
 
+
 export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorProps) {
   const handleTypeChange = (type: 'webhook' | 'cron' | 'email') => {
     let config = {};
@@ -20,7 +21,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
         config = { url: '', method: 'POST', headers: {} };
         break;
       case 'cron':
-        config = { schedule: '0 0 * * *', timezone: 'UTC' };
+        config = { schedule: '1', timezone: 'Europe/Moscow' }; // По умолчанию каждую минуту
         break;
       case 'email':
         config = { from: '', subject: '', body: '' };
@@ -77,33 +78,61 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
 
       case 'cron':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="cron-schedule">Расписание (cron)</Label>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="cron-schedule">Расписание (cron)</Label>
               <Input
                 id="cron-schedule"
-                value={(trigger.config as CronTriggerConfig).schedule || ''}
+                value={(trigger.config as CronTriggerConfig).schedule || '1'}
                 onChange={(e) => onTriggerChange({
                   ...trigger,
                   config: { ...trigger.config, schedule: e.target.value }
                 })}
-                placeholder="0 0 * * *"
+                placeholder="* * * * *"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Формат: * * * * * (мин час день месяц день_недели)
+                Cron выражение или простой формат (1, 11, 111, 1111)
               </p>
             </div>
             <div>
               <Label htmlFor="cron-timezone">Часовой пояс</Label>
               <Input
                 id="cron-timezone"
-                value={(trigger.config as CronTriggerConfig).timezone || 'UTC'}
-                onChange={(e) => onTriggerChange({
-                  ...trigger,
-                  config: { ...trigger.config, timezone: e.target.value }
-                })}
-                placeholder="UTC"
+                value="Europe/Moscow (MSK)"
+                disabled
+                className="bg-gray-50"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Московское время (UTC+3)
+              </p>
+            </div>
+          </div>
+            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+              <p className="text-sm text-green-800">
+                <strong>✅ Cron активен:</strong> Workflow будет автоматически запускаться по расписанию.
+              </p>
+            </div>
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-sm text-blue-800">
+                <strong>📝 Формат расписаний:</strong><br/>
+                <strong>Простой формат:</strong><br/>
+                <code>1</code> - каждую минуту ⚠️<br/>
+                <code>11</code> - каждый час<br/>
+                <code>111</code> - каждый день в полночь<br/>
+                <code>1111</code> - каждый понедельник<br/>
+                <br/>
+                <strong>Полный cron формат:</strong><br/>
+                <code>* * * * *</code> - каждую минуту<br/>
+                <code>*/5 * * * *</code> - каждые 5 минут<br/>
+                <code>0 * * * *</code> - каждый час<br/>
+                <code>0 9 * * 1-5</code> - будни в 9:00
+              </p>
+              {((trigger.config as CronTriggerConfig).schedule === '1' || (trigger.config as CronTriggerConfig).schedule === '* * * * *') && (
+                <p className="text-xs text-red-600 mt-2 font-medium">
+                  ⚠️ Внимание: Это расписание запускает workflow каждую минуту! Используйте только для тестирования.
+                </p>
+              )}
             </div>
           </div>
         );

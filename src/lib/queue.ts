@@ -139,13 +139,18 @@ export const getQueueStats = async () => {
     const completed = await workflowQueue.getCompleted();
     const failed = await workflowQueue.getFailed();
 
+    // Импортируем cron задачи для общей статистики
+    const { getActiveCronTasks } = await import('../services/cronService');
+    const cronTasks = getActiveCronTasks();
+
     return {
       ...queueStats,
       waiting: waiting.length,
-      active: active.length,
+      active: active.length + cronTasks.length, // Добавляем cron задачи как активные
       completedCount: completed.length,
       failedCount: failed.length,
-      totalJobs: waiting.length + active.length + completed.length + failed.length,
+      totalJobs: waiting.length + active.length + completed.length + failed.length + cronTasks.length,
+      cronTasks: cronTasks.length, // Добавляем отдельную статистику по cron
     };
   } catch (error) {
     console.warn('Redis/Bull queue unavailable, using mock stats:', error);

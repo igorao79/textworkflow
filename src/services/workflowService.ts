@@ -1,5 +1,3 @@
-import 'server-only';
-
 import { Resend } from 'resend';
 import axios from 'axios';
 import { Telegraf } from 'telegraf';
@@ -179,19 +177,38 @@ function saveExecutions(executions: WorkflowExecution[]): void {
   }
 }
 
+function updateExecutionInFile(updatedExecution: WorkflowExecution): void {
+  try {
+    const executions = loadExecutions();
+    const index = executions.findIndex(e => e.id === updatedExecution.id);
+    if (index !== -1) {
+      executions[index] = updatedExecution;
+      saveExecutions(executions);
+      console.log(`✅ Updated execution ${updatedExecution.id} in file`);
+    } else {
+      console.warn(`⚠️ Execution ${updatedExecution.id} not found for update`);
+    }
+  } catch (error) {
+    console.error('Error updating execution in file:', error);
+  }
+}
+
 // Хранилище workflow с загрузкой из файлов
 const workflows: Workflow[] = loadWorkflows();
-const executions: WorkflowExecution[] = loadExecutions();
 
 export async function executeWorkflow(
   workflowId: string,
   triggerData: Record<string, unknown>
 ): Promise<WorkflowExecution> {
+  console.log(`🔄 WorkflowService: executeWorkflow called for ${workflowId} with trigger:`, triggerData);
+
   const workflow = workflows.find(w => w.id === workflowId);
   if (!workflow) {
-    console.error(`Workflow ${workflowId} not found`);
+    console.error(`❌ WorkflowService: Workflow ${workflowId} not found`);
     throw new Error(`Workflow ${workflowId} not found`);
   }
+
+  console.log(`✅ WorkflowService: Found workflow ${workflowId}, actions: ${workflow.actions.length}`);
 
   const execution: WorkflowExecution = {
     id: `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -201,8 +218,10 @@ export async function executeWorkflow(
     logs: []
   };
 
-  executions.push(execution);
-  saveExecutions(executions);
+  // Читаем текущие executions из файла, добавляем новый и сохраняем
+  const currentExecutions = loadExecutions();
+  currentExecutions.push(execution);
+  saveExecutions(currentExecutions);
 
   try {
     // Выполняем действия workflow последовательно
@@ -212,10 +231,11 @@ export async function executeWorkflow(
 
     execution.status = 'completed';
     execution.completedAt = new Date();
+    execution.result = triggerData; // Сохраняем результаты выполнения
 
-    // Логируем завершение
+    // Логируем завершение и обновляем в файле
     addLog(execution, 'info', 'Workflow execution completed successfully');
-    saveExecutions(executions);
+    updateExecutionInFile(execution);
 
   } catch (error: unknown) {
     execution.status = 'failed';
@@ -223,7 +243,7 @@ export async function executeWorkflow(
     execution.completedAt = new Date();
 
     addLog(execution, 'error', `Workflow execution failed: ${execution.error}`);
-    saveExecutions(executions);
+    updateExecutionInFile(execution);
 
     console.error(`Workflow ${workflowId} failed:`, error);
 
@@ -600,7 +620,12 @@ export function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'up
 }
 
 export function getWorkflows(): Workflow[] {
-  return workflows;
+  // Сортируем по дате создания в обратном порядке (новые первыми)
+  return workflows.sort((a, b) => {
+    const aTime = new Date(a.createdAt).getTime();
+    const bTime = new Date(b.createdAt).getTime();
+    return bTime - aTime; // Новые первыми
+  });
 }
 
 export function getWorkflow(id: string): Workflow | undefined {
@@ -627,12 +652,22 @@ export function deleteWorkflow(id: string): boolean {
 
 // Операции с executions
 export function getExecutions(workflowId?: string): WorkflowExecution[] {
-  if (workflowId) {
-    return executions.filter(e => e.workflowId === workflowId);
-  }
-  return executions;
+  // Читаем актуальные данные из файла при каждом запросе
+  const executions = loadExecutions();
+
+  const filteredExecutions = workflowId
+    ? executions.filter(e => e.workflowId === workflowId)
+    : executions;
+
+  // Сортируем по дате начала выполнения в обратном порядке (новые сначала)
+  return filteredExecutions.sort((a, b) => {
+    const aTime = new Date(a.startedAt).getTime();
+    const bTime = new Date(b.startedAt).getTime();
+    return bTime - aTime; // Новые первыми
+  });
 }
 
 export function getExecution(id: string): WorkflowExecution | undefined {
-  return executions.find(e => e.id === id);
+  const executions = loadExecutions();
+  return executions.find((e) => e.id === id);
 }

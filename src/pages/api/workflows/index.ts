@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getWorkflows, createWorkflow, updateWorkflow, deleteWorkflow } from '@/services/workflowService';
+import '@/services/cronService'; // Инициализируем cron scheduler
 
 /**
  * @swagger
@@ -44,6 +45,7 @@ import { getWorkflows, createWorkflow, updateWorkflow, deleteWorkflow } from '@/
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    console.log(`📡 ${req.method} /api/workflows`);
     switch (req.method) {
       case 'GET':
         const workflows = getWorkflows();

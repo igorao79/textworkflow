@@ -1,0 +1,4285 @@
+[
+  {
+    "id": "exec_1768068941019_mfld70823",
+    "workflowId": "wf_1768068708009_q0i591k7a",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:15:41.019Z",
+    "logs": [
+      {
+        "id": "log_1768068941020_xvppuhzeq",
+        "timestamp": "2026-01-10T18:15:41.020Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768068941701_9bqj7t9kr",
+        "timestamp": "2026-01-10T18:15:41.701Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      },
+      {
+        "id": "log_1768068941702_pcf8nwqit",
+        "timestamp": "2026-01-10T18:15:41.702Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:15:41.702Z"
+  },
+  {
+    "id": "exec_1768068941028_17b16lrrq",
+    "workflowId": "wf_1768068762256_nqrn9prtd",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:15:41.028Z",
+    "logs": [
+      {
+        "id": "log_1768068941030_srpg5w096",
+        "timestamp": "2026-01-10T18:15:41.030Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768068727007_oqi5avuna"
+      },
+      {
+        "id": "log_1768068941875_k499pd3ye",
+        "timestamp": "2026-01-10T18:15:41.875Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+        "actionId": "action_1768068727007_oqi5avuna"
+      },
+      {
+        "id": "log_1768068941875_k06y9up2f",
+        "timestamp": "2026-01-10T18:15:41.875Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The yourdomain.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:15:41.875Z"
+  },
+  {
+    "id": "exec_1768069192608_9ldkx63uk",
+    "workflowId": "wf_1768068959549_0u7tpow73",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:19:52.608Z",
+    "logs": [
+      {
+        "id": "log_1768069192612_vn8vexj4z",
+        "timestamp": "2026-01-10T18:19:52.612Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768068944935_lefzfk58f"
+      },
+      {
+        "id": "log_1768069193100_jak5h5qsq",
+        "timestamp": "2026-01-10T18:19:53.100Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+        "actionId": "action_1768068944935_lefzfk58f"
+      },
+      {
+        "id": "log_1768069193101_t2j4os77v",
+        "timestamp": "2026-01-10T18:19:53.101Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains"
+      }
+    ],
+    "error": "Email sending failed: The gmail.com domain is not verified. Please, add and verify your domain on https://resend.com/domains",
+    "completedAt": "2026-01-10T18:19:53.101Z"
+  },
+  {
+    "id": "exec_1768069536577_ivlitoq6u",
+    "workflowId": "wf_1768069303523_2ms675t06",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.577Z",
+    "logs": [
+      {
+        "id": "log_1768069536578_30gr84dzj",
+        "timestamp": "2026-01-10T18:25:36.578Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069289158_ih6anqusf"
+      },
+      {
+        "id": "log_1768069537058_ts1pe57s4",
+        "timestamp": "2026-01-10T18:25:37.058Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field.",
+        "actionId": "action_1768069289158_ih6anqusf"
+      },
+      {
+        "id": "log_1768069537058_kzqm4mzz0",
+        "timestamp": "2026-01-10T18:25:37.058Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:37.058Z"
+  },
+  {
+    "id": "exec_1768069536582_rw8gsa1bm",
+    "workflowId": "wf_1768069344596_c693oem4l",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.582Z",
+    "logs": [
+      {
+        "id": "log_1768069536582_1llu69sy5",
+        "timestamp": "2026-01-10T18:25:36.582Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069333870_isina8ycf"
+      },
+      {
+        "id": "log_1768069537550_1d0nk6wab",
+        "timestamp": "2026-01-10T18:25:37.550Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069333870_isina8ycf"
+      },
+      {
+        "id": "log_1768069537550_bijc2d5r5",
+        "timestamp": "2026-01-10T18:25:37.550Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:25:37.550Z"
+  },
+  {
+    "id": "exec_1768069536583_qd082xzcn",
+    "workflowId": "wf_1768069376513_0948mkat2",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.583Z",
+    "logs": [
+      {
+        "id": "log_1768069536583_6o4ocwnzb",
+        "timestamp": "2026-01-10T18:25:36.583Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069366678_s7nfdhheh"
+      },
+      {
+        "id": "log_1768069537736_bs2agc2vh",
+        "timestamp": "2026-01-10T18:25:37.736Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069366678_s7nfdhheh"
+      },
+      {
+        "id": "log_1768069537736_x17h8tekq",
+        "timestamp": "2026-01-10T18:25:37.736Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:25:37.736Z"
+  },
+  {
+    "id": "exec_1768069536583_pynq68koz",
+    "workflowId": "wf_1768069411418_jekav7b5z",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:36.583Z",
+    "logs": [
+      {
+        "id": "log_1768069536583_sbjrs06wj",
+        "timestamp": "2026-01-10T18:25:36.583Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069389574_f6gm69pz9"
+      },
+      {
+        "id": "log_1768069537221_wates3nu6",
+        "timestamp": "2026-01-10T18:25:37.221Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field.",
+        "actionId": "action_1768069389574_f6gm69pz9"
+      },
+      {
+        "id": "log_1768069537221_e6qvdgmtj",
+        "timestamp": "2026-01-10T18:25:37.221Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:37.221Z"
+  },
+  {
+    "id": "exec_1768069547950_mmvgigt8f",
+    "workflowId": "wf_1768069547949_tiintnso5",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:25:47.950Z",
+    "logs": [
+      {
+        "id": "log_1768069547951_yekfr58fz",
+        "timestamp": "2026-01-10T18:25:47.951Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069548320_q4zpx6ux2",
+        "timestamp": "2026-01-10T18:25:48.320Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: Missing `from` field."
+      },
+      {
+        "id": "log_1768069548320_cntf7glkt",
+        "timestamp": "2026-01-10T18:25:48.320Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: Missing `from` field."
+      }
+    ],
+    "error": "Email sending failed: Missing `from` field.",
+    "completedAt": "2026-01-10T18:25:48.320Z"
+  },
+  {
+    "id": "exec_1768069560560_n6pfem9id",
+    "workflowId": "wf_1768069560558_enj1mgbfm",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:26:00.560Z",
+    "logs": [
+      {
+        "id": "log_1768069560561_78lb446la",
+        "timestamp": "2026-01-10T18:26:00.561Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069560985_ty9d1zha1",
+        "timestamp": "2026-01-10T18:26:00.985Z",
+        "level": "error",
+        "message": "Action email failed: Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain."
+      },
+      {
+        "id": "log_1768069560985_kyq4eojiv",
+        "timestamp": "2026-01-10T18:26:00.985Z",
+        "level": "error",
+        "message": "Workflow execution failed: Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain."
+      }
+    ],
+    "error": "Email sending failed: You can only send testing emails to your own email address (samptv59@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain.",
+    "completedAt": "2026-01-10T18:26:00.985Z"
+  },
+  {
+    "id": "exec_1768069584950_nfn1ziyb5",
+    "workflowId": "wf_1768069584949_qtddgt2lm",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:26:24.950Z",
+    "logs": [
+      {
+        "id": "log_1768069584951_tqaa0xbjk",
+        "timestamp": "2026-01-10T18:26:24.951Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069585380_ip2n8lv7n",
+        "timestamp": "2026-01-10T18:26:25.380Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069585380_dqjt5221v",
+        "timestamp": "2026-01-10T18:26:25.380Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:26:25.380Z"
+  },
+  {
+    "id": "exec_1768069634478_a4h85osvo",
+    "workflowId": "wf_1768069634477_tuc3mjn5j",
+    "status": "failed",
+    "startedAt": "2026-01-10T18:27:14.478Z",
+    "logs": [
+      {
+        "id": "log_1768069634478_epqi4kfsh",
+        "timestamp": "2026-01-10T18:27:14.478Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1768069612982_qdg83m15d"
+      },
+      {
+        "id": "log_1768069634847_8e4xgi7hl",
+        "timestamp": "2026-01-10T18:27:14.847Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1768069612982_qdg83m15d"
+      },
+      {
+        "id": "log_1768069634847_h770xdvx6",
+        "timestamp": "2026-01-10T18:27:14.847Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1768069613725_ci56ndpvl"
+      },
+      {
+        "id": "log_1768069635104_hdxhbg92g",
+        "timestamp": "2026-01-10T18:27:15.104Z",
+        "level": "error",
+        "message": "Action telegram failed: 400: Bad Request: chat not found",
+        "actionId": "action_1768069613725_ci56ndpvl"
+      },
+      {
+        "id": "log_1768069635104_m7udu3agl",
+        "timestamp": "2026-01-10T18:27:15.104Z",
+        "level": "error",
+        "message": "Workflow execution failed: 400: Bad Request: chat not found"
+      }
+    ],
+    "error": "400: Bad Request: chat not found",
+    "completedAt": "2026-01-10T18:27:15.104Z"
+  },
+  {
+    "id": "exec_1768069708058_cvf8puoef",
+    "workflowId": "wf_1768069708056_gibcpuykr",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:28:28.058Z",
+    "logs": [
+      {
+        "id": "log_1768069708059_jgbv7xnv0",
+        "timestamp": "2026-01-10T18:28:28.059Z",
+        "level": "info",
+        "message": "Executing action: telegram"
+      },
+      {
+        "id": "log_1768069708183_nfmg1i3mk",
+        "timestamp": "2026-01-10T18:28:28.183Z",
+        "level": "info",
+        "message": "Action telegram completed successfully"
+      },
+      {
+        "id": "log_1768069708183_6nuk7308y",
+        "timestamp": "2026-01-10T18:28:28.183Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:28:28.183Z"
+  },
+  {
+    "id": "exec_1768069713723_icm0xi976",
+    "workflowId": "wf_1768069713721_uaffs90iu",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:28:33.723Z",
+    "logs": [
+      {
+        "id": "log_1768069713724_z90vi7y4e",
+        "timestamp": "2026-01-10T18:28:33.724Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069714101_yl3w4bq3f",
+        "timestamp": "2026-01-10T18:28:34.101Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069714101_s3xmq9sko",
+        "timestamp": "2026-01-10T18:28:34.101Z",
+        "level": "info",
+        "message": "Executing action: telegram"
+      },
+      {
+        "id": "log_1768069714211_rtyakqwaa",
+        "timestamp": "2026-01-10T18:28:34.211Z",
+        "level": "info",
+        "message": "Action telegram completed successfully"
+      },
+      {
+        "id": "log_1768069714211_ymni9bjgy",
+        "timestamp": "2026-01-10T18:28:34.211Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:28:34.211Z"
+  },
+  {
+    "id": "exec_1768069892175_je6lpjnf1",
+    "workflowId": "wf_1768069892174_q1dtpiylu",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:31:32.175Z",
+    "logs": [
+      {
+        "id": "log_1768069892175_mpjzk2k8y",
+        "timestamp": "2026-01-10T18:31:32.175Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768069892559_nzb9mpetk",
+        "timestamp": "2026-01-10T18:31:32.559Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768069892559_3qw6lb4ix",
+        "timestamp": "2026-01-10T18:31:32.559Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:31:32.559Z"
+  },
+  {
+    "id": "exec_1768070558311_z8vesdqkz",
+    "workflowId": "wf_1768070558310_4jxjznsj8",
+    "status": "completed",
+    "startedAt": "2026-01-10T18:42:38.311Z",
+    "logs": [
+      {
+        "id": "log_1768070558311_2u9yv23vx",
+        "timestamp": "2026-01-10T18:42:38.311Z",
+        "level": "info",
+        "message": "Executing action: email"
+      },
+      {
+        "id": "log_1768070558674_mh8rdrq3m",
+        "timestamp": "2026-01-10T18:42:38.674Z",
+        "level": "info",
+        "message": "Action email completed successfully"
+      },
+      {
+        "id": "log_1768070558674_215t1o1e5",
+        "timestamp": "2026-01-10T18:42:38.674Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-10T18:42:38.674Z"
+  },
+  {
+    "id": "exec_1768156581096_qg9twdbdw",
+    "workflowId": "wf_1768156581095_bw397nzy1",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:21.096Z",
+    "logs": [
+      {
+        "id": "log_1768156581097_uu0862106",
+        "timestamp": "2026-01-11T18:36:21.097Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581987_i7c1hzx5v",
+        "timestamp": "2026-01-11T18:36:21.987Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581987_qfkatf2n5",
+        "timestamp": "2026-01-11T18:36:21.987Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:21.987Z"
+  },
+  {
+    "id": "exec_1768156581117_a2eekccdw",
+    "workflowId": "wf_1768156581116_ovl3o7a03",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:21.117Z",
+    "logs": [
+      {
+        "id": "log_1768156581117_kts2nh5e7",
+        "timestamp": "2026-01-11T18:36:21.117Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581723_8dlempgr4",
+        "timestamp": "2026-01-11T18:36:21.723Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156581723_d8gzv0l5t",
+        "timestamp": "2026-01-11T18:36:21.723Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:21.723Z"
+  },
+  {
+    "id": "exec_1768156585377_rbu33fdqv",
+    "workflowId": "wf_1768156585376_i3jz9d79d",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:25.377Z",
+    "logs": [
+      {
+        "id": "log_1768156585378_hquovjtfx",
+        "timestamp": "2026-01-11T18:36:25.378Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585607_8gybnxuh2",
+        "timestamp": "2026-01-11T18:36:25.607Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585607_bs3szap9t",
+        "timestamp": "2026-01-11T18:36:25.607Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:25.607Z"
+  },
+  {
+    "id": "exec_1768156585411_kai0j7jqs",
+    "workflowId": "wf_1768156585410_d6noeafvd",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:25.411Z",
+    "logs": [
+      {
+        "id": "log_1768156585412_66otw3yrt",
+        "timestamp": "2026-01-11T18:36:25.412Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585929_a9yalmg64",
+        "timestamp": "2026-01-11T18:36:25.929Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156585929_1bjf3s9e2",
+        "timestamp": "2026-01-11T18:36:25.929Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:25.929Z"
+  },
+  {
+    "id": "exec_1768156586584_5o3gxz2kl",
+    "workflowId": "wf_1768156586582_67e07vhxg",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:26.584Z",
+    "logs": [
+      {
+        "id": "log_1768156586584_mvzzsla65",
+        "timestamp": "2026-01-11T18:36:26.584Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586843_iaghva5ra",
+        "timestamp": "2026-01-11T18:36:26.843Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586843_284kenqma",
+        "timestamp": "2026-01-11T18:36:26.843Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:26.843Z"
+  },
+  {
+    "id": "exec_1768156586609_jypooqr3b",
+    "workflowId": "wf_1768156586608_p5h1llwl8",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:26.609Z",
+    "logs": [
+      {
+        "id": "log_1768156586610_wi3g4psra",
+        "timestamp": "2026-01-11T18:36:26.610Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586852_71oar4w9n",
+        "timestamp": "2026-01-11T18:36:26.852Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156586852_hx1sqmwg1",
+        "timestamp": "2026-01-11T18:36:26.852Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:26.852Z"
+  },
+  {
+    "id": "exec_1768156588151_o4at0v5cm",
+    "workflowId": "wf_1768156588150_tlradgbe8",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:28.151Z",
+    "logs": [
+      {
+        "id": "log_1768156588152_yircvxvfo",
+        "timestamp": "2026-01-11T18:36:28.152Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588390_bc5y6fw0l",
+        "timestamp": "2026-01-11T18:36:28.390Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588390_55ib2cnbc",
+        "timestamp": "2026-01-11T18:36:28.390Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:28.390Z"
+  },
+  {
+    "id": "exec_1768156588177_e5y076v4h",
+    "workflowId": "wf_1768156588175_fksk5y4kn",
+    "status": "completed",
+    "startedAt": "2026-01-11T18:36:28.177Z",
+    "logs": [
+      {
+        "id": "log_1768156588177_ypjnhsei4",
+        "timestamp": "2026-01-11T18:36:28.177Z",
+        "level": "info",
+        "message": "Executing action: email",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588420_9j7tj8172",
+        "timestamp": "2026-01-11T18:36:28.420Z",
+        "level": "info",
+        "message": "Action email completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768156588420_kvc3u7xvz",
+        "timestamp": "2026-01-11T18:36:28.420Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T18:36:28.420Z"
+  },
+  {
+    "id": "exec_1768165800248_2tnp7ky5z",
+    "workflowId": "wf_1768165800246_19uaqhw2v",
+    "status": "completed",
+    "startedAt": "2026-01-11T21:10:00.248Z",
+    "logs": [
+      {
+        "id": "log_1768165800248_mah6wnimg",
+        "timestamp": "2026-01-11T21:10:00.248Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768165800780_55ktefug9",
+        "timestamp": "2026-01-11T21:10:00.780Z",
+        "level": "info",
+        "message": "Action database completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768165800780_s2yhueeq0",
+        "timestamp": "2026-01-11T21:10:00.780Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T21:10:00.780Z"
+  },
+  {
+    "id": "exec_1768167461749_jowf4y78c",
+    "workflowId": "wf_1768167461748_fkea2j575",
+    "status": "completed",
+    "startedAt": "2026-01-11T21:37:41.749Z",
+    "logs": [
+      {
+        "id": "log_1768167461750_k15y8domb",
+        "timestamp": "2026-01-11T21:37:41.750Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167462823_48ogebmbd",
+        "timestamp": "2026-01-11T21:37:42.823Z",
+        "level": "info",
+        "message": "Action database completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167462823_vug1oj7zt",
+        "timestamp": "2026-01-11T21:37:42.823Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T21:37:42.823Z"
+  },
+  {
+    "id": "exec_1768167463321_qp4jcvaj9",
+    "workflowId": "wf_1768167463320_45190venh",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:37:43.321Z",
+    "logs": [
+      {
+        "id": "log_1768167463322_2irmeyntv",
+        "timestamp": "2026-01-11T21:37:43.322Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167463472_652bnhmhm",
+        "timestamp": "2026-01-11T21:37:43.472Z",
+        "level": "error",
+        "message": "Action database failed: duplicate key value violates unique constraint \"test_users_email_key\"",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167463472_b062n52m7",
+        "timestamp": "2026-01-11T21:37:43.472Z",
+        "level": "error",
+        "message": "Workflow execution failed: duplicate key value violates unique constraint \"test_users_email_key\""
+      }
+    ],
+    "error": "duplicate key value violates unique constraint \"test_users_email_key\"",
+    "completedAt": "2026-01-11T21:37:43.472Z"
+  },
+  {
+    "id": "exec_1768167470966_imuojm1ad",
+    "workflowId": "wf_1768167470965_kxuv89vtd",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:37:50.966Z",
+    "logs": [
+      {
+        "id": "log_1768167470967_ixvo1grny",
+        "timestamp": "2026-01-11T21:37:50.967Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167471077_9zsr06ha6",
+        "timestamp": "2026-01-11T21:37:51.077Z",
+        "level": "error",
+        "message": "Action database failed: duplicate key value violates unique constraint \"test_users_email_key\"",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167471077_y28juj6zf",
+        "timestamp": "2026-01-11T21:37:51.077Z",
+        "level": "error",
+        "message": "Workflow execution failed: duplicate key value violates unique constraint \"test_users_email_key\""
+      }
+    ],
+    "error": "duplicate key value violates unique constraint \"test_users_email_key\"",
+    "completedAt": "2026-01-11T21:37:51.077Z"
+  },
+  {
+    "id": "exec_1768167498346_6tgsigh3c",
+    "workflowId": "wf_1768167498344_qlw48phk2",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:38:18.346Z",
+    "logs": [
+      {
+        "id": "log_1768167498347_jjp50qv63",
+        "timestamp": "2026-01-11T21:38:18.347Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167498458_1vd3loo92",
+        "timestamp": "2026-01-11T21:38:18.458Z",
+        "level": "error",
+        "message": "Action database failed: duplicate key value violates unique constraint \"test_users_email_key\"",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167498458_i9gxor91c",
+        "timestamp": "2026-01-11T21:38:18.458Z",
+        "level": "error",
+        "message": "Workflow execution failed: duplicate key value violates unique constraint \"test_users_email_key\""
+      }
+    ],
+    "error": "duplicate key value violates unique constraint \"test_users_email_key\"",
+    "completedAt": "2026-01-11T21:38:18.458Z"
+  },
+  {
+    "id": "exec_1768167532274_3gi8wb3h1",
+    "workflowId": "wf_1768167532273_12n09oex3",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:38:52.274Z",
+    "logs": [
+      {
+        "id": "log_1768167532276_qhylrcqob",
+        "timestamp": "2026-01-11T21:38:52.276Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167532720_o8blib6nb",
+        "timestamp": "2026-01-11T21:38:52.720Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167532721_bl1ocqe5v",
+        "timestamp": "2026-01-11T21:38:52.721Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:38:52.720Z"
+  },
+  {
+    "id": "exec_1768167555267_r1ozo53e2",
+    "workflowId": "wf_1768167555265_57uj1ecqb",
+    "status": "completed",
+    "startedAt": "2026-01-11T21:39:15.267Z",
+    "logs": [
+      {
+        "id": "log_1768167555268_xgkqyxipq",
+        "timestamp": "2026-01-11T21:39:15.268Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167555326_w7p349qg9",
+        "timestamp": "2026-01-11T21:39:15.326Z",
+        "level": "info",
+        "message": "Action database completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167555326_puqt1mngx",
+        "timestamp": "2026-01-11T21:39:15.326Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T21:39:15.326Z"
+  },
+  {
+    "id": "exec_1768167588109_abswjev9j",
+    "workflowId": "wf_1768167588107_pdt5bklj5",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:48.109Z",
+    "logs": [
+      {
+        "id": "log_1768167588109_uc7k58gti",
+        "timestamp": "2026-01-11T21:39:48.109Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167588576_bws6g1vhc",
+        "timestamp": "2026-01-11T21:39:48.576Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167588576_chavlupvd",
+        "timestamp": "2026-01-11T21:39:48.576Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:48.576Z"
+  },
+  {
+    "id": "exec_1768167589141_a0xnydgjs",
+    "workflowId": "wf_1768167589140_1d4fg7g8v",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:49.141Z",
+    "logs": [
+      {
+        "id": "log_1768167589142_n4i02lld7",
+        "timestamp": "2026-01-11T21:39:49.142Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167589256_2df2vt1e7",
+        "timestamp": "2026-01-11T21:39:49.256Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167589256_cfwlxuovd",
+        "timestamp": "2026-01-11T21:39:49.256Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:49.256Z"
+  },
+  {
+    "id": "exec_1768167589741_vylizpzj4",
+    "workflowId": "wf_1768167589740_kh94l0hqe",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:49.741Z",
+    "logs": [
+      {
+        "id": "log_1768167589742_33mefukp5",
+        "timestamp": "2026-01-11T21:39:49.742Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167589857_b19xkmh6k",
+        "timestamp": "2026-01-11T21:39:49.857Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167589857_mhrtaj2g8",
+        "timestamp": "2026-01-11T21:39:49.857Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:49.857Z"
+  },
+  {
+    "id": "exec_1768167590178_pcxx6l7w0",
+    "workflowId": "wf_1768167590177_l01tkw1we",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:50.178Z",
+    "logs": [
+      {
+        "id": "log_1768167590179_x92ncumav",
+        "timestamp": "2026-01-11T21:39:50.179Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590289_gbk8sf9e0",
+        "timestamp": "2026-01-11T21:39:50.289Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590289_sibhdenn0",
+        "timestamp": "2026-01-11T21:39:50.289Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:50.289Z"
+  },
+  {
+    "id": "exec_1768167590412_qiqaj0phy",
+    "workflowId": "wf_1768167590411_f7np7zyl6",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:50.412Z",
+    "logs": [
+      {
+        "id": "log_1768167590413_sc0o0d71x",
+        "timestamp": "2026-01-11T21:39:50.413Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590520_ear0iqbab",
+        "timestamp": "2026-01-11T21:39:50.520Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590520_0r5ovnu0p",
+        "timestamp": "2026-01-11T21:39:50.520Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:50.520Z"
+  },
+  {
+    "id": "exec_1768167590632_zh4ropqwo",
+    "workflowId": "wf_1768167590630_26bom5njm",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:50.633Z",
+    "logs": [
+      {
+        "id": "log_1768167590634_vidk5yl2u",
+        "timestamp": "2026-01-11T21:39:50.634Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590746_lz7g0nnqz",
+        "timestamp": "2026-01-11T21:39:50.746Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590746_dte9cbgte",
+        "timestamp": "2026-01-11T21:39:50.746Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:50.746Z"
+  },
+  {
+    "id": "exec_1768167590871_15z5zpjaj",
+    "workflowId": "wf_1768167590870_hxnd29csn",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:50.871Z",
+    "logs": [
+      {
+        "id": "log_1768167590872_885ecnlg7",
+        "timestamp": "2026-01-11T21:39:50.872Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590987_nl1ap20pw",
+        "timestamp": "2026-01-11T21:39:50.987Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167590987_qxbfwyoge",
+        "timestamp": "2026-01-11T21:39:50.987Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:50.987Z"
+  },
+  {
+    "id": "exec_1768167591109_8u4si7hhp",
+    "workflowId": "wf_1768167591107_mwgh0faxf",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.109Z",
+    "logs": [
+      {
+        "id": "log_1768167591110_32ou3toid",
+        "timestamp": "2026-01-11T21:39:51.111Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591226_c9wtj4yz7",
+        "timestamp": "2026-01-11T21:39:51.226Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591226_dfj9cmz8t",
+        "timestamp": "2026-01-11T21:39:51.226Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:51.226Z"
+  },
+  {
+    "id": "exec_1768167591348_mp20kdjcq",
+    "workflowId": "wf_1768167591346_7soch3og7",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.348Z",
+    "logs": [
+      {
+        "id": "log_1768167591349_6yylrne9y",
+        "timestamp": "2026-01-11T21:39:51.349Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591468_ygxyo3lg5",
+        "timestamp": "2026-01-11T21:39:51.468Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591468_dnmlfeufq",
+        "timestamp": "2026-01-11T21:39:51.468Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:51.468Z"
+  },
+  {
+    "id": "exec_1768167591578_ha8631ul8",
+    "workflowId": "wf_1768167591576_ye1i6chki",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.578Z",
+    "logs": [
+      {
+        "id": "log_1768167591579_w3a1dxhxs",
+        "timestamp": "2026-01-11T21:39:51.579Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591685_ayh8y5iro",
+        "timestamp": "2026-01-11T21:39:51.685Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591685_e155x525e",
+        "timestamp": "2026-01-11T21:39:51.685Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:51.685Z"
+  },
+  {
+    "id": "exec_1768167591602_07qwrem4a",
+    "workflowId": "wf_1768167591601_slwo413o5",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.602Z",
+    "logs": [
+      {
+        "id": "log_1768167591603_a18kxy8jm",
+        "timestamp": "2026-01-11T21:39:51.603Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592519_7g5w69bth",
+        "timestamp": "2026-01-11T21:39:52.519Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592519_zp1cnc65r",
+        "timestamp": "2026-01-11T21:39:52.519Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:52.519Z"
+  },
+  {
+    "id": "exec_1768167591794_ba5fk1b89",
+    "workflowId": "wf_1768167591792_q1rk0nl3q",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.794Z",
+    "logs": [
+      {
+        "id": "log_1768167591795_8gkuz8rza",
+        "timestamp": "2026-01-11T21:39:51.795Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591908_mfj05xxp6",
+        "timestamp": "2026-01-11T21:39:51.908Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167591908_l4jh62goc",
+        "timestamp": "2026-01-11T21:39:51.908Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:51.908Z"
+  },
+  {
+    "id": "exec_1768167591821_3q6dqtgdn",
+    "workflowId": "wf_1768167591819_7ebcjsfhs",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:51.821Z",
+    "logs": [
+      {
+        "id": "log_1768167591822_d7njkfhua",
+        "timestamp": "2026-01-11T21:39:51.822Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167593100_t06l9ss6t",
+        "timestamp": "2026-01-11T21:39:53.100Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167593100_y0ud3jsbr",
+        "timestamp": "2026-01-11T21:39:53.100Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:53.100Z"
+  },
+  {
+    "id": "exec_1768167592025_2i3hotuts",
+    "workflowId": "wf_1768167592023_bu5j4bpo6",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:52.025Z",
+    "logs": [
+      {
+        "id": "log_1768167592026_c5tulp1cz",
+        "timestamp": "2026-01-11T21:39:52.026Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592130_z3dpw7hz9",
+        "timestamp": "2026-01-11T21:39:52.130Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592130_ii0i55632",
+        "timestamp": "2026-01-11T21:39:52.130Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:52.130Z"
+  },
+  {
+    "id": "exec_1768167592043_cww4mnq4s",
+    "workflowId": "wf_1768167592041_el2iqg9c6",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:52.043Z",
+    "logs": [
+      {
+        "id": "log_1768167592044_53r8f5lfw",
+        "timestamp": "2026-01-11T21:39:52.044Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167593264_kav8a3ukh",
+        "timestamp": "2026-01-11T21:39:53.264Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167593264_0lnbw68t1",
+        "timestamp": "2026-01-11T21:39:53.264Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:53.264Z"
+  },
+  {
+    "id": "exec_1768167592241_lndsk93em",
+    "workflowId": "wf_1768167592239_vtw9owkpd",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:39:52.241Z",
+    "logs": [
+      {
+        "id": "log_1768167592242_cmk0gpji9",
+        "timestamp": "2026-01-11T21:39:52.242Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592348_7i6ntouri",
+        "timestamp": "2026-01-11T21:39:52.348Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768167592348_cwma4nkje",
+        "timestamp": "2026-01-11T21:39:52.348Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:39:52.348Z"
+  },
+  {
+    "id": "exec_1768167723634_ayr6zh1gx",
+    "workflowId": "wf_1768167723632_3q27hxug5",
+    "status": "completed",
+    "startedAt": "2026-01-11T21:42:03.635Z",
+    "logs": [
+      {
+        "id": "log_1768167723636_cqzrj85cq",
+        "timestamp": "2026-01-11T21:42:03.636Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167724078_ho46igau5",
+        "timestamp": "2026-01-11T21:42:04.078Z",
+        "level": "info",
+        "message": "Action database completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167724078_d25hxkarf",
+        "timestamp": "2026-01-11T21:42:04.078Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T21:42:04.078Z"
+  },
+  {
+    "id": "exec_1768167724670_q8k5c65l0",
+    "workflowId": "wf_1768167724669_uvykzaman",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:04.670Z",
+    "logs": [
+      {
+        "id": "log_1768167724671_ci1oow2dt",
+        "timestamp": "2026-01-11T21:42:04.671Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167724791_vnh7jipnn",
+        "timestamp": "2026-01-11T21:42:04.791Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167724791_h227eubu1",
+        "timestamp": "2026-01-11T21:42:04.791Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:04.791Z"
+  },
+  {
+    "id": "exec_1768167725128_c5wn4eyfd",
+    "workflowId": "wf_1768167725127_8mblbldcs",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:05.128Z",
+    "logs": [
+      {
+        "id": "log_1768167725129_10sdgizfn",
+        "timestamp": "2026-01-11T21:42:05.129Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167725233_e1yshwc42",
+        "timestamp": "2026-01-11T21:42:05.233Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167725233_8zbxzepk1",
+        "timestamp": "2026-01-11T21:42:05.233Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:05.233Z"
+  },
+  {
+    "id": "exec_1768167725698_khrxb9tvg",
+    "workflowId": "wf_1768167725696_ygu41xx5r",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:05.698Z",
+    "logs": [
+      {
+        "id": "log_1768167725699_hlprjg2tv",
+        "timestamp": "2026-01-11T21:42:05.699Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167725807_o4p7a4ocr",
+        "timestamp": "2026-01-11T21:42:05.807Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167725807_q525b3it8",
+        "timestamp": "2026-01-11T21:42:05.807Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:05.807Z"
+  },
+  {
+    "id": "exec_1768167725934_zoggkjy30",
+    "workflowId": "wf_1768167725933_j67ck45u1",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:05.934Z",
+    "logs": [
+      {
+        "id": "log_1768167725935_iph7fhcjc",
+        "timestamp": "2026-01-11T21:42:05.935Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726038_7iktw5u7o",
+        "timestamp": "2026-01-11T21:42:06.038Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726038_z93iic5fq",
+        "timestamp": "2026-01-11T21:42:06.038Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:06.038Z"
+  },
+  {
+    "id": "exec_1768167726170_383ydvgen",
+    "workflowId": "wf_1768167726168_0pnm14j3z",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:06.170Z",
+    "logs": [
+      {
+        "id": "log_1768167726171_629jw09qb",
+        "timestamp": "2026-01-11T21:42:06.171Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726276_2gheawxl4",
+        "timestamp": "2026-01-11T21:42:06.276Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726276_pxs1eos4k",
+        "timestamp": "2026-01-11T21:42:06.276Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:06.276Z"
+  },
+  {
+    "id": "exec_1768167726382_xvdot1upc",
+    "workflowId": "wf_1768167726380_wof2o1ggi",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:06.382Z",
+    "logs": [
+      {
+        "id": "log_1768167726383_wu9rqxkvv",
+        "timestamp": "2026-01-11T21:42:06.383Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726486_qezmsmif0",
+        "timestamp": "2026-01-11T21:42:06.486Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726486_hh6c9uwm9",
+        "timestamp": "2026-01-11T21:42:06.486Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:06.486Z"
+  },
+  {
+    "id": "exec_1768167726728_b1fu2ebnj",
+    "workflowId": "wf_1768167726726_329fsiw70",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:06.728Z",
+    "logs": [
+      {
+        "id": "log_1768167726729_nk4xjkacp",
+        "timestamp": "2026-01-11T21:42:06.729Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726832_o3834imzk",
+        "timestamp": "2026-01-11T21:42:06.832Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167726832_z41did1pi",
+        "timestamp": "2026-01-11T21:42:06.832Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:06.832Z"
+  },
+  {
+    "id": "exec_1768167726933_bg6cl6z6y",
+    "workflowId": "wf_1768167726932_57j80nyo2",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:06.933Z",
+    "logs": [
+      {
+        "id": "log_1768167726935_6mame6r38",
+        "timestamp": "2026-01-11T21:42:06.935Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727038_vx8gmnoy6",
+        "timestamp": "2026-01-11T21:42:07.038Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727038_dxtee0m5a",
+        "timestamp": "2026-01-11T21:42:07.038Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:07.038Z"
+  },
+  {
+    "id": "exec_1768167726964_qyq2vuxok",
+    "workflowId": "wf_1768167726963_6qrm4fpht",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:06.964Z",
+    "logs": [
+      {
+        "id": "log_1768167726966_2me3oduqd",
+        "timestamp": "2026-01-11T21:42:06.966Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727782_m6hpsoads",
+        "timestamp": "2026-01-11T21:42:07.782Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727782_b2t3p3k9i",
+        "timestamp": "2026-01-11T21:42:07.782Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:07.782Z"
+  },
+  {
+    "id": "exec_1768167727173_fakcoc6nd",
+    "workflowId": "wf_1768167727171_27sspo1yc",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:07.173Z",
+    "logs": [
+      {
+        "id": "log_1768167727174_w7oygluiu",
+        "timestamp": "2026-01-11T21:42:07.174Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727284_57gxu1c4e",
+        "timestamp": "2026-01-11T21:42:07.284Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727284_1wrusxhvm",
+        "timestamp": "2026-01-11T21:42:07.284Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:07.284Z"
+  },
+  {
+    "id": "exec_1768167727205_36beozvzb",
+    "workflowId": "wf_1768167727203_1ohd3z3l1",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:07.205Z",
+    "logs": [
+      {
+        "id": "log_1768167727206_by16igm8k",
+        "timestamp": "2026-01-11T21:42:07.206Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727976_f1i5bpfq6",
+        "timestamp": "2026-01-11T21:42:07.976Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727976_hmzvocpm9",
+        "timestamp": "2026-01-11T21:42:07.976Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:07.976Z"
+  },
+  {
+    "id": "exec_1768167727419_nan7c3jk4",
+    "workflowId": "wf_1768167727418_iy3vnuu05",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:07.419Z",
+    "logs": [
+      {
+        "id": "log_1768167727420_1abkcbazy",
+        "timestamp": "2026-01-11T21:42:07.420Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727523_nh7wzq4i9",
+        "timestamp": "2026-01-11T21:42:07.523Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167727523_5lb8o9q1v",
+        "timestamp": "2026-01-11T21:42:07.523Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:07.523Z"
+  },
+  {
+    "id": "exec_1768167727885_7vlb08oc4",
+    "workflowId": "wf_1768167727883_1mvx2f8sj",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:07.885Z",
+    "logs": [
+      {
+        "id": "log_1768167727886_yb6cfxh22",
+        "timestamp": "2026-01-11T21:42:07.886Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728121_g67wuk0f4",
+        "timestamp": "2026-01-11T21:42:08.121Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728121_ueg27220h",
+        "timestamp": "2026-01-11T21:42:08.121Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.121Z"
+  },
+  {
+    "id": "exec_1768167728231_5ixcq0trd",
+    "workflowId": "wf_1768167728229_4ndc06m8g",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.231Z",
+    "logs": [
+      {
+        "id": "log_1768167728232_szgh0agyy",
+        "timestamp": "2026-01-11T21:42:08.232Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728332_iwh3xdq6l",
+        "timestamp": "2026-01-11T21:42:08.332Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728332_taq3zttp9",
+        "timestamp": "2026-01-11T21:42:08.332Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.332Z"
+  },
+  {
+    "id": "exec_1768167728238_12v5hgkq4",
+    "workflowId": "wf_1768167728236_l89hn8mah",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.238Z",
+    "logs": [
+      {
+        "id": "log_1768167728239_nyzqwo86c",
+        "timestamp": "2026-01-11T21:42:08.239Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728476_by5ymjsjp",
+        "timestamp": "2026-01-11T21:42:08.476Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728476_p00qrnr9u",
+        "timestamp": "2026-01-11T21:42:08.476Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.476Z"
+  },
+  {
+    "id": "exec_1768167728245_6glpxjo4z",
+    "workflowId": "wf_1768167728243_4uwmksfvz",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.245Z",
+    "logs": [
+      {
+        "id": "log_1768167728246_hucgf9ph3",
+        "timestamp": "2026-01-11T21:42:08.246Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728614_6nlrw1ign",
+        "timestamp": "2026-01-11T21:42:08.614Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728614_3vul6t8hd",
+        "timestamp": "2026-01-11T21:42:08.614Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.614Z"
+  },
+  {
+    "id": "exec_1768167728253_foc6ywo9b",
+    "workflowId": "wf_1768167728252_d7ikvxpji",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.253Z",
+    "logs": [
+      {
+        "id": "log_1768167728254_eo37zsnlo",
+        "timestamp": "2026-01-11T21:42:08.254Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730307_6zix57djh",
+        "timestamp": "2026-01-11T21:42:10.307Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730307_5fjhbd3m9",
+        "timestamp": "2026-01-11T21:42:10.307Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.307Z"
+  },
+  {
+    "id": "exec_1768167728725_ju55chdat",
+    "workflowId": "wf_1768167728723_obj1dmbta",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.725Z",
+    "logs": [
+      {
+        "id": "log_1768167728727_w0bzcl1f4",
+        "timestamp": "2026-01-11T21:42:08.727Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728838_jcxosb9pd",
+        "timestamp": "2026-01-11T21:42:08.838Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728838_649ast46b",
+        "timestamp": "2026-01-11T21:42:08.838Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.838Z"
+  },
+  {
+    "id": "exec_1768167728736_lfx2n3r2j",
+    "workflowId": "wf_1768167728733_yau5pxl79",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.736Z",
+    "logs": [
+      {
+        "id": "log_1768167728738_kh45uw7yz",
+        "timestamp": "2026-01-11T21:42:08.738Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728972_wcmx3cnwg",
+        "timestamp": "2026-01-11T21:42:08.972Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167728972_f23x7tpss",
+        "timestamp": "2026-01-11T21:42:08.972Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:08.972Z"
+  },
+  {
+    "id": "exec_1768167728748_ej2flqmky",
+    "workflowId": "wf_1768167728745_xfmzrrcwf",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.748Z",
+    "logs": [
+      {
+        "id": "log_1768167728750_1alr0x2m0",
+        "timestamp": "2026-01-11T21:42:08.750Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729116_e0cqvt7px",
+        "timestamp": "2026-01-11T21:42:09.116Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729116_nbrr3c221",
+        "timestamp": "2026-01-11T21:42:09.116Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.116Z"
+  },
+  {
+    "id": "exec_1768167728776_ij3wibq3o",
+    "workflowId": "wf_1768167728773_eubz1zpa4",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:08.776Z",
+    "logs": [
+      {
+        "id": "log_1768167728777_1img7xi6o",
+        "timestamp": "2026-01-11T21:42:08.777Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730957_43jvi71ae",
+        "timestamp": "2026-01-11T21:42:10.957Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730957_ckhb127ug",
+        "timestamp": "2026-01-11T21:42:10.957Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.957Z"
+  },
+  {
+    "id": "exec_1768167729224_fnssljxh7",
+    "workflowId": "wf_1768167729222_479zpafqg",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.224Z",
+    "logs": [
+      {
+        "id": "log_1768167729226_enkhs7pjg",
+        "timestamp": "2026-01-11T21:42:09.226Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729326_vi6tiy8gx",
+        "timestamp": "2026-01-11T21:42:09.326Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729326_8ihcuxhix",
+        "timestamp": "2026-01-11T21:42:09.326Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.326Z"
+  },
+  {
+    "id": "exec_1768167729232_9ipw81frj",
+    "workflowId": "wf_1768167729230_eduf0vrz1",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.232Z",
+    "logs": [
+      {
+        "id": "log_1768167729233_7hle346o7",
+        "timestamp": "2026-01-11T21:42:09.233Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729467_i2e1fnjrw",
+        "timestamp": "2026-01-11T21:42:09.467Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729467_lg5lv3u30",
+        "timestamp": "2026-01-11T21:42:09.467Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.467Z"
+  },
+  {
+    "id": "exec_1768167729239_ck7qkdd9m",
+    "workflowId": "wf_1768167729237_o9beq0qxc",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.239Z",
+    "logs": [
+      {
+        "id": "log_1768167729241_f3lvqbbyk",
+        "timestamp": "2026-01-11T21:42:09.241Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729605_qhs9d7r45",
+        "timestamp": "2026-01-11T21:42:09.605Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729605_3ufsiswma",
+        "timestamp": "2026-01-11T21:42:09.605Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.605Z"
+  },
+  {
+    "id": "exec_1768167729247_kcbpm9mss",
+    "workflowId": "wf_1768167729246_704cxon9e",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.247Z",
+    "logs": [
+      {
+        "id": "log_1768167729249_tsvpcl3tx",
+        "timestamp": "2026-01-11T21:42:09.249Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731717_qi32qxnao",
+        "timestamp": "2026-01-11T21:42:11.717Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731717_g6l29oel6",
+        "timestamp": "2026-01-11T21:42:11.717Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.717Z"
+  },
+  {
+    "id": "exec_1768167729719_fw3azg4mh",
+    "workflowId": "wf_1768167729716_w7b106qjk",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.719Z",
+    "logs": [
+      {
+        "id": "log_1768167729721_wizzru71l",
+        "timestamp": "2026-01-11T21:42:09.721Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729826_frjyr8gh7",
+        "timestamp": "2026-01-11T21:42:09.826Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729826_cy9bh6ml3",
+        "timestamp": "2026-01-11T21:42:09.826Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.826Z"
+  },
+  {
+    "id": "exec_1768167729729_0969k7tip",
+    "workflowId": "wf_1768167729727_55731p3np",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.729Z",
+    "logs": [
+      {
+        "id": "log_1768167729731_0k39739pj",
+        "timestamp": "2026-01-11T21:42:09.731Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729965_owjmbxzwm",
+        "timestamp": "2026-01-11T21:42:09.965Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167729965_lgzgkiwkq",
+        "timestamp": "2026-01-11T21:42:09.965Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:09.965Z"
+  },
+  {
+    "id": "exec_1768167729741_ju49wf4cf",
+    "workflowId": "wf_1768167729738_svd0fcd85",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:09.741Z",
+    "logs": [
+      {
+        "id": "log_1768167729743_yjhkl0tjn",
+        "timestamp": "2026-01-11T21:42:09.743Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730108_en7iuesj3",
+        "timestamp": "2026-01-11T21:42:10.108Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730108_lb9jtnajq",
+        "timestamp": "2026-01-11T21:42:10.108Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.108Z"
+  },
+  {
+    "id": "exec_1768167730225_jugj67024",
+    "workflowId": "wf_1768167730222_m7a4tmqsz",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.225Z",
+    "logs": [
+      {
+        "id": "log_1768167730226_bq4ha885q",
+        "timestamp": "2026-01-11T21:42:10.226Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730454_2xyfhb08y",
+        "timestamp": "2026-01-11T21:42:10.454Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730454_4y9adxefr",
+        "timestamp": "2026-01-11T21:42:10.454Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.454Z"
+  },
+  {
+    "id": "exec_1768167730234_1yjfem2jl",
+    "workflowId": "wf_1768167730232_54iz4gnxd",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.234Z",
+    "logs": [
+      {
+        "id": "log_1768167730235_zmo6hf11o",
+        "timestamp": "2026-01-11T21:42:10.235Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730594_yxdhvs8od",
+        "timestamp": "2026-01-11T21:42:10.594Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730594_gpxrvl3d1",
+        "timestamp": "2026-01-11T21:42:10.594Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.594Z"
+  },
+  {
+    "id": "exec_1768167730243_loyw96e0b",
+    "workflowId": "wf_1768167730241_2tljvz82a",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.243Z",
+    "logs": [
+      {
+        "id": "log_1768167730245_9j1mzzz7n",
+        "timestamp": "2026-01-11T21:42:10.245Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730736_m411vs8o4",
+        "timestamp": "2026-01-11T21:42:10.736Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167730736_im1qgp6gu",
+        "timestamp": "2026-01-11T21:42:10.736Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:10.736Z"
+  },
+  {
+    "id": "exec_1768167730874_gzytqfvz3",
+    "workflowId": "wf_1768167730872_6hoffvsd1",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.874Z",
+    "logs": [
+      {
+        "id": "log_1768167730875_j24swjt4u",
+        "timestamp": "2026-01-11T21:42:10.875Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731110_ajxifcl3i",
+        "timestamp": "2026-01-11T21:42:11.110Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731110_cju02gjmw",
+        "timestamp": "2026-01-11T21:42:11.110Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.110Z"
+  },
+  {
+    "id": "exec_1768167730881_smaimnlnt",
+    "workflowId": "wf_1768167730879_ba5103okh",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.881Z",
+    "logs": [
+      {
+        "id": "log_1768167730882_nqpnebfna",
+        "timestamp": "2026-01-11T21:42:10.882Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731251_r4kvcz46e",
+        "timestamp": "2026-01-11T21:42:11.251Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731251_j2hbptdlg",
+        "timestamp": "2026-01-11T21:42:11.251Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.251Z"
+  },
+  {
+    "id": "exec_1768167730888_4mlfknn5s",
+    "workflowId": "wf_1768167730886_r3pxysrrd",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.888Z",
+    "logs": [
+      {
+        "id": "log_1768167730889_3vh0o1qzd",
+        "timestamp": "2026-01-11T21:42:10.889Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731390_7u267h8x9",
+        "timestamp": "2026-01-11T21:42:11.390Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731390_even0cixx",
+        "timestamp": "2026-01-11T21:42:11.390Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.390Z"
+  },
+  {
+    "id": "exec_1768167730895_sjn6f0728",
+    "workflowId": "wf_1768167730894_pmrkccmxe",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:10.895Z",
+    "logs": [
+      {
+        "id": "log_1768167730897_ydtrvfx0g",
+        "timestamp": "2026-01-11T21:42:10.897Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731524_b6wpqi53k",
+        "timestamp": "2026-01-11T21:42:11.524Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731524_ev99adlcg",
+        "timestamp": "2026-01-11T21:42:11.524Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.524Z"
+  },
+  {
+    "id": "exec_1768167731631_0knbdgpzn",
+    "workflowId": "wf_1768167731629_g7gvbc6ty",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:11.631Z",
+    "logs": [
+      {
+        "id": "log_1768167731632_bwz6h579a",
+        "timestamp": "2026-01-11T21:42:11.632Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731870_85cv6fe15",
+        "timestamp": "2026-01-11T21:42:11.870Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167731870_yrenldr4q",
+        "timestamp": "2026-01-11T21:42:11.870Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:11.870Z"
+  },
+  {
+    "id": "exec_1768167731639_o1xzwzzh4",
+    "workflowId": "wf_1768167731637_ajq39xrwg",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:11.639Z",
+    "logs": [
+      {
+        "id": "log_1768167731641_9i9ktsvme",
+        "timestamp": "2026-01-11T21:42:11.641Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732007_d4c6gua0o",
+        "timestamp": "2026-01-11T21:42:12.007Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732007_mbkdjmarq",
+        "timestamp": "2026-01-11T21:42:12.007Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.007Z"
+  },
+  {
+    "id": "exec_1768167731647_r3m0xzahz",
+    "workflowId": "wf_1768167731645_tfius4dxs",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:11.647Z",
+    "logs": [
+      {
+        "id": "log_1768167731649_6f3s25l2o",
+        "timestamp": "2026-01-11T21:42:11.649Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732153_ta6mtzwaq",
+        "timestamp": "2026-01-11T21:42:12.153Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732153_l0hknub8a",
+        "timestamp": "2026-01-11T21:42:12.153Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.153Z"
+  },
+  {
+    "id": "exec_1768167731655_zwf9fhxmj",
+    "workflowId": "wf_1768167731653_lsvfypefo",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:11.655Z",
+    "logs": [
+      {
+        "id": "log_1768167731657_8nljjiymt",
+        "timestamp": "2026-01-11T21:42:11.657Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732293_fcq78plry",
+        "timestamp": "2026-01-11T21:42:12.293Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732293_hts7lq005",
+        "timestamp": "2026-01-11T21:42:12.293Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.293Z"
+  },
+  {
+    "id": "exec_1768167731663_rswr87yof",
+    "workflowId": "wf_1768167731661_4qkhpbtw2",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:11.663Z",
+    "logs": [
+      {
+        "id": "log_1768167731665_op4xc308m",
+        "timestamp": "2026-01-11T21:42:11.665Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732434_as869np63",
+        "timestamp": "2026-01-11T21:42:12.434Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732434_gcmtfa7vt",
+        "timestamp": "2026-01-11T21:42:12.434Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.434Z"
+  },
+  {
+    "id": "exec_1768167732549_m94w0fkko",
+    "workflowId": "wf_1768167732547_f1rs10jcf",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.549Z",
+    "logs": [
+      {
+        "id": "log_1768167732550_vo2tp8555",
+        "timestamp": "2026-01-11T21:42:12.550Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732652_vv2o44n1u",
+        "timestamp": "2026-01-11T21:42:12.652Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732652_wmzjhf18h",
+        "timestamp": "2026-01-11T21:42:12.652Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.652Z"
+  },
+  {
+    "id": "exec_1768167732556_7nxxw83c0",
+    "workflowId": "wf_1768167732554_dwr7e4a3a",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.556Z",
+    "logs": [
+      {
+        "id": "log_1768167732558_3fz2ocbvb",
+        "timestamp": "2026-01-11T21:42:12.558Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732792_v6xzqaisj",
+        "timestamp": "2026-01-11T21:42:12.792Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732792_92k3w2gjm",
+        "timestamp": "2026-01-11T21:42:12.792Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.792Z"
+  },
+  {
+    "id": "exec_1768167732564_4mng2hlek",
+    "workflowId": "wf_1768167732562_doi8dfcfx",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.564Z",
+    "logs": [
+      {
+        "id": "log_1768167732565_v35x8j5m4",
+        "timestamp": "2026-01-11T21:42:12.565Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732933_a6ku6uadk",
+        "timestamp": "2026-01-11T21:42:12.933Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167732933_u72rxq71y",
+        "timestamp": "2026-01-11T21:42:12.933Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:12.933Z"
+  },
+  {
+    "id": "exec_1768167732571_bofe4q2fj",
+    "workflowId": "wf_1768167732570_eqqspxzvr",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.571Z",
+    "logs": [
+      {
+        "id": "log_1768167732573_wg4w9qmc0",
+        "timestamp": "2026-01-11T21:42:12.573Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733075_no8t8ajaz",
+        "timestamp": "2026-01-11T21:42:13.075Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733075_hyl53q9sl",
+        "timestamp": "2026-01-11T21:42:13.075Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.075Z"
+  },
+  {
+    "id": "exec_1768167732579_xjnnpkbr7",
+    "workflowId": "wf_1768167732578_8wa7ocjie",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.579Z",
+    "logs": [
+      {
+        "id": "log_1768167732581_9q9nb9pkx",
+        "timestamp": "2026-01-11T21:42:12.581Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733211_993ukl84d",
+        "timestamp": "2026-01-11T21:42:13.211Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733211_g1ff2j9ik",
+        "timestamp": "2026-01-11T21:42:13.211Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.211Z"
+  },
+  {
+    "id": "exec_1768167732590_lvt0uuqau",
+    "workflowId": "wf_1768167732588_mzfnowviy",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:12.590Z",
+    "logs": [
+      {
+        "id": "log_1768167732592_cuenlaklx",
+        "timestamp": "2026-01-11T21:42:12.592Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733352_8cq4s2d5u",
+        "timestamp": "2026-01-11T21:42:13.352Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733352_m74rvbv4a",
+        "timestamp": "2026-01-11T21:42:13.352Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.352Z"
+  },
+  {
+    "id": "exec_1768167733468_nv1oqvfhq",
+    "workflowId": "wf_1768167733466_vwwy7d605",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.468Z",
+    "logs": [
+      {
+        "id": "log_1768167733469_213xx4pnd",
+        "timestamp": "2026-01-11T21:42:13.469Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733573_dzrb6awoe",
+        "timestamp": "2026-01-11T21:42:13.573Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733573_fvrmvs7h0",
+        "timestamp": "2026-01-11T21:42:13.573Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.573Z"
+  },
+  {
+    "id": "exec_1768167733477_kxbf1ci1z",
+    "workflowId": "wf_1768167733474_x9ld7r19i",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.477Z",
+    "logs": [
+      {
+        "id": "log_1768167733479_bvwlx0h1e",
+        "timestamp": "2026-01-11T21:42:13.479Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733713_v7egqzuic",
+        "timestamp": "2026-01-11T21:42:13.713Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733713_m7x19cqdr",
+        "timestamp": "2026-01-11T21:42:13.713Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.713Z"
+  },
+  {
+    "id": "exec_1768167733487_loyr4vu9a",
+    "workflowId": "wf_1768167733485_6m4k9hk2m",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.487Z",
+    "logs": [
+      {
+        "id": "log_1768167733489_8uun6l6zo",
+        "timestamp": "2026-01-11T21:42:13.489Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733848_66ng0f6m8",
+        "timestamp": "2026-01-11T21:42:13.848Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733848_73dn27cqx",
+        "timestamp": "2026-01-11T21:42:13.848Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.848Z"
+  },
+  {
+    "id": "exec_1768167733496_jjwptw9cx",
+    "workflowId": "wf_1768167733494_8l608kgrd",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.496Z",
+    "logs": [
+      {
+        "id": "log_1768167733498_8qitgbdsd",
+        "timestamp": "2026-01-11T21:42:13.498Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733991_se1l0tu9f",
+        "timestamp": "2026-01-11T21:42:13.991Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167733991_ylxeq6mcw",
+        "timestamp": "2026-01-11T21:42:13.991Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:13.991Z"
+  },
+  {
+    "id": "exec_1768167733503_tcrobnyhe",
+    "workflowId": "wf_1768167733502_zonnvkmy4",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.503Z",
+    "logs": [
+      {
+        "id": "log_1768167733505_weeliym9t",
+        "timestamp": "2026-01-11T21:42:13.505Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734129_d2o5c9qwg",
+        "timestamp": "2026-01-11T21:42:14.129Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734129_raj2yb5zs",
+        "timestamp": "2026-01-11T21:42:14.129Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.129Z"
+  },
+  {
+    "id": "exec_1768167733512_ah4icc8o4",
+    "workflowId": "wf_1768167733510_v0zmx33eh",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:13.512Z",
+    "logs": [
+      {
+        "id": "log_1768167733514_0ft1tlxv6",
+        "timestamp": "2026-01-11T21:42:13.514Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734268_0ykbeuj3w",
+        "timestamp": "2026-01-11T21:42:14.268Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734268_6tj3d94ua",
+        "timestamp": "2026-01-11T21:42:14.268Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.268Z"
+  },
+  {
+    "id": "exec_1768167734379_f3bz1bt0c",
+    "workflowId": "wf_1768167734377_xbv644ri6",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.379Z",
+    "logs": [
+      {
+        "id": "log_1768167734381_y4fbbd3n7",
+        "timestamp": "2026-01-11T21:42:14.381Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734489_haz40v1t9",
+        "timestamp": "2026-01-11T21:42:14.489Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734489_xig7dxdrs",
+        "timestamp": "2026-01-11T21:42:14.489Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.489Z"
+  },
+  {
+    "id": "exec_1768167734389_89yxokkt8",
+    "workflowId": "wf_1768167734387_fn0vzclh9",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.389Z",
+    "logs": [
+      {
+        "id": "log_1768167734391_afemd770z",
+        "timestamp": "2026-01-11T21:42:14.391Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734637_ggqhip0mh",
+        "timestamp": "2026-01-11T21:42:14.637Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734637_pkq3n04jz",
+        "timestamp": "2026-01-11T21:42:14.637Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.637Z"
+  },
+  {
+    "id": "exec_1768167734398_er9gz4doi",
+    "workflowId": "wf_1768167734396_71tk2iae5",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.398Z",
+    "logs": [
+      {
+        "id": "log_1768167734400_0p5efp4ot",
+        "timestamp": "2026-01-11T21:42:14.400Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734775_m8ute7zqq",
+        "timestamp": "2026-01-11T21:42:14.775Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734775_yowrr1ao7",
+        "timestamp": "2026-01-11T21:42:14.775Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.775Z"
+  },
+  {
+    "id": "exec_1768167734406_3i0pqn8yu",
+    "workflowId": "wf_1768167734404_pom03n7nj",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.406Z",
+    "logs": [
+      {
+        "id": "log_1768167734408_7g78yi4fs",
+        "timestamp": "2026-01-11T21:42:14.408Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734920_n1ellfsjf",
+        "timestamp": "2026-01-11T21:42:14.920Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167734920_7o451wz3u",
+        "timestamp": "2026-01-11T21:42:14.920Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:14.920Z"
+  },
+  {
+    "id": "exec_1768167734415_sw9ko2hpe",
+    "workflowId": "wf_1768167734412_kdbrgzq69",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.415Z",
+    "logs": [
+      {
+        "id": "log_1768167734417_b641zsfjp",
+        "timestamp": "2026-01-11T21:42:14.417Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735065_kxsajca2h",
+        "timestamp": "2026-01-11T21:42:15.065Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735065_pfqtdyx5h",
+        "timestamp": "2026-01-11T21:42:15.065Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:15.065Z"
+  },
+  {
+    "id": "exec_1768167734423_ue1do0x19",
+    "workflowId": "wf_1768167734421_xt8gyfyyp",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:14.423Z",
+    "logs": [
+      {
+        "id": "log_1768167734425_ti0t6lt8c",
+        "timestamp": "2026-01-11T21:42:14.425Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735244_ofup6acev",
+        "timestamp": "2026-01-11T21:42:15.244Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735244_9bb19vd4u",
+        "timestamp": "2026-01-11T21:42:15.244Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:15.244Z"
+  },
+  {
+    "id": "exec_1768167735374_8uphs0ojg",
+    "workflowId": "wf_1768167735372_g3bb9oyyl",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.374Z",
+    "logs": [
+      {
+        "id": "log_1768167735378_gk1nauy2v",
+        "timestamp": "2026-01-11T21:42:15.378Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735499_8hi8ctm40",
+        "timestamp": "2026-01-11T21:42:15.499Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735499_euikvswum",
+        "timestamp": "2026-01-11T21:42:15.499Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:15.499Z"
+  },
+  {
+    "id": "exec_1768167735387_epxnu5urm",
+    "workflowId": "wf_1768167735384_16wikcohe",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.387Z",
+    "logs": [
+      {
+        "id": "log_1768167735390_yvf072p3g",
+        "timestamp": "2026-01-11T21:42:15.390Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735658_be9k7shw1",
+        "timestamp": "2026-01-11T21:42:15.658Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735658_itokht2ld",
+        "timestamp": "2026-01-11T21:42:15.658Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:15.658Z"
+  },
+  {
+    "id": "exec_1768167735398_wuvit1ar3",
+    "workflowId": "wf_1768167735395_t8an171co",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.398Z",
+    "logs": [
+      {
+        "id": "log_1768167735400_2e3f39p32",
+        "timestamp": "2026-01-11T21:42:15.400Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735863_3wehqpam0",
+        "timestamp": "2026-01-11T21:42:15.863Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167735863_l2esfeibo",
+        "timestamp": "2026-01-11T21:42:15.863Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:15.863Z"
+  },
+  {
+    "id": "exec_1768167735410_wa0sca9gc",
+    "workflowId": "wf_1768167735406_2o89ugcvo",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.410Z",
+    "logs": [
+      {
+        "id": "log_1768167735412_c0ior4iws",
+        "timestamp": "2026-01-11T21:42:15.412Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736071_brgu2u04e",
+        "timestamp": "2026-01-11T21:42:16.071Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736071_pjvnkk0au",
+        "timestamp": "2026-01-11T21:42:16.071Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.071Z"
+  },
+  {
+    "id": "exec_1768167735419_zvxzxkrlf",
+    "workflowId": "wf_1768167735417_wkyotluzr",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.419Z",
+    "logs": [
+      {
+        "id": "log_1768167735421_zc8huaigq",
+        "timestamp": "2026-01-11T21:42:15.421Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736217_io8o44jub",
+        "timestamp": "2026-01-11T21:42:16.217Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736217_25slioo0y",
+        "timestamp": "2026-01-11T21:42:16.217Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.217Z"
+  },
+  {
+    "id": "exec_1768167735428_5ftnmecxk",
+    "workflowId": "wf_1768167735426_877lrmbop",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:15.428Z",
+    "logs": [
+      {
+        "id": "log_1768167735430_zxt6z7bjy",
+        "timestamp": "2026-01-11T21:42:15.430Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736365_z5hstmfhx",
+        "timestamp": "2026-01-11T21:42:16.365Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736365_z3941a47s",
+        "timestamp": "2026-01-11T21:42:16.365Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.365Z"
+  },
+  {
+    "id": "exec_1768167736543_14rtuulg4",
+    "workflowId": "wf_1768167736541_y6olzzv48",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:16.543Z",
+    "logs": [
+      {
+        "id": "log_1768167736545_fznm5snzu",
+        "timestamp": "2026-01-11T21:42:16.545Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736652_8gtvklvec",
+        "timestamp": "2026-01-11T21:42:16.652Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736652_f1w6c3zoa",
+        "timestamp": "2026-01-11T21:42:16.652Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.652Z"
+  },
+  {
+    "id": "exec_1768167736552_eta0kludk",
+    "workflowId": "wf_1768167736550_agtg8v2tl",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:16.552Z",
+    "logs": [
+      {
+        "id": "log_1768167736554_p6htynlf9",
+        "timestamp": "2026-01-11T21:42:16.554Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736792_gfxuuyflm",
+        "timestamp": "2026-01-11T21:42:16.792Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736792_ak1n68zko",
+        "timestamp": "2026-01-11T21:42:16.792Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.792Z"
+  },
+  {
+    "id": "exec_1768167736561_eyrohvtck",
+    "workflowId": "wf_1768167736559_1ei8zqmly",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:16.561Z",
+    "logs": [
+      {
+        "id": "log_1768167736563_bu3fa1fni",
+        "timestamp": "2026-01-11T21:42:16.563Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736932_nlxe9w3xa",
+        "timestamp": "2026-01-11T21:42:16.932Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167736932_lxp9x1elh",
+        "timestamp": "2026-01-11T21:42:16.932Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:16.932Z"
+  },
+  {
+    "id": "exec_1768167736572_w8jhvbcvx",
+    "workflowId": "wf_1768167736569_g6lz2tu2o",
+    "status": "failed",
+    "startedAt": "2026-01-11T21:42:16.572Z",
+    "logs": [
+      {
+        "id": "log_1768167736574_gzd3jj97u",
+        "timestamp": "2026-01-11T21:42:16.574Z",
+        "level": "info",
+        "message": "Executing action: database",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167737071_nc5skiyl3",
+        "timestamp": "2026-01-11T21:42:17.071Z",
+        "level": "error",
+        "message": "Action database failed: Пользователь с таким email уже существует",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768167737071_la3jo93iz",
+        "timestamp": "2026-01-11T21:42:17.071Z",
+        "level": "error",
+        "message": "Workflow execution failed: Пользователь с таким email уже существует"
+      }
+    ],
+    "error": "Пользователь с таким email уже существует",
+    "completedAt": "2026-01-11T21:42:17.071Z"
+  },
+  {
+    "id": "exec_1768169070527_jgy8e9rh1",
+    "workflowId": "wf_1768169070524_3n85oeq6n",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:04:30.527Z",
+    "logs": [
+      {
+        "id": "log_1768169070534_s67uds3jv",
+        "timestamp": "2026-01-11T22:04:30.534Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169071075_cjih7ldec",
+        "timestamp": "2026-01-11T22:04:31.075Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169071075_ee2uvu9ou",
+        "timestamp": "2026-01-11T22:04:31.075Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:04:31.075Z"
+  },
+  {
+    "id": "exec_1768169071213_zpmbm9n9g",
+    "workflowId": "wf_1768169071211_fmao6r1bi",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:04:31.213Z",
+    "logs": [
+      {
+        "id": "log_1768169071217_i6kw8fhim",
+        "timestamp": "2026-01-11T22:04:31.217Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169071315_o2jbt5rg0",
+        "timestamp": "2026-01-11T22:04:31.315Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169071315_g4dlmgrkr",
+        "timestamp": "2026-01-11T22:04:31.315Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:04:31.315Z"
+  },
+  {
+    "id": "exec_1768169072313_pnec9fbfy",
+    "workflowId": "wf_1768169072311_98e2s8fmi",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:04:32.313Z",
+    "logs": [
+      {
+        "id": "log_1768169072318_xbgv49b58",
+        "timestamp": "2026-01-11T22:04:32.318Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169072411_t01rtz2di",
+        "timestamp": "2026-01-11T22:04:32.411Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169072411_k27lesp57",
+        "timestamp": "2026-01-11T22:04:32.411Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:04:32.411Z"
+  },
+  {
+    "id": "exec_1768169229503_9cs44ypgx",
+    "workflowId": "wf_1768169229500_jiavmaz85",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:07:09.503Z",
+    "logs": [
+      {
+        "id": "log_1768169229507_ggnlndi3t",
+        "timestamp": "2026-01-11T22:07:09.507Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169229829_c2zqx2ftf",
+        "timestamp": "2026-01-11T22:07:09.829Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169229829_7kamfrov6",
+        "timestamp": "2026-01-11T22:07:09.829Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:07:09.829Z"
+  },
+  {
+    "id": "exec_1768169230522_rqjblcfd9",
+    "workflowId": "wf_1768169230520_ye61dpx95",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:07:10.522Z",
+    "logs": [
+      {
+        "id": "log_1768169230528_jan54fwkf",
+        "timestamp": "2026-01-11T22:07:10.528Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169230636_msh6p8nja",
+        "timestamp": "2026-01-11T22:07:10.636Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169230636_dr8tde7a3",
+        "timestamp": "2026-01-11T22:07:10.636Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:07:10.636Z"
+  },
+  {
+    "id": "exec_1768169230902_xqwwcqh45",
+    "workflowId": "wf_1768169230898_x5ya2cgaq",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:07:10.902Z",
+    "logs": [
+      {
+        "id": "log_1768169230908_8l87uosl1",
+        "timestamp": "2026-01-11T22:07:10.908Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169230980_4xqjb1tx0",
+        "timestamp": "2026-01-11T22:07:10.980Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169230980_osbck4or8",
+        "timestamp": "2026-01-11T22:07:10.980Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:07:10.980Z"
+  },
+  {
+    "id": "exec_1768169369559_gclf8un3i",
+    "workflowId": "wf_1768169369556_votvih6h2",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:09:29.559Z",
+    "logs": [
+      {
+        "id": "log_1768169369564_4812xo5mh",
+        "timestamp": "2026-01-11T22:09:29.564Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169369889_4x44y86m4",
+        "timestamp": "2026-01-11T22:09:29.889Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169369889_zzkyji1gv",
+        "timestamp": "2026-01-11T22:09:29.889Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:09:29.889Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully",
+      "httpResponse": {
+        "id": 40,
+        "text": "Парасомния — термин, обозначающий неестественные движения во время сна. Некоторые люди даже совершали преступление из-за парасомнии, включая вождение во сне и даже убийство."
+      }
+    }
+  },
+  {
+    "id": "exec_1768169370577_7f5id21jc",
+    "workflowId": "wf_1768169370575_idvik1ofr",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:09:30.577Z",
+    "logs": [
+      {
+        "id": "log_1768169370583_fdqpzplw8",
+        "timestamp": "2026-01-11T22:09:30.583Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169370673_pn8yiyf8b",
+        "timestamp": "2026-01-11T22:09:30.673Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169370673_4cvzola3n",
+        "timestamp": "2026-01-11T22:09:30.673Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:09:30.673Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully",
+      "httpResponse": {
+        "id": 97,
+        "text": "Испания значит «земля кроликов»?"
+      }
+    }
+  },
+  {
+    "id": "exec_1768169370961_pprjtfkcj",
+    "workflowId": "wf_1768169370957_nmuz4l43t",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:09:30.961Z",
+    "logs": [
+      {
+        "id": "log_1768169370967_n29ak2yrx",
+        "timestamp": "2026-01-11T22:09:30.967Z",
+        "level": "info",
+        "message": "Executing action: http",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169371051_keczxtgsc",
+        "timestamp": "2026-01-11T22:09:31.051Z",
+        "level": "info",
+        "message": "Action http completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768169371051_fz9448cvl",
+        "timestamp": "2026-01-11T22:09:31.051Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:09:31.051Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully",
+      "httpResponse": {
+        "id": 51,
+        "text": "Ежедневно жители США съедают 18 гектаров пиццы."
+      }
+    }
+  },
+  {
+    "id": "exec_1768170601499_qucan0b8a",
+    "workflowId": "wf_1768170601496_yg0tr4ra9",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:30:01.499Z",
+    "logs": [
+      {
+        "id": "log_1768170601504_0p7rx52pi",
+        "timestamp": "2026-01-11T22:30:01.504Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170602051_cd5rw0t1j",
+        "timestamp": "2026-01-11T22:30:02.051Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170602051_8t1x4qj4o",
+        "timestamp": "2026-01-11T22:30:02.051Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:30:02.051Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170602510_ymsk4xfj9",
+    "workflowId": "wf_1768170602508_lknbmw2ok",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:30:02.510Z",
+    "logs": [
+      {
+        "id": "log_1768170602515_om021krnw",
+        "timestamp": "2026-01-11T22:30:02.515Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170602602_ldbypsh2d",
+        "timestamp": "2026-01-11T22:30:02.602Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170602602_qku958gwf",
+        "timestamp": "2026-01-11T22:30:02.602Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:30:02.602Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170603100_2nyrwdkx9",
+    "workflowId": "wf_1768170603098_p2weppm1m",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:30:03.100Z",
+    "logs": [
+      {
+        "id": "log_1768170603105_ge86imzp3",
+        "timestamp": "2026-01-11T22:30:03.105Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170603199_qo5dul3f7",
+        "timestamp": "2026-01-11T22:30:03.199Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170603199_fewt23haw",
+        "timestamp": "2026-01-11T22:30:03.199Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:30:03.199Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170750091_umdfwvy8k",
+    "workflowId": "wf_1768170750089_jo3tmizbj",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:32:30.091Z",
+    "logs": [
+      {
+        "id": "log_1768170750095_411vad9hw",
+        "timestamp": "2026-01-11T22:32:30.095Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170750187_dq6zwn92j",
+        "timestamp": "2026-01-11T22:32:30.187Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170750187_ih5oofx5f",
+        "timestamp": "2026-01-11T22:32:30.187Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:32:30.187Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170751317_dollmvt9s",
+    "workflowId": "wf_1768170751315_2n1ubrduz",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:32:31.317Z",
+    "logs": [
+      {
+        "id": "log_1768170751322_hp1nsscqv",
+        "timestamp": "2026-01-11T22:32:31.322Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170751444_286kwo4is",
+        "timestamp": "2026-01-11T22:32:31.444Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170751444_vuewktowm",
+        "timestamp": "2026-01-11T22:32:31.444Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:32:31.444Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170751328_ab08xbru5",
+    "workflowId": "wf_1768170751326_5gu2d5byj",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:32:31.328Z",
+    "logs": [
+      {
+        "id": "log_1768170751332_rkdqbqsoh",
+        "timestamp": "2026-01-11T22:32:31.332Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170751852_8xd2b5rwx",
+        "timestamp": "2026-01-11T22:32:31.852Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768170751852_gdqkrpb84",
+        "timestamp": "2026-01-11T22:32:31.852Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:32:31.852Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170977811_6n8cyjqgk",
+    "workflowId": "wf_1768170977809_65913i8g8",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:36:17.811Z",
+    "logs": [
+      {
+        "id": "log_1768170977816_jysdzb12k",
+        "timestamp": "2026-01-11T22:36:17.816Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170977949_2j5bkkkfq",
+        "timestamp": "2026-01-11T22:36:17.949Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170977949_8fbdake4c",
+        "timestamp": "2026-01-11T22:36:17.949Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:36:17.949Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170978832_71uwa2369",
+    "workflowId": "wf_1768170978830_02dp41ahf",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:36:18.832Z",
+    "logs": [
+      {
+        "id": "log_1768170978837_o9jom1e9h",
+        "timestamp": "2026-01-11T22:36:18.837Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170978943_2tlxu0l09",
+        "timestamp": "2026-01-11T22:36:18.943Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170978943_8wdzxqkgo",
+        "timestamp": "2026-01-11T22:36:18.943Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:36:18.943Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768170978990_lftpk477i",
+    "workflowId": "wf_1768170978988_f4udnxhvu",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:36:18.990Z",
+    "logs": [
+      {
+        "id": "log_1768170978995_33fxa0d04",
+        "timestamp": "2026-01-11T22:36:18.995Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170979085_xeocnwzs5",
+        "timestamp": "2026-01-11T22:36:19.085Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768170979085_6njobgdze",
+        "timestamp": "2026-01-11T22:36:19.085Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:36:19.085Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768171135795_flrx1bk3r",
+    "workflowId": "wf_1768171135793_pu8v7iq77",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:38:55.795Z",
+    "logs": [
+      {
+        "id": "log_1768171135800_6044ovx2y",
+        "timestamp": "2026-01-11T22:38:55.800Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171135944_j074gpi7a",
+        "timestamp": "2026-01-11T22:38:55.944Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171135944_38qbkp84f",
+        "timestamp": "2026-01-11T22:38:55.944Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:38:55.944Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768171137315_qwxyy45pi",
+    "workflowId": "wf_1768171137312_qb3ftvzcm",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:38:57.315Z",
+    "logs": [
+      {
+        "id": "log_1768171137319_5xa5lhaq9",
+        "timestamp": "2026-01-11T22:38:57.319Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171137475_63zt8edxl",
+        "timestamp": "2026-01-11T22:38:57.475Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171137475_0dpuzkmfk",
+        "timestamp": "2026-01-11T22:38:57.475Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:38:57.475Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768171137326_vv5ao6chq",
+    "workflowId": "wf_1768171137323_jwrscfd1b",
+    "status": "completed",
+    "startedAt": "2026-01-11T22:38:57.326Z",
+    "logs": [
+      {
+        "id": "log_1768171137330_im03jngkj",
+        "timestamp": "2026-01-11T22:38:57.330Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171137521_e2y8a9q36",
+        "timestamp": "2026-01-11T22:38:57.521Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768171137521_fhlm2exet",
+        "timestamp": "2026-01-11T22:38:57.521Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T22:38:57.521Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768172730274_f10894hz8",
+    "workflowId": "wf_1768172730272_u53bsgy2x",
+    "status": "completed",
+    "startedAt": "2026-01-11T23:05:30.274Z",
+    "logs": [
+      {
+        "id": "log_1768172730278_p5j1uk8lr",
+        "timestamp": "2026-01-11T23:05:30.278Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172730948_qf4oud2l3",
+        "timestamp": "2026-01-11T23:05:30.948Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172730948_d8z14jhsr",
+        "timestamp": "2026-01-11T23:05:30.948Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172731043_g8nwspgy3",
+        "timestamp": "2026-01-11T23:05:31.043Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172731043_fnao8kj5y",
+        "timestamp": "2026-01-11T23:05:31.043Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T23:05:31.043Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768172730909_8e2l2ufex",
+    "workflowId": "wf_1768172730908_4kfgjmp5n",
+    "status": "completed",
+    "startedAt": "2026-01-11T23:05:30.909Z",
+    "logs": [
+      {
+        "id": "log_1768172730913_8wterxghu",
+        "timestamp": "2026-01-11T23:05:30.913Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172731495_qlgwaanqd",
+        "timestamp": "2026-01-11T23:05:31.495Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172731495_v7ro21dro",
+        "timestamp": "2026-01-11T23:05:31.495Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172731598_2xf2nnoss",
+        "timestamp": "2026-01-11T23:05:31.598Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172731598_l1lgwvhxf",
+        "timestamp": "2026-01-11T23:05:31.598Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T23:05:31.598Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768172731592_tv6axpq6u",
+    "workflowId": "wf_1768172731590_kzmzqakzl",
+    "status": "completed",
+    "startedAt": "2026-01-11T23:05:31.592Z",
+    "logs": [
+      {
+        "id": "log_1768172731596_2i0m8s0sy",
+        "timestamp": "2026-01-11T23:05:31.596Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172731704_sdver8ufj",
+        "timestamp": "2026-01-11T23:05:31.704Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768172731704_286h9loh6",
+        "timestamp": "2026-01-11T23:05:31.704Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172736799_ettp6xf3g",
+        "timestamp": "2026-01-11T23:05:36.799Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768172736799_abecaid8c",
+        "timestamp": "2026-01-11T23:05:36.799Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-11T23:05:36.799Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  }
+]

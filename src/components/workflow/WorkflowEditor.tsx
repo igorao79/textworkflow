@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
@@ -58,37 +58,88 @@ function ExecutionMonitorModal({
     endTime?: Date;
   }>>([]);
 
-  // Функция для выполнения workflow
-  const executeWorkflow = React.useCallback(async () => {
-    if (!onExecute) return;
+  // Флаг для предотвращения повторного запуска
+  const [hasStartedExecution, setHasStartedExecution] = useState(false);
+  const [isExecuting, setIsExecuting] = useState(false);
 
-    console.log('🚀 Starting workflow execution...');
+  // Функция для выполнения workflow с отслеживанием шагов
+  const executeWorkflow = React.useCallback(async () => {
+    if (!onExecute || isSubmitting || hasStartedExecution) return;
+
+    console.log('🚀 Starting workflow execution with step tracking...');
+    setIsExecuting(true);
     setIsSubmitting?.(true);
+    setHasStartedExecution(true);
+
+    // Инициализируем шаги
+    const steps = actions.map(action => ({
+      id: action.id,
+      title: getActionTitle(action.type),
+      status: 'pending' as const
+    }));
+    setExecutionSteps(steps);
 
     try {
+      // Имитируем выполнение шагов
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
+
+        // Обновляем статус на "running"
+        setExecutionSteps(prev => prev.map(s =>
+          s.id === step.id
+            ? { ...s, status: 'running', startTime: new Date() }
+            : s
+        ));
+
+        console.log(`▶️ Executing step: ${step.title}`);
+
+        // Имитируем задержку выполнения
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Обновляем статус на "completed"
+        setExecutionSteps(prev => prev.map(s =>
+          s.id === step.id
+            ? { ...s, status: 'completed', endTime: new Date() }
+            : s
+        ));
+
+        console.log(`✅ Step completed: ${step.title}`);
+      }
+
+      // Выполняем реальный workflow
       await onExecute();
       console.log('✅ Workflow execution completed');
+
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
+
+      // Обновляем статус failed для текущего шага
+      setExecutionSteps(prev => prev.map(s =>
+        s.status === 'running'
+          ? { ...s, status: 'failed', endTime: new Date() }
+          : s
+      ));
+
     } finally {
       setIsSubmitting?.(false);
+      setIsExecuting(false);
     }
-  }, [onExecute, setIsSubmitting]);
+  }, [onExecute, setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
 
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {
-    if (isOpen && !isSubmitting && executionSteps.length > 0) {
-      console.log('🎬 Execution completed, closing modal in 2 seconds...');
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+    if (isOpen && !isExecuting && executionSteps.length > 0 && hasStartedExecution) {
+      console.log('🎬 Execution completed, keeping modal open for results...');
+      // Не закрываем автоматически, даем пользователю посмотреть результаты
     }
-  }, [isOpen, isSubmitting, executionSteps, onClose]);
+  }, [isOpen, isExecuting, executionSteps, hasStartedExecution]);
 
-  // Инициализируем шаги выполнения при открытии модального окна
+  // Инициализируем шаги выполнения при открытии модального окна (только один раз)
   React.useEffect(() => {
-    if (isOpen && actions.length > 0) {
+    if (isOpen && actions.length > 0 && !hasStartedExecution) {
       console.log('🎬 Initializing execution steps for actions:', actions.length);
+      setHasStartedExecution(true);
+
       const steps = actions.map(action => ({
         id: action.id,
         title: getActionTitle(action.type),
@@ -104,26 +155,18 @@ function ExecutionMonitorModal({
         executeWorkflow();
       }, 1000);
     }
-  }, [isOpen, actions, executeWorkflow]);
+  }, [isOpen, actions, executeWorkflow, hasStartedExecution]);
 
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-500';
-      case 'running': return 'bg-blue-500 animate-pulse';
-      case 'failed': return 'bg-red-500';
-      default: return 'bg-gray-300';
+  // Сбрасываем флаги при закрытии модального окна
+  React.useEffect(() => {
+    if (!isOpen) {
+      setHasStartedExecution(false);
+      setIsExecuting(false);
+      setExecutionSteps([]);
     }
-  };
+  }, [isOpen]);
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed': return 'Выполнено';
-      case 'running': return 'Выполняется...';
-      case 'failed': return 'Ошибка';
-      default: return 'Ожидает';
-    }
-  };
+
 
   return (
       <Dialog open={isOpen} onOpenChange={(open) => {
@@ -154,24 +197,65 @@ function ExecutionMonitorModal({
 
           {executionSteps.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Планируемые действия:</h3>
-              {executionSteps.map((step) => (
-                <div key={step.id} className="flex items-center space-x-3 p-4 border rounded-lg bg-card">
-                  <div className="w-4 h-4 rounded-full bg-gray-300"></div>
-                  <div className="flex-1">
-                    <div className="font-medium">{step.title}</div>
-                    <div className="text-sm text-muted-foreground">Будет выполнено</div>
+              <h3 className="text-lg font-semibold">Очередь выполнения:</h3>
+              {executionSteps.map((step) => {
+                const statusColors = {
+                  pending: 'bg-gray-300',
+                  running: 'bg-blue-500 animate-pulse',
+                  completed: 'bg-green-500',
+                  failed: 'bg-red-500'
+                };
+
+                const statusTexts = {
+                  pending: 'Ожидает',
+                  running: 'Выполняется...',
+                  completed: 'Завершено',
+                  failed: 'Ошибка'
+                };
+
+                return (
+                  <div key={step.id} className="flex items-center space-x-3 p-4 border rounded-lg bg-card">
+                    <div className={`w-4 h-4 rounded-full ${statusColors[step.status]}`}></div>
+                    <div className="flex-1">
+                      <div className="font-medium">{step.title}</div>
+                      <div className="text-sm text-muted-foreground">{statusTexts[step.status]}</div>
+                      {step.startTime && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Начало: {step.startTime.toLocaleTimeString('ru-RU')}
+                          {step.endTime && ` → Завершение: ${step.endTime.toLocaleTimeString('ru-RU')}`}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+            {!isExecuting && hasStartedExecution && (
+              <Button
+                variant="default"
+                onClick={() => {
+                  console.log('🔄 Restarting workflow execution...');
+                  setHasStartedExecution(false);
+                  setIsExecuting(false);
+                  setExecutionSteps([]);
+                  setIsSubmitting?.(false);
+                  // Перезапустим выполнение
+                  setTimeout(() => {
+                    executeWorkflow();
+                  }, 500);
+                }}
+                disabled={isSubmitting}
+              >
+                🔄 Запустить заново
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={onClose}
-              disabled={isSubmitting}
+              disabled={isExecuting}
             >
               {isSubmitting ? 'Выполняется...' : 'Закрыть'}
             </Button>
@@ -211,6 +295,8 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
   const actionCounterRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [hasExecuted, setHasExecuted] = useState(false);
 
   // Логируем изменения showExecutionMonitor
   React.useEffect(() => {
@@ -558,18 +644,33 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                         isSubmitting,
                         isWorkflowValid,
                         actionsCount: workflowData.actions.length,
-                        buttonDisabled: isSubmitting || !isWorkflowValid
+                        buttonDisabled: isSubmitting || !isWorkflowValid || hasExecuted
                       });
-                      console.log('🎬 Setting showExecutionMonitor to true');
-                      setShowExecutionMonitor(true);
-                      console.log('✅ showExecutionMonitor set to true');
+                      console.log('🎪 Opening confirmation dialog');
+                      setShowConfirmDialog(true);
+                      console.log('✅ Confirmation dialog opened');
                     }}
-                    disabled={isSubmitting || !isWorkflowValid}
+                    disabled={isSubmitting || !isWorkflowValid || hasExecuted}
                     size="lg"
                     className="px-8 py-3 text-lg font-semibold"
                   >
-                    {isSubmitting ? 'Запуск...' : 'Запустить Workflow'}
+                    {isSubmitting ? 'Запуск...' : hasExecuted ? 'Workflow запущен' : 'Запустить Workflow'}
                   </Button>
+                  {hasExecuted && !isSubmitting && (
+                    <Button
+                      onClick={() => {
+                        setHasExecuted(false);
+                        setShowExecutionMonitor(false);
+                        setShowConfirmDialog(true);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Выполняется...' : 'Запустить заново'}
+                    </Button>
+                  )}
                   {!isWorkflowValid && workflowData.actions.length > 0 && (
                     <p className="text-sm text-muted-foreground mt-2 text-center">
                       Заполните все поля действий для запуска workflow
@@ -581,6 +682,78 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
           </Card>
         </div>
       </div>
+
+      {/* Модальное окно подтверждения запуска */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Подтверждение запуска Workflow</DialogTitle>
+            <DialogDescription>
+              Проверьте настройки перед запуском workflow
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Тип триггера:</span>
+              <Badge variant="outline">
+                {workflowData.trigger.type === 'webhook' ? 'Webhook' :
+                 workflowData.trigger.type === 'cron' ? 'Cron' :
+                 workflowData.trigger.type === 'email' ? 'Email' : 'Неизвестный'}
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Количество действий:</span>
+              <Badge variant="secondary">
+                {workflowData.actions.length}
+              </Badge>
+            </div>
+
+            {workflowData.actions.length > 0 && (
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium mb-2">Действия:</h4>
+                <div className="space-y-1">
+                  {workflowData.actions.slice(0, 3).map((action, index) => (
+                    <div key={action.id} className="flex items-center justify-between text-xs">
+                      <span>{index + 1}. {action.type === 'telegram' ? 'Telegram' :
+                                         action.type === 'http' ? 'HTTP' :
+                                         action.type === 'email' ? 'Email' :
+                                         action.type === 'database' ? 'Database' :
+                                         action.type === 'transform' ? 'Transform' : action.type}</span>
+                    </div>
+                  ))}
+                  {workflowData.actions.length > 3 && (
+                    <div className="text-xs text-muted-foreground">
+                      ... и ещё {workflowData.actions.length - 3} действий
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+            >
+              Отмена
+            </Button>
+            <Button
+              onClick={() => {
+                console.log('🚀 Confirmed workflow execution');
+                setShowConfirmDialog(false);
+                setShowExecutionMonitor(true);
+                setHasExecuted(true);
+                console.log('✅ Execution monitor opened');
+              }}
+            >
+              🚀 Запустить Workflow
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Модальное окно мониторинга выполнения */}
       <ExecutionMonitorModal

@@ -82,6 +82,7 @@ export interface WorkflowExecution {
   completedAt?: Date;
   logs: WorkflowExecutionLog[];
   error?: string;
+  result?: Record<string, unknown>;
 }
 
 export interface WorkflowExecutionLog {

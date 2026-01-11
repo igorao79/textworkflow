@@ -51,6 +51,7 @@ import { workflowQueue } from '@/lib/queue';
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    console.log(`📡 ${req.method} /api/executions`);
     switch (req.method) {
       case 'GET':
         const { workflowId: queryWorkflowId } = req.query;
