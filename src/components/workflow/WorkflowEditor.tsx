@@ -5,7 +5,6 @@ import { getActionTitle } from './WorkflowNode';
 import {
   DndContext,
   DragEndEvent,
-  DragOverEvent,
   PointerSensor,
   useSensor,
   useSensors,
@@ -13,12 +12,14 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
+  rectSortingStrategy,
   verticalListSortingStrategy,
+  arrayMove,
 } from '@dnd-kit/sortable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
@@ -136,6 +137,9 @@ function ExecutionMonitorModal({
       <DialogContent className="w-[95vw] max-w-4xl max-h-[80vh] overflow-y-auto sm:w-[90vw] md:w-[80vw] lg:w-[70vw]">
         <DialogHeader>
           <DialogTitle>Мониторинг выполнения Workflow</DialogTitle>
+          <DialogDescription>
+            Отслеживание прогресса выполнения каждого шага workflow
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -288,10 +292,10 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
 
     const activeType = active.data.current?.type;
     const overId = over.id as string;
+    const activeId = active.id as string;
 
     // Если перетаскиваем новый action в рабочую область
     if (activeType === 'palette-item' && overId === 'drop-zone') {
-
       const activeData = active.data.current;
       if (!activeData) return;
 
@@ -307,6 +311,23 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
         ...workflowData,
         actions: [...workflowData.actions, newAction]
       });
+    }
+
+    // Обработка сортировки существующих элементов
+    if (activeType === 'workflow-node') {
+      const overType = over.data.current?.type;
+
+      if (overType === 'workflow-node' && activeId !== overId) {
+        const oldIndex = workflowData.actions.findIndex(action => action.id === activeId);
+        const newIndex = workflowData.actions.findIndex(action => action.id === overId);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          onWorkflowChange({
+            ...workflowData,
+            actions: arrayMove(workflowData.actions, oldIndex, newIndex)
+          });
+        }
+      }
     }
   };
 
@@ -359,41 +380,10 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
   };
 
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const activeType = active.data.current?.type;
-    const overId = over.id as string;
-    const activeId = active.id as string;
-
-    // Если перетаскиваем новый action в рабочую область
-    if (activeType === 'palette-item' && overId === 'drop-zone') {
-      // Это обрабатывается в handleDragEnd
-      return;
-    }
-
-    // Обработка сортировки существующих элементов
-    if (activeType === 'workflow-node') {
-      const overType = over.data.current?.type;
-
-      if (overType === 'workflow-node' && activeId !== overId) {
-        const oldIndex = workflowData.actions.findIndex(action => action.id === activeId);
-        const newIndex = workflowData.actions.findIndex(action => action.id === overId);
-
-        if (oldIndex !== -1 && newIndex !== -1) {
-          const newActions = [...workflowData.actions];
-          const [movedAction] = newActions.splice(oldIndex, 1);
-          newActions.splice(newIndex, 0, movedAction);
-
-          onWorkflowChange({
-            ...workflowData,
-            actions: newActions
-          });
-        }
-      }
-    }
+  const handleDragOver = () => {
+    // Сортировка теперь обрабатывается только в handleDragEnd
+    // handleDragOver используется только для добавления новых элементов
+    return;
   };
 
   return (
@@ -459,224 +449,194 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                     </div>
                   </div>
                 ) : (
-                  <SortableContext
-                    items={workflowData.actions.map(a => a.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {/* Десктоп версия - 5 колонок */}
-                    <div className="hidden xl:grid xl:grid-cols-5 gap-6 justify-items-center relative">
-                      {workflowData.actions.map((action, index) => {
-                        const row = Math.floor(index / 5);
-                        const isEvenRow = row % 2 === 0;
-                        const colInRow = index % 5;
-                        const visualCol = isEvenRow ? colInRow : 4 - colInRow;
+                  <>
+                    {/* Desktop версии с rect sorting */}
+                    <div className="hidden lg:block">
+                      <SortableContext
+                        items={workflowData.actions.map(a => a.id)}
+                        strategy={rectSortingStrategy}
+                      >
+                        {/* Desktop версия - 5 колонок */}
+                        <div className="hidden xl:grid xl:grid-cols-5 gap-6 justify-items-center relative">
+                          {workflowData.actions.map((action, index) => {
+                            const row = Math.floor(index / 5);
+                            const isEvenRow = row % 2 === 0;
+                            const colInRow = index % 5;
+                            const visualCol = isEvenRow ? colInRow : 4 - colInRow;
 
-                        const totalItems = workflowData.actions.length;
+                            const totalItems = workflowData.actions.length;
 
-                        // Определяем направление стрелки
-                        let showRightArrow = false;
-                        let showLeftArrow = false;
-                        let showDownArrow = false;
+                            // Определяем направление стрелки
+                            let showRightArrow = false;
+                            let showLeftArrow = false;
+                            let showDownArrow = false;
 
-                        if (index < totalItems - 1) {
-                          if (colInRow < 4) {
-                            // Не последний в ряду
-                            if (isEvenRow) {
-                              // Четный ряд - стрелка вправо
-                              showRightArrow = true;
-                            } else {
-                              // Нечетный ряд - стрелка влево
-                              showLeftArrow = true;
+                            if (index < totalItems - 1) {
+                              if (colInRow < 4) {
+                                // Не последний в ряду
+                                if (isEvenRow) {
+                                  // Четный ряд - стрелка вправо
+                                  showRightArrow = true;
+                                } else {
+                                  // Нечетный ряд - стрелка влево
+                                  showLeftArrow = true;
+                                }
+                              } else {
+                                // Последний в ряду - стрелка вниз (если есть следующий ряд)
+                                showDownArrow = true;
+                              }
                             }
-                          } else {
-                            // Последний в ряду - стрелка вниз (если есть следующий ряд)
-                            showDownArrow = true;
-                          }
-                        }
 
-                        return (
-                          <div
-                            key={action.id}
-                            className="relative"
-                            style={{
-                              gridRow: row + 1,
-                              gridColumn: visualCol + 1
-                            }}
-                          >
-                            <WorkflowNode
-                              action={action}
-                              index={index}
-                              onUpdate={handleActionUpdate}
-                              onDelete={handleActionDelete}
-                            />
+                            return (
+                              <div
+                                key={action.id}
+                                className="relative"
+                                style={{
+                                  gridRow: row + 1,
+                                  gridColumn: visualCol + 1
+                                }}
+                              >
+                                <WorkflowNode
+                                  action={action}
+                                  index={index}
+                                  onUpdate={handleActionUpdate}
+                                  onDelete={handleActionDelete}
+                                />
 
-                            {/* Стрелка вправо */}
-                            {showRightArrow && (
-                              <div className="absolute top-10 -right-5 flex items-center z-10 opacity-70">
-                                <div className="w-5 h-0.5 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[2px] border-l-primary border-y-[2px] border-y-transparent"></div>
+                                {/* Стрелка вправо */}
+                                {showRightArrow && (
+                                  <div className="absolute top-10 -right-5 flex items-center z-10 opacity-70">
+                                    <div className="w-5 h-0.5 bg-primary"></div>
+                                    <div className="w-0 h-0 border-l-[2px] border-l-primary border-y-[2px] border-y-transparent"></div>
+                                  </div>
+                                )}
+
+                                {/* Стрелка влево */}
+                                {showLeftArrow && (
+                                  <div className="absolute top-10 -left-5 flex items-center z-10 opacity-70">
+                                    <div className="w-0 h-0 border-r-[2px] border-r-primary border-y-[2px] border-y-transparent"></div>
+                                    <div className="w-5 h-0.5 bg-primary"></div>
+                                  </div>
+                                )}
+
+                                {/* Стрелка вниз */}
+                                {showDownArrow && (
+                                  <div className="absolute -bottom-6 left-10 flex flex-col items-center z-10 opacity-70">
+                                    <div className="w-0.5 h-6 bg-primary"></div>
+                                    <div className="w-0 h-0 border-l-[1.5px] border-l-transparent border-r-[1.5px] border-r-transparent border-t-[3px] border-t-primary"></div>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            );
+                          })}
+                        </div>
 
-                            {/* Стрелка влево */}
-                            {showLeftArrow && (
-                              <div className="absolute top-10 -left-5 flex items-center z-10 opacity-70">
-                                <div className="w-0 h-0 border-r-[2px] border-r-primary border-y-[2px] border-y-transparent"></div>
-                                <div className="w-5 h-0.5 bg-primary"></div>
-                              </div>
-                            )}
+                        {/* LG версия - 4 колонки */}
+                        <div className="grid lg:grid-cols-4 xl:hidden gap-6 justify-items-center relative">
+                          {workflowData.actions.map((action, index) => {
+                            const row = Math.floor(index / 4);
+                            const isEvenRow = row % 2 === 0;
+                            const colInRow = index % 4;
+                            const visualCol = isEvenRow ? colInRow : 3 - colInRow;
 
-                            {/* Стрелка вниз */}
-                            {showDownArrow && (
-                              <div className="absolute -bottom-6 left-10 flex flex-col items-center z-10 opacity-70">
-                                <div className="w-0.5 h-6 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[1.5px] border-l-transparent border-r-[1.5px] border-r-transparent border-t-[3px] border-t-primary"></div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                            const totalItems = workflowData.actions.length;
 
-                    {/* LG версия - 4 колонки */}
-                    <div className="hidden lg:grid lg:grid-cols-4 xl:hidden gap-6 justify-items-center relative">
-                      {workflowData.actions.map((action, index) => {
-                        const row = Math.floor(index / 4);
-                        const isEvenRow = row % 2 === 0;
-                        const colInRow = index % 4;
-                        const visualCol = isEvenRow ? colInRow : 3 - colInRow;
+                            // Определяем направление стрелки
+                            let showRightArrow = false;
+                            let showLeftArrow = false;
+                            let showDownArrow = false;
 
-                        const totalItems = workflowData.actions.length;
-
-                        // Определяем направление стрелки
-                        let showRightArrow = false;
-                        let showLeftArrow = false;
-                        let showDownArrow = false;
-
-                        if (index < totalItems - 1) {
-                          if (colInRow < 3) {
-                            // Не последний в ряду
-                            if (isEvenRow) {
-                              // Четный ряд - стрелка вправо
-                              showRightArrow = true;
-                            } else {
-                              // Нечетный ряд - стрелка влево
-                              showLeftArrow = true;
+                            if (index < totalItems - 1) {
+                              if (colInRow < 3) {
+                                // Не последний в ряду
+                                if (isEvenRow) {
+                                  // Четный ряд - стрелка вправо
+                                  showRightArrow = true;
+                                } else {
+                                  // Нечетный ряд - стрелка влево
+                                  showLeftArrow = true;
+                                }
+                              } else {
+                                // Последний в ряду - стрелка вниз (если есть следующий ряд)
+                                showDownArrow = true;
+                              }
                             }
-                          } else {
-                            // Последний в ряду - стрелка вниз (если есть следующий ряд)
-                            showDownArrow = true;
-                          }
-                        }
 
-                        return (
-                          <div
-                            key={action.id}
-                            className="relative"
-                            style={{
-                              gridRow: row + 1,
-                              gridColumn: visualCol + 1
-                            }}
-                          >
-                            <WorkflowNode
-                              action={action}
-                              index={index}
-                              onUpdate={handleActionUpdate}
-                              onDelete={handleActionDelete}
-                            />
+                            return (
+                              <div
+                                key={action.id}
+                                className="relative"
+                                style={{
+                                  gridRow: row + 1,
+                                  gridColumn: visualCol + 1
+                                }}
+                              >
+                                <WorkflowNode
+                                  action={action}
+                                  index={index}
+                                  onUpdate={handleActionUpdate}
+                                  onDelete={handleActionDelete}
+                                />
 
-                            {/* Стрелка вправо */}
-                            {showRightArrow && (
-                              <div className="absolute top-10 -right-4 flex items-center z-10 opacity-70">
-                                <div className="w-4 h-0.5 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[2px] border-l-primary border-y-[1px] border-y-transparent"></div>
+                                {/* Стрелка вправо */}
+                                {showRightArrow && (
+                                  <div className="absolute top-10 -right-4 flex items-center z-10 opacity-70">
+                                    <div className="w-4 h-0.5 bg-primary"></div>
+                                    <div className="w-0 h-0 border-l-[2px] border-l-primary border-y-[1px] border-y-transparent"></div>
+                                  </div>
+                                )}
+
+                                {/* Стрелка влево */}
+                                {showLeftArrow && (
+                                  <div className="absolute top-10 -left-4 flex items-center z-10 opacity-70">
+                                    <div className="w-0 h-0 border-r-[2px] border-r-primary border-y-[1px] border-y-transparent"></div>
+                                    <div className="w-4 h-0.5 bg-primary"></div>
+                                  </div>
+                                )}
+
+                                {/* Стрелка вниз */}
+                                {showDownArrow && (
+                                  <div className="absolute -bottom-5 left-10 flex flex-col items-center z-10 opacity-70">
+                                    <div className="w-0.5 h-5 bg-primary"></div>
+                                    <div className="w-0 h-0 border-l-[1px] border-l-transparent border-r-[1px] border-r-transparent border-t-[2px] border-t-primary"></div>
+                                  </div>
+                                )}
                               </div>
-                            )}
-
-                            {/* Стрелка влево */}
-                            {showLeftArrow && (
-                              <div className="absolute top-10 -left-4 flex items-center z-10 opacity-70">
-                                <div className="w-0 h-0 border-r-[2px] border-r-primary border-y-[1px] border-y-transparent"></div>
-                                <div className="w-4 h-0.5 bg-primary"></div>
-                              </div>
-                            )}
-
-                            {/* Стрелка вниз */}
-                            {showDownArrow && (
-                              <div className="absolute -bottom-5 left-10 flex flex-col items-center z-10 opacity-70">
-                                <div className="w-0.5 h-5 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[1px] border-l-transparent border-r-[1px] border-r-transparent border-t-[2px] border-t-primary"></div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      </SortableContext>
                     </div>
 
-                    {/* Мобильная версия - адаптивная сетка */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 justify-items-center relative xl:hidden">
-                      {workflowData.actions.map((action, index) => {
-                        // Для мобильной версии используем упрощенную логику - все элементы в одном ряду
-                        const row = 0;
-                        const colInRow = index;
-                        const visualCol = colInRow;
+                    {/* Мобильная версия - вертикальный список */}
+                    <div className="lg:hidden">
+                      <SortableContext
+                        items={workflowData.actions.map(a => a.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="flex flex-col gap-6">
+                          {workflowData.actions.map((action, index) => (
+                            <div key={action.id} className="relative flex justify-center">
+                              <WorkflowNode
+                                action={action}
+                                index={index}
+                                onUpdate={handleActionUpdate}
+                                onDelete={handleActionDelete}
+                              />
 
-                        const totalItems = workflowData.actions.length;
-
-                        // Определяем направление стрелки
-                        let showRightArrow = false;
-                        const showLeftArrow = false;
-                        const showDownArrow = false;
-
-                        if (index < totalItems - 1) {
-                          // В мобильной версии все элементы в одном ряду, поэтому стрелка всегда вправо
-                          showRightArrow = true;
-                        }
-
-                        return (
-                          <div
-                            key={action.id}
-                            className="relative"
-                            style={{
-                              gridRow: row + 1,
-                              gridColumn: visualCol + 1
-                            }}
-                          >
-                            <WorkflowNode
-                              action={action}
-                              index={index}
-                              onUpdate={handleActionUpdate}
-                              onDelete={handleActionDelete}
-                            />
-
-                            {/* Стрелка вправо */}
-                            {showRightArrow && (
-                              <div className="absolute top-10 -right-4 flex items-center z-10 opacity-70">
-                                <div className="w-4 h-0.5 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[1px] border-l-primary border-y-[0.5px] border-y-transparent"></div>
-                              </div>
-                            )}
-
-                            {/* Стрелка влево */}
-                            {showLeftArrow && (
-                              <div className="absolute top-10 -left-4 flex items-center z-10 opacity-70">
-                                <div className="w-0 h-0 border-r-[1px] border-r-primary border-y-[0.5px] border-y-transparent"></div>
-                                <div className="w-4 h-0.5 bg-primary"></div>
-                              </div>
-                            )}
-
-                            {/* Стрелка вниз */}
-                            {showDownArrow && (
-                              <div className="absolute -bottom-4 left-10 flex flex-col items-center z-10 opacity-70">
-                                <div className="w-0.5 h-4 bg-primary"></div>
-                                <div className="w-0 h-0 border-l-[0.5px] border-l-transparent border-r-[0.5px] border-r-transparent border-t-[1px] border-t-primary"></div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                              {/* Стрелка вниз для мобильной версии */}
+                              {index < workflowData.actions.length - 1 && (
+                                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center z-10 opacity-70">
+                                  <div className="w-0.5 h-8 bg-primary"></div>
+                                  <div className="w-0 h-0 border-l-[1px] border-l-transparent border-r-[1px] border-r-transparent border-t-[2px] border-t-primary"></div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </SortableContext>
                     </div>
-                  </SortableContext>
+                  </>
                 )}
               </DropZone>
 

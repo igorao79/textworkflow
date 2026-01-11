@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [currentWorkflowsPage, setCurrentWorkflowsPage] = useState(1);
   const [currentExecutionsPage, setCurrentExecutionsPage] = useState(1);
+  const [queueActionLoading, setQueueActionLoading] = useState(false);
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -97,6 +98,9 @@ export default function DashboardPage() {
   };
 
   const toggleQueuePause = async () => {
+    if (queueActionLoading) return;
+
+    setQueueActionLoading(true);
     try {
       const action = queueStats?.paused ? 'resume' : 'pause';
       const response = await fetch('/api/queue/pause', {
@@ -111,6 +115,8 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error toggling queue pause:', error);
+    } finally {
+      setQueueActionLoading(false);
     }
   };
 
@@ -181,8 +187,25 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg">Загрузка дашборда...</div>
+          <div className="flex flex-col items-center justify-center h-64 space-y-4">
+            {/* Анимированный спиннер */}
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-primary/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+            </div>
+
+            {/* Текст загрузки */}
+            <div className="text-center space-y-2">
+              <div className="text-xl font-semibold text-foreground">Загрузка дашборда</div>
+              <div className="text-sm text-muted-foreground">Подготовка данных и статистики...</div>
+            </div>
+
+            {/* Анимированные точки */}
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            </div>
           </div>
         </div>
       </div>
@@ -326,11 +349,17 @@ export default function DashboardPage() {
                   <div className="flex gap-2">
                     <Button
                       onClick={toggleQueuePause}
+                      disabled={queueActionLoading}
                       variant={queueStats.paused ? "default" : "outline"}
                       size="sm"
                       className="flex-1"
                     >
-                      {queueStats.paused ? (
+                      {queueActionLoading ? (
+                        <>
+                          <div className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                          Выполнение...
+                        </>
+                      ) : queueStats.paused ? (
                         <>
                           <PlayIcon className="w-4 h-4 mr-2" />
                           Возобновить

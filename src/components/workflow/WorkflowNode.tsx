@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { WorkflowAction, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { Trash2, Settings, Mail, Send, Globe, Database, RefreshCw, Wrench } from 'lucide-react';
 
@@ -309,17 +309,33 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
             <DialogContent className="w-[95vw] max-w-md sm:w-[90vw] md:w-[80vw]">
               <DialogHeader>
                 <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
+                <DialogDescription>
+                  Настройте параметры действия workflow
+                </DialogDescription>
               </DialogHeader>
               <div className="max-h-96 overflow-y-auto px-3">
                 {renderActionConfig()}
               </div>
-              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={handleCancel}>
-                  Отмена
+              <div className="flex justify-between items-center pt-4 border-t">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    onDelete(action.id);
+                    setIsDialogOpen(false);
+                  }}
+                >
+                  Удалить действие
                 </Button>
-                <Button onClick={handleSave}>
-                  Сохранить
-                </Button>
+
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                  <Button variant="outline" onClick={handleCancel}>
+                    Отмена
+                  </Button>
+                  <Button onClick={handleSave}>
+                    Сохранить
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
