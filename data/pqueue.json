@@ -1,0 +1,107 @@
+[
+  {
+    "id": "task-1-1768245400052",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245400053,
+    "endTime": 1768245406465
+  },
+  {
+    "id": "task-2-1768245470025",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245470027,
+    "endTime": 1768245476494
+  },
+  {
+    "id": "task-1-1768245540052",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245540053,
+    "endTime": 1768245543829
+  },
+  {
+    "id": "task-1-1768245600080",
+    "task": "Cron workflow: Workflow 1768242620124",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245600081,
+    "endTime": 1768245604490
+  },
+  {
+    "id": "task-2-1768245600083",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245600084,
+    "endTime": 1768245606362
+  },
+  {
+    "id": "task-1-1768245840074",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245840075,
+    "endTime": 1768245846633
+  },
+  {
+    "id": "task-2-1768245840078",
+    "task": "Cron workflow: Workflow 1768242620124",
+    "status": "failed",
+    "priority": 1,
+    "startTime": 1768245840079,
+    "endTime": 1768245840079,
+    "error": "Симуляция ошибки выполнения: Cron workflow: Workflow 1768242620124"
+  },
+  {
+    "id": "task-1-1768245960198",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245960199,
+    "endTime": 1768245964855
+  },
+  {
+    "id": "task-2-1768245960204",
+    "task": "Cron workflow: Workflow 1768242620124",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768245960204,
+    "endTime": 1768245964044
+  },
+  {
+    "id": "task-3-1768246080170",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768246080171,
+    "endTime": 1768246084083
+  },
+  {
+    "id": "task-4-1768246080213",
+    "task": "Cron workflow: Workflow 1768242620124",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768246080214,
+    "endTime": 1768246082414
+  },
+  {
+    "id": "task-5-1768246200209",
+    "task": "Cron workflow: Workflow 1768242968708",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768246200210,
+    "endTime": 1768246202690
+  },
+  {
+    "id": "task-6-1768246200248",
+    "task": "Cron workflow: Workflow 1768242620124",
+    "status": "completed",
+    "priority": 1,
+    "startTime": 1768246200249,
+    "endTime": 1768246207031
+  }
+]

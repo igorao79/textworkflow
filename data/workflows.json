@@ -1,14 +1,13 @@
 [
   {
-    "name": "Workflow 1768229336398",
+    "name": "Workflow 1768242968708",
     "description": "",
     "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
+      "id": "trigger_1768242962273",
+      "type": "cron",
       "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
+        "schedule": "*/2 * * * *",
+        "timezone": "Europe/Moscow"
       }
     },
     "actions": [
@@ -17,7 +16,7 @@
         "type": "telegram",
         "config": {
           "chatId": "",
-          "message": "ааа"
+          "message": "aaaa"
         },
         "position": {
           "x": 100,
@@ -25,21 +24,20 @@
         }
       }
     ],
-    "isActive": true,
-    "id": "wf_1768229336963_pkllnk0me",
-    "createdAt": "2026-01-12T14:48:56.963Z",
-    "updatedAt": "2026-01-12T14:48:56.963Z"
+    "isActive": false,
+    "id": "wf_1768242969211_uu6d8rier",
+    "createdAt": "2026-01-12T18:36:09.211Z",
+    "updatedAt": "2026-01-12T19:29:46.683Z"
   },
   {
-    "name": "Workflow 1768229015899",
+    "name": "Workflow 1768242620124",
     "description": "",
     "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
+      "id": "trigger_1768242612266",
+      "type": "cron",
       "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
+        "schedule": "*/2 * * * *",
+        "timezone": "Europe/Moscow"
       }
     },
     "actions": [
@@ -48,7 +46,7 @@
         "type": "telegram",
         "config": {
           "chatId": "",
-          "message": "аа"
+          "message": "аываываыва"
         },
         "position": {
           "x": 100,
@@ -56,134 +54,10 @@
         }
       }
     ],
-    "isActive": true,
-    "id": "wf_1768229015927_ilao5y7yx",
-    "createdAt": "2026-01-12T14:43:35.927Z",
-    "updatedAt": "2026-01-12T14:43:35.927Z"
-  },
-  {
-    "name": "Workflow 1768228979050",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "аа"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768228979060_h5e4j4lzm",
-    "createdAt": "2026-01-12T14:42:59.060Z",
-    "updatedAt": "2026-01-12T14:42:59.060Z"
-  },
-  {
-    "name": "Workflow 1768228961215",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "аа"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768228961225_akb7haple",
-    "createdAt": "2026-01-12T14:42:41.225Z",
-    "updatedAt": "2026-01-12T14:42:41.225Z"
-  },
-  {
-    "name": "Workflow 1768228953134",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "аа"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768228953723_ej3h6dpkm",
-    "createdAt": "2026-01-12T14:42:33.723Z",
-    "updatedAt": "2026-01-12T14:42:33.723Z"
-  },
-  {
-    "name": "Workflow 1768228671034",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
-    },
-    "actions": [
-      {
-        "id": "action_2",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "авав"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768228671844_gq0jdea0s",
-    "createdAt": "2026-01-12T14:37:51.844Z",
-    "updatedAt": "2026-01-12T14:37:51.844Z"
+    "isActive": false,
+    "id": "wf_1768242620545_8dbweqsdy",
+    "createdAt": "2026-01-12T18:30:20.545Z",
+    "updatedAt": "2026-01-12T19:29:46.683Z"
   },
   {
     "name": "Workflow 1768226911877",
@@ -227,36 +101,6 @@
     "id": "wf_1768226913310_2t089zj13",
     "createdAt": "2026-01-12T14:08:33.310Z",
     "updatedAt": "2026-01-12T14:08:33.310Z"
-  },
-  {
-    "name": "Workflow 1768175698074",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1768175690195",
-      "type": "cron",
-      "config": {
-        "schedule": "* * * * *",
-        "timezone": "Europe/Moscow"
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "fsdfds"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768175698945_6mozvvmtw",
-    "createdAt": "2026-01-11T23:54:58.945Z",
-    "updatedAt": "2026-01-11T23:54:58.945Z"
   },
   {
     "name": "Workflow 1768174038471",
@@ -747,36 +591,5 @@
     "id": "wf_1768172987857_oingnyamg",
     "createdAt": "2026-01-11T23:09:47.857Z",
     "updatedAt": "2026-01-11T23:09:47.857Z"
-  },
-  {
-    "name": "Workflow 1768229370664",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1",
-      "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "вв"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768229370684_u5z2b54jj",
-    "createdAt": "2026-01-12T14:49:30.684Z",
-    "updatedAt": "2026-01-12T14:49:30.684Z"
   }
 ]

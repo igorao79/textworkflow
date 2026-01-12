@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stopCronTask, updateCronTasks } from '@/services/cronService';
+import { stopCronTask } from '@/services/cronService';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,6 @@ export async function DELETE(
     const stopped = stopCronTask(workflowId);
     if (stopped) {
       console.log('✅ Cron task deactivated for workflow:', workflowId);
-      await updateCronTasks(); // Re-evaluate tasks to ensure consistency
       return NextResponse.json({
         message: `Cron task deactivated for workflow ${workflowId}`,
         success: true,

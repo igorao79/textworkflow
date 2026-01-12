@@ -1,14 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-
-// Bull Queue с fallback на mock
-let Queue;
-try {
-  Queue = require('bull');
-} catch (error) {
-  console.log('⚠️ Bull not available, will use mock');
-  Queue = null;
-}
+import Queue from 'bull';
+import { Worker } from 'worker_threads';
+import { WorkflowExecution } from '../types/workflow';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
@@ -26,37 +18,17 @@ const mockQueueStats = {
 };
 
 // Очередь для выполнения workflow
-let workflowQueue;
-try {
-  workflowQueue = new Queue('workflow-execution', REDIS_URL, {
-    defaultJobOptions: {
-      removeOnComplete: 100, // Хранить последние 100 завершенных задач
-      removeOnFail: 200,     // Хранить последние 200 неудачных задач
-      attempts: 5,           // Максимум 5 попыток
-      backoff: {
-        type: 'exponential',
-        delay: 2000,         // Начальная задержка 2 секунды
-      },
+export const workflowQueue = new Queue('workflow-execution', REDIS_URL, {
+  defaultJobOptions: {
+    removeOnComplete: 100, // Хранить последние 100 завершенных задач
+    removeOnFail: 200,     // Хранить последние 200 неудачных задач
+    attempts: 5,           // Максимум 5 попыток
+    backoff: {
+      type: 'exponential',
+      delay: 2000,         // Начальная задержка 2 секунды
     },
-  });
-  console.log('✅ Bull Queue initialized with Redis');
-} catch (error) {
-  console.log('⚠️ Redis not available, using mock queue');
-  // Mock queue для тестирования
-  workflowQueue = {
-    add: async (data) => {
-      console.log('📝 Mock queue: added job', data);
-      return { id: Date.now() };
-    },
-    getWaitingCount: async () => 0,
-    getActiveCount: async () => 0,
-    getCompletedCount: async () => 0,
-    getFailedCount: async () => 0,
-    close: async () => console.log('📝 Mock queue: closed')
-  };
-}
-
-export { workflowQueue };
+  },
+});
 
 // Статистика очереди
 export const queueStats = {
@@ -66,17 +38,59 @@ export const queueStats = {
   paused: false,
 };
 
-// ВНИМАНИЕ: Обработчик задач workflow должен запускаться в ОТДЕЛЬНОМ worker процессе
-// НЕ в Next.js API routes!
-//
-// Правильная архитектура:
-// 1. Next.js API routes - только добавляют задачи (queue.add)
-// 2. Отдельный Node.js процесс - обрабатывает задачи (queue.process)
-// 3. Cron scheduler тоже в отдельном процессе
-//
-// См. src/workers/workflow-worker.ts для правильной реализации
+// Обработчик задач workflow с изоляцией
+workflowQueue.process(async (job) => {
+  const { workflowId, triggerData } = job.data;
 
-// Убрал workflowQueue.process() отсюда - он должен быть в отдельном worker процессе
+  return new Promise<WorkflowExecution>((resolve, reject) => {
+    console.log(`🔒 Starting isolated workflow execution: ${workflowId} in job ${job.id}`);
+
+    // Запускаем воркер в отдельном потоке для изоляции
+
+    const worker = new Worker('./src/workers/workflow-worker.ts', {
+      workerData: { workflowId, triggerData }
+    });
+
+    // Устанавливаем таймаут для воркера (максимум 5 минут)
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      reject(new Error(`Workflow execution timeout for ${workflowId}`));
+    }, 5 * 60 * 1000); // 5 минут
+
+    worker.on('message', (message: { success: boolean; result?: WorkflowExecution; error?: string }) => {
+      clearTimeout(timeout);
+
+      if (message.success) {
+        console.log(`✅ Isolated workflow completed: ${workflowId}`);
+        // Обновляем статистику
+        queueStats.completed++;
+        resolve(message.result!); // result должен быть определен при success = true
+      } else {
+        console.error(`❌ Isolated workflow failed: ${workflowId}`, message.error);
+        // Обновляем статистику
+        queueStats.failed++;
+        queueStats.retries++;
+        reject(new Error(message.error));
+      }
+    });
+
+    worker.on('error', (error: Error) => {
+      clearTimeout(timeout);
+      console.error(`💥 Worker error for ${workflowId}:`, error);
+      queueStats.failed++;
+      reject(error);
+    });
+
+    worker.on('exit', (code: number) => {
+      clearTimeout(timeout);
+      if (code !== 0) {
+        console.error(`🚨 Worker exited with code ${code} for ${workflowId}`);
+        queueStats.failed++;
+        reject(new Error(`Worker exited with code ${code}`));
+      }
+    });
+  });
+});
 
 
 // События очереди
@@ -120,42 +134,24 @@ export const resumeQueue = async () => {
 
 export const getQueueStats = async () => {
   try {
-    console.log('🔍 getQueueStats: Getting queue statistics...');
-    const waiting = await workflowQueue.getWaitingCount();
-    const active = await workflowQueue.getActiveCount();
-    const completed = await workflowQueue.getCompletedCount();
-    const failed = await workflowQueue.getFailedCount();
+    const waiting = await workflowQueue.getWaiting();
+    const active = await workflowQueue.getActive();
+    const completed = await workflowQueue.getCompleted();
+    const failed = await workflowQueue.getFailed();
 
-    console.log('📊 Raw queue stats - waiting:', waiting, 'active:', active, 'completed:', completed, 'failed:', failed);
+    // Импортируем cron задачи для общей статистики
+    const { getActiveCronTasks } = await import('../services/cronService');
+    const cronTasks = getActiveCronTasks();
 
-    // Загружаем cron задачи из файла (синхронизация между процессами)
-    const CRON_TASKS_FILE = path.join(process.cwd(), 'data', 'cron-tasks.json');
-
-    let cronTasks = [];
-    try {
-      if (fs.existsSync(CRON_TASKS_FILE)) {
-        const data = fs.readFileSync(CRON_TASKS_FILE, 'utf8');
-        const savedWorkflowIds = JSON.parse(data);
-        cronTasks = savedWorkflowIds.map((id: string) => ({ workflowId: id, isRunning: true, nextExecution: null }));
-      }
-    } catch (error) {
-      console.warn('Error loading cron tasks from file:', error);
-    }
-
-    console.log('📊 Cron tasks loaded from file:', cronTasks.length, cronTasks);
-
-    const stats = {
+    return {
       ...queueStats,
-      waiting: waiting,
-      active: active + cronTasks.length, // Добавляем cron задачи как активные
-      completedCount: completed,
-      failedCount: failed,
-      totalJobs: waiting + active + completed + failed + cronTasks.length,
+      waiting: waiting.length,
+      active: active.length + cronTasks.length, // Добавляем cron задачи как активные
+      completedCount: completed.length,
+      failedCount: failed.length,
+      totalJobs: waiting.length + active.length + completed.length + failed.length + cronTasks.length,
       cronTasks: cronTasks.length, // Добавляем отдельную статистику по cron
     };
-
-    console.log('📊 Final queue stats:', stats);
-    return stats;
   } catch (error) {
     console.warn('Redis/Bull queue unavailable, using mock stats:', error);
     // Возвращаем mock данные если Redis недоступен
