@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
+import { Workflow, WorkflowAction, WorkflowTrigger } from '@/types/workflow';
 import { CheckCircle, RotateCcw, Play } from 'lucide-react';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
@@ -52,7 +52,6 @@ function ExecutionMonitorModal({
   isSubmitting?: boolean;
   setIsSubmitting?: (submitting: boolean) => void;
 }) {
-  const [, setCurrentStep] = useState(0);
   const [executionSteps, setExecutionSteps] = useState<Array<{
     id: string;
     title: string;
@@ -66,7 +65,6 @@ function ExecutionMonitorModal({
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionProgress, setExecutionProgress] = useState(0);
 
-
   // Функция для выполнения workflow с отслеживанием шагов
   const executeWorkflow = React.useCallback(async () => {
     if (!onExecute || isSubmitting || hasStartedExecution) return;
@@ -74,7 +72,7 @@ function ExecutionMonitorModal({
     setIsExecuting(true);
     setIsSubmitting?.(true);
     setHasStartedExecution(true);
-    setExecutionProgress(0);
+    setExecutionProgress(1); // Начинаем с 1%, чтобы показать что выполнение началось
 
     // Отправляем уведомление о начале выполнения
     notifyInfo(
@@ -160,25 +158,12 @@ function ExecutionMonitorModal({
     }
   }, [isOpen, isExecuting, executionSteps, hasStartedExecution]);
 
-  // Инициализируем шаги выполнения при открытии модального окна (только один раз)
+  // Автоматически запускаем выполнение при открытии модального окна
   React.useEffect(() => {
-    if (isOpen && actions.length > 0 && !hasStartedExecution) {
-      setHasStartedExecution(true);
-
-      const steps = actions.map(action => ({
-        id: action.id,
-        title: getActionTitle(action.type),
-        status: 'pending' as const
-      }));
-      setExecutionSteps(steps);
-      setCurrentStep(0);
-
-      // Автоматически запускаем выполнение через 1 секунду
-      setTimeout(() => {
-        executeWorkflow();
-      }, 1000);
+    if (isOpen && !hasStartedExecution && onExecute) {
+      executeWorkflow();
     }
-  }, [isOpen, actions, executeWorkflow, hasStartedExecution]);
+  }, [isOpen, hasStartedExecution, onExecute, executeWorkflow]);
 
   // Сбрасываем флаги при закрытии модального окна
   React.useEffect(() => {
@@ -215,7 +200,11 @@ function ExecutionMonitorModal({
           </div>
 
           <div className="text-center py-8 text-muted-foreground">
-            {isSubmitting ? (
+            {!hasStartedExecution ? (
+              <div className="rounded-full h-12 w-12 bg-blue-500 mx-auto mb-4 flex items-center justify-center">
+                <Play className="w-6 h-6 text-white" />
+              </div>
+            ) : isSubmitting ? (
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             ) : (
               <div className="rounded-full h-12 w-12 bg-green-500 mx-auto mb-4 flex items-center justify-center">
@@ -223,12 +212,19 @@ function ExecutionMonitorModal({
               </div>
             )}
             <p className="text-lg font-medium">
-              {isSubmitting ? 'Выполнение workflow' : 'Workflow выполнен!'}
+              {!hasStartedExecution
+                ? 'Готов к запуску'
+                : isSubmitting
+                  ? 'Выполнение workflow'
+                  : 'Workflow выполнен!'
+              }
             </p>
             <p className="text-sm mt-2">
-              {isSubmitting
-                ? 'Пожалуйста, подождите завершения всех операций'
-                : 'Все действия успешно выполнены'
+              {!hasStartedExecution
+                ? 'Нажмите кнопку для запуска workflow'
+                : isSubmitting
+                  ? 'Пожалуйста, подождите завершения всех операций'
+                  : 'Все действия успешно выполнены'
               }
             </p>
           </div>
@@ -335,7 +331,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
   const [isMobile, setIsMobile] = useState(false);
   const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [hasExecuted, setHasExecuted] = useState(false);
 
   // Логируем изменения showExecutionMonitor
   React.useEffect(() => {
@@ -359,52 +354,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
     return counts;
   }, {});
 
-  // Проверка валидности всех действий
-  const isWorkflowValid = React.useMemo(() => {
-    if (workflowData.actions.length === 0) {
-      return false;
-    }
-
-    const isValid = workflowData.actions.every((action: WorkflowAction) => {
-      switch (action.type) {
-        case 'email':
-          const emailConfig = action.config as EmailActionConfig;
-          return emailConfig.to && emailConfig.subject && emailConfig.body;
-        case 'telegram':
-          const telegramConfig = action.config as TelegramActionConfig;
-          return telegramConfig.message;
-        case 'http':
-          const httpConfig = action.config as HttpActionConfig;
-          return httpConfig.url && httpConfig.method;
-        case 'database':
-          const dbConfig = action.config as DatabaseActionConfig;
-
-          // Проверяем основные поля
-          if (!dbConfig.operation || !dbConfig.table) {
-            return false;
-          }
-
-          // Для INSERT и UPDATE проверяем data
-          if ((dbConfig.operation === 'insert' || dbConfig.operation === 'update') && !dbConfig.data) {
-            return false;
-          }
-
-          // Для UPDATE и DELETE проверяем where
-          if ((dbConfig.operation === 'update' || dbConfig.operation === 'delete') && !dbConfig.where) {
-            return false;
-          }
-
-          return true;
-        case 'transform':
-          const transformConfig = action.config as TransformActionConfig;
-          return transformConfig.input && transformConfig.transformation && transformConfig.output;
-        default:
-          return false;
-      }
-    });
-
-    return isValid;
-  }, [workflowData.actions]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -648,43 +597,24 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                 )}
               </DropZone>
 
-              {/* Кнопка запуска */}
-              {onSubmit && (
-                <div className="flex justify-center flex-col items-center mt-6">
-                  <Button
-                    onClick={() => {
-                      setShowConfirmDialog(true);
-                    }}
-                    disabled={isSubmitting || !isWorkflowValid || hasExecuted}
-                    size="lg"
-                    className="px-8 py-3 text-lg font-semibold"
-                  >
-                    {isSubmitting ? 'Запуск...' : hasExecuted ? 'Workflow запущен' : 'Запустить Workflow'}
-                  </Button>
-                  {hasExecuted && !isSubmitting && (
-                    <Button
-                      onClick={() => {
-                        setHasExecuted(false);
-                        setShowExecutionMonitor(false);
-                        setShowConfirmDialog(true);
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Выполняется...' : 'Запустить заново'}
-                    </Button>
-                  )}
-                  {!isWorkflowValid && workflowData.actions.length > 0 && (
-                    <p className="text-sm text-muted-foreground mt-2 text-center">
-                      Заполните все поля действий для запуска workflow
-                    </p>
-                  )}
-                </div>
-              )}
             </CardContent>
           </Card>
+
+          {/* Кнопка запуска workflow */}
+          <div className="flex justify-center mt-6">
+            <Button
+              onClick={() => {
+                if (workflowData.actions.length === 0) return;
+                setShowExecutionMonitor(true);
+              }}
+              disabled={workflowData.actions.length === 0}
+              size="lg"
+              className="px-8 py-3 text-lg font-semibold"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Запустить Workflow
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -749,7 +679,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
               onClick={() => {
                 setShowConfirmDialog(false);
                 setShowExecutionMonitor(true);
-                setHasExecuted(true);
               }}
             >
               <Play className="w-4 h-4 mr-2" />

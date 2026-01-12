@@ -6,9 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Workflow, WorkflowExecution, CronTriggerConfig } from '@/types/workflow';
-import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle, Pause, Play as PlayIcon, FileText, Trash2, Loader2 } from 'lucide-react';
+import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle, Pause, FileText, Trash2, Loader2 } from 'lucide-react';
 import { getQueueState } from '@/lib/queue-visualization';
 import { Tooltip, ResponsiveContainer, PieChart, Pie } from 'recharts';
 
@@ -57,14 +56,32 @@ export default function DashboardPage() {
       const response = await fetch('/api/cron');
       if (response.ok) {
         const cronTasksData = await response.json();
-        setCronTasks(cronTasksData);
+        setCronTasks((prev: Array<{
+          workflowId: string;
+          isRunning: boolean;
+          nextExecution: Date | null;
+        }>) => {
+          // Проверяем, изменились ли данные
+          if (JSON.stringify(prev) !== JSON.stringify(cronTasksData)) {
+            return cronTasksData;
+          }
+          return prev;
+        });
       } else {
         // Если API недоступен, сбрасываем статусы
-        setCronTasks([]);
+        setCronTasks((prev: Array<{
+          workflowId: string;
+          isRunning: boolean;
+          nextExecution: Date | null;
+        }>) => prev.length > 0 ? [] : prev);
       }
     } catch (error) {
       console.error('Error loading cron tasks:', error);
-      setCronTasks([]);
+      setCronTasks((prev: Array<{
+        workflowId: string;
+        isRunning: boolean;
+        nextExecution: Date | null;
+      }>) => prev.length > 0 ? [] : prev);
     } finally {
       setCronTasksLoading(false);
     }
@@ -152,30 +169,49 @@ export default function DashboardPage() {
   useEffect(() => {
     loadData();
 
-    // Автообновление cron задач каждые 5 секунд
+    // Автообновление cron задач каждые 30 секунд
     const cronInterval = setInterval(() => {
       loadCronTasks();
-    }, 5000);
+    }, 30000);
 
-    // Автообновление состояния PQueue и основной статистики каждые 2 секунды
+    // Автообновление состояния PQueue и основной статистики каждые 10 секунд
     const queueInterval = setInterval(async () => {
       try {
         // Обновляем PQueue состояние
         const pQueueState = getQueueState();
-        setPQueueTasks(pQueueState.tasks.slice(0, 5)); // Показываем только последние 5 задач
-        setPQueueStats(pQueueState.queueStats);
+        setPQueueTasks(prev => {
+          const newTasks = pQueueState.tasks.slice(0, 5);
+          // Проверяем, изменились ли данные
+          if (JSON.stringify(prev) !== JSON.stringify(newTasks)) {
+            return newTasks;
+          }
+          return prev;
+        });
+        setPQueueStats(prev => {
+          // Проверяем, изменились ли данные
+          if (JSON.stringify(prev) !== JSON.stringify(pQueueState.queueStats)) {
+            return pQueueState.queueStats;
+          }
+          return prev;
+        });
 
         // Обновляем основную статистику очереди
         const queueStatsRes = await fetch('/api/queue/stats');
         if (queueStatsRes.ok) {
           const queueStatsData = await queueStatsRes.json();
-          setQueueStats(queueStatsData);
-          console.log('📊 Dashboard: Updated queue stats:', queueStatsData);
+          setQueueStats(prev => {
+            // Проверяем, изменились ли данные
+            if (JSON.stringify(prev) !== JSON.stringify(queueStatsData)) {
+              console.log('📊 Dashboard: Updated queue stats:', queueStatsData);
+              return queueStatsData;
+            }
+            return prev;
+          });
         }
       } catch (error) {
         console.warn('Failed to update queue state:', error);
       }
-    }, 2000);
+    }, 10000); // Увеличили с 2 до 10 секунд
 
     return () => {
       clearInterval(cronInterval);
@@ -337,12 +373,12 @@ export default function DashboardPage() {
               {usersLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  Загрузка...
+                  <span className="hidden sm:inline">Загрузка...</span>
                 </>
               ) : (
                 <>
                   <FileText className="w-4 h-4" />
-                  Получить пользователей
+                  <span className="hidden sm:inline">Получить пользователей</span>
                 </>
               )}
             </Button>
@@ -477,20 +513,20 @@ export default function DashboardPage() {
                       const isRunning = task?.isRunning || false;
 
                       return (
-                        <div key={workflow.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                            <div>
-                              <p className="font-medium">{workflow.name}</p>
+                        <div key={workflow.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg gap-3">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className={`w-3 h-3 rounded-full shrink-0 ${isRunning ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium truncate">{workflow.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {isRunning ? 'Запущена' : 'Остановлена'}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-muted-foreground truncate">
                                 Расписание: {workflow.trigger.type === 'cron' ? (workflow.trigger.config as CronTriggerConfig).schedule || 'Не задано' : 'Не задано'} • {workflow.actions.length} действий
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 shrink-0">
                             {!isRunning ? (
                               <Button
                                 variant="default"
@@ -755,19 +791,21 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <h3 className="font-medium">{workflow.name}</h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              <Badge variant="outline" className="text-xs shrink-0">
                                 {getTriggerTypeLabel(workflow.trigger.type)}
                               </Badge>
                               {workflow.trigger.type === 'cron' && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {(workflow.trigger.config as CronTriggerConfig).schedule ? `Расписание: ${(workflow.trigger.config as CronTriggerConfig).schedule}` : 'Без расписания'}
+                                <Badge variant="secondary" className="text-xs max-w-full sm:max-w-none truncate">
+                                  <span className="hidden sm:inline">Расписание: </span>
+                                  {(workflow.trigger.config as CronTriggerConfig).schedule || 'Без расписания'}
                                 </Badge>
                               )}
                             </div>
                           </div>
-                          <Badge variant={workflow.isActive ? 'default' : 'secondary'}>
-                            {workflow.isActive ? 'Активен' : 'Неактивен'}
+                          <Badge variant={workflow.isActive ? 'default' : 'secondary'} className="shrink-0">
+                            <span className="hidden sm:inline">{workflow.isActive ? 'Выполнен' : 'Не выполнен'}</span>
+                            <span className="sm:hidden">{workflow.isActive ? '✓' : '✗'}</span>
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
@@ -1016,15 +1054,15 @@ export default function DashboardPage() {
 
         {/* Модалка с пользователями */}
         <Dialog open={showUsersModal} onOpenChange={setShowUsersModal}>
-          <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogContent className="max-w-4xl max-h-[80vh] w-[95vw] sm:w-auto">
             <DialogHeader>
-              <DialogTitle>Пользователи базы данных</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg sm:text-xl">Пользователи базы данных</DialogTitle>
+              <DialogDescription className="text-sm">
                 Список всех пользователей из таблицы test_users
               </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea className="max-h-96">
+            <div className="max-h-96 overflow-y-auto overflow-x-hidden">
               {users.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -1035,33 +1073,36 @@ export default function DashboardPage() {
                   <div className="text-sm text-muted-foreground mb-4">
                     Всего пользователей: {users.length}
                   </div>
+                  {/* Контейнер с горизонтальной прокруткой для мобильных */}
                   <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium">ID</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Имя</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Создан</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {users.map((user) => (
-                          <tr key={user.id} className="hover:bg-muted/50">
-                            <td className="px-4 py-3 text-sm">{user.id}</td>
-                            <td className="px-4 py-3 text-sm font-medium">{user.name}</td>
-                            <td className="px-4 py-3 text-sm">{user.email}</td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">
-                              {formatDate(user.created_at)}
-                            </td>
+                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+                      <table className="w-full min-w-[600px]">
+                        <thead className="bg-muted/50">
+                          <tr>
+                            <th className="px-3 py-3 text-left text-sm font-medium whitespace-nowrap min-w-[60px]">ID</th>
+                            <th className="px-3 py-3 text-left text-sm font-medium whitespace-nowrap min-w-[120px]">Имя</th>
+                            <th className="px-3 py-3 text-left text-sm font-medium whitespace-nowrap min-w-[200px]">Email</th>
+                            <th className="px-3 py-3 text-left text-sm font-medium whitespace-nowrap min-w-[120px]">Создан</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y">
+                          {users.map((user) => (
+                            <tr key={user.id} className="hover:bg-muted/50">
+                              <td className="px-3 py-3 text-sm font-mono min-w-[60px]">{user.id}</td>
+                              <td className="px-3 py-3 text-sm font-medium min-w-[120px]">{user.name}</td>
+                              <td className="px-3 py-3 text-sm break-all min-w-[200px]">{user.email}</td>
+                              <td className="px-3 py-3 text-sm text-muted-foreground whitespace-nowrap min-w-[120px]">
+                                {formatDate(user.created_at)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
-            </ScrollArea>
+            </div>
 
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowUsersModal(false)}>

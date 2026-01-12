@@ -4796,5 +4796,889 @@
       "email": "noreply@workflow.com",
       "message": "Workflow executed successfully"
     }
+  },
+  {
+    "id": "exec_1768248742604_wnh5gbh9m",
+    "workflowId": "wf_1768248742601_px55cq6n1",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:12:22.604Z",
+    "logs": [
+      {
+        "id": "log_1768248742609_y7h17fx34",
+        "timestamp": "2026-01-12T20:12:22.609Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248742762_kqhrvl1o6",
+        "timestamp": "2026-01-12T20:12:22.762Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248742762_4id0s1dv6",
+        "timestamp": "2026-01-12T20:12:22.762Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:12:22.762Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768248834898_m1tgkoxn7",
+    "workflowId": "wf_1768248834894_rdwil65sh",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:13:54.898Z",
+    "logs": [
+      {
+        "id": "log_1768248834904_rlrxju0p0",
+        "timestamp": "2026-01-12T20:13:54.904Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248835508_myvhn5gvr",
+        "timestamp": "2026-01-12T20:13:55.508Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248835508_8ysfr9fc6",
+        "timestamp": "2026-01-12T20:13:55.508Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:13:55.508Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768248949939_jbsgwkwzm",
+    "workflowId": "wf_1768248949937_tf5xg37h2",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:15:49.939Z",
+    "logs": [
+      {
+        "id": "log_1768248949943_c76ye4pm3",
+        "timestamp": "2026-01-12T20:15:49.943Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248950337_r3q0kaav6",
+        "timestamp": "2026-01-12T20:15:50.337Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248950337_otla0e5nb",
+        "timestamp": "2026-01-12T20:15:50.337Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:15:50.337Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768248958988_oaes2c4br",
+    "workflowId": "wf_1768248958986_nr01yjggp",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:15:58.988Z",
+    "logs": [
+      {
+        "id": "log_1768248958992_e66gf35fd",
+        "timestamp": "2026-01-12T20:15:58.992Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248959157_8lbsceca9",
+        "timestamp": "2026-01-12T20:15:59.157Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768248959157_hmpj78lbp",
+        "timestamp": "2026-01-12T20:15:59.157Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:15:59.157Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249077724_i0wx5f8ia",
+    "workflowId": "wf_1768249077722_ugwuhg3p7",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:17:57.724Z",
+    "logs": [
+      {
+        "id": "log_1768249077728_nvnak4gis",
+        "timestamp": "2026-01-12T20:17:57.728Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249077832_oxfuqeer8",
+        "timestamp": "2026-01-12T20:17:57.832Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249077832_f1bp5qnfv",
+        "timestamp": "2026-01-12T20:17:57.832Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:17:57.832Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249125609_e3i3xpg4l",
+    "workflowId": "wf_1768249125607_mcj2t3gtb",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:18:45.609Z",
+    "logs": [
+      {
+        "id": "log_1768249125614_2cvpnls3u",
+        "timestamp": "2026-01-12T20:18:45.614Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249125708_7zql96rwu",
+        "timestamp": "2026-01-12T20:18:45.708Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249125708_9wn274hcx",
+        "timestamp": "2026-01-12T20:18:45.708Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:18:45.708Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249130896_2oxi5igr2",
+    "workflowId": "wf_1768249130894_y523r22rp",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:18:50.896Z",
+    "logs": [
+      {
+        "id": "log_1768249130900_envrq7zqq",
+        "timestamp": "2026-01-12T20:18:50.900Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249130994_cdeyieq2m",
+        "timestamp": "2026-01-12T20:18:50.994Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249130994_b6re0ivl5",
+        "timestamp": "2026-01-12T20:18:50.994Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:18:50.994Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249195968_ieqgsfv6z",
+    "workflowId": "wf_1768249195966_2fz8qv7sp",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:19:55.968Z",
+    "logs": [
+      {
+        "id": "log_1768249195973_iy7202fjp",
+        "timestamp": "2026-01-12T20:19:55.973Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249196112_aghh6ic01",
+        "timestamp": "2026-01-12T20:19:56.112Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249196112_iuuyd7kau",
+        "timestamp": "2026-01-12T20:19:56.112Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:19:56.112Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249200584_q0wkmko41",
+    "workflowId": "wf_1768249200583_6jiuroovh",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:20:00.584Z",
+    "logs": [
+      {
+        "id": "log_1768249200588_zeopj2rxl",
+        "timestamp": "2026-01-12T20:20:00.588Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249200685_95jwbi2px",
+        "timestamp": "2026-01-12T20:20:00.685Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249200685_5qhmquyjr",
+        "timestamp": "2026-01-12T20:20:00.685Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:20:00.685Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249334533_o8cw8k87b",
+    "workflowId": "wf_1768249334531_njkrcpzg8",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:22:14.533Z",
+    "logs": [
+      {
+        "id": "log_1768249334537_69fz62jly",
+        "timestamp": "2026-01-12T20:22:14.537Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249334649_kfwwx4yvg",
+        "timestamp": "2026-01-12T20:22:14.649Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249334649_6dor954d4",
+        "timestamp": "2026-01-12T20:22:14.649Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:22:14.649Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249485920_xnv48ayso",
+    "workflowId": "wf_1768249485918_f3i3w3o3k",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:24:45.920Z",
+    "logs": [
+      {
+        "id": "log_1768249485925_jl4diaoa5",
+        "timestamp": "2026-01-12T20:24:45.925Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249486029_zf6vi9z6p",
+        "timestamp": "2026-01-12T20:24:46.029Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249486029_i0vyvw7x9",
+        "timestamp": "2026-01-12T20:24:46.029Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:24:46.029Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249486577_egk1th635",
+    "workflowId": "wf_1768249486575_dp8b6upc6",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:24:46.577Z",
+    "logs": [
+      {
+        "id": "log_1768249486581_ul55y2f05",
+        "timestamp": "2026-01-12T20:24:46.581Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249486765_8qakb973u",
+        "timestamp": "2026-01-12T20:24:46.765Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249486765_6hqfevrlk",
+        "timestamp": "2026-01-12T20:24:46.765Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:24:46.765Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249492098_2urm6q8ly",
+    "workflowId": "wf_1768249492097_oq23sromd",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:24:52.098Z",
+    "logs": [
+      {
+        "id": "log_1768249492102_fjsyg52mq",
+        "timestamp": "2026-01-12T20:24:52.102Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249492303_wauf364m5",
+        "timestamp": "2026-01-12T20:24:52.303Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249492303_zxj6hg7h0",
+        "timestamp": "2026-01-12T20:24:52.303Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:24:52.303Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249493100_lkekpspe2",
+    "workflowId": "wf_1768249493098_h0i3e0zpt",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:24:53.100Z",
+    "logs": [
+      {
+        "id": "log_1768249493104_faxe7tbxw",
+        "timestamp": "2026-01-12T20:24:53.104Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249493312_3ge57p7ga",
+        "timestamp": "2026-01-12T20:24:53.312Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249493312_sq99jp3ul",
+        "timestamp": "2026-01-12T20:24:53.312Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:24:53.312Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249535001_zxck6wy0a",
+    "workflowId": "wf_1768249534999_qigc497tg",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:25:35.001Z",
+    "logs": [
+      {
+        "id": "log_1768249535006_knlb3c5q7",
+        "timestamp": "2026-01-12T20:25:35.006Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249535361_7j7mswnax",
+        "timestamp": "2026-01-12T20:25:35.361Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249535361_7s77yxbrs",
+        "timestamp": "2026-01-12T20:25:35.361Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:25:35.361Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249536009_bi0t61bmy",
+    "workflowId": "wf_1768249536005_ik5bit2qn",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:25:36.009Z",
+    "logs": [
+      {
+        "id": "log_1768249536014_m5a3o3vsy",
+        "timestamp": "2026-01-12T20:25:36.014Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249536133_lzjow1cho",
+        "timestamp": "2026-01-12T20:25:36.133Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249536133_gmxv6jteb",
+        "timestamp": "2026-01-12T20:25:36.133Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:25:36.133Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249542852_o9pjgv8su",
+    "workflowId": "wf_1768249542850_2rrjk0g8a",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:25:42.852Z",
+    "logs": [
+      {
+        "id": "log_1768249542856_3qffmlito",
+        "timestamp": "2026-01-12T20:25:42.857Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249542958_r6w9z2g5z",
+        "timestamp": "2026-01-12T20:25:42.958Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249542958_52mkjtvtg",
+        "timestamp": "2026-01-12T20:25:42.958Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:25:42.958Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249544830_8dygdv5o9",
+    "workflowId": "wf_1768249544828_3emgfv5jr",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:25:44.830Z",
+    "logs": [
+      {
+        "id": "log_1768249544834_sxol1kn2j",
+        "timestamp": "2026-01-12T20:25:44.834Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249544941_eu6j5iexz",
+        "timestamp": "2026-01-12T20:25:44.941Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249544941_e213mvbzs",
+        "timestamp": "2026-01-12T20:25:44.941Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:25:44.941Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249560648_glq66qnix",
+    "workflowId": "wf_1768249560646_fjlhibem2",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:00.648Z",
+    "logs": [
+      {
+        "id": "log_1768249560652_n83q3rcel",
+        "timestamp": "2026-01-12T20:26:00.652Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249560752_7uu80hcmg",
+        "timestamp": "2026-01-12T20:26:00.752Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249560752_5c62uatp6",
+        "timestamp": "2026-01-12T20:26:00.752Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:00.752Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249561297_t4hxzv786",
+    "workflowId": "wf_1768249561296_2uo62z4oq",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:01.297Z",
+    "logs": [
+      {
+        "id": "log_1768249561302_uc1h5pu81",
+        "timestamp": "2026-01-12T20:26:01.302Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249561404_qqv7s3c75",
+        "timestamp": "2026-01-12T20:26:01.404Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249561404_flxczn3h2",
+        "timestamp": "2026-01-12T20:26:01.404Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:01.404Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249573029_cjnfvgkel",
+    "workflowId": "wf_1768249573027_v707iarbi",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:13.029Z",
+    "logs": [
+      {
+        "id": "log_1768249573034_q8a14lg33",
+        "timestamp": "2026-01-12T20:26:13.034Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249573169_go8cw57tz",
+        "timestamp": "2026-01-12T20:26:13.169Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249573169_dm4xdr0s6",
+        "timestamp": "2026-01-12T20:26:13.169Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:13.169Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249574165_gmb6jy4yz",
+    "workflowId": "wf_1768249574162_ywuurpfwh",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:14.165Z",
+    "logs": [
+      {
+        "id": "log_1768249574171_44io7iva6",
+        "timestamp": "2026-01-12T20:26:14.171Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249574364_6t7mi5h8d",
+        "timestamp": "2026-01-12T20:26:14.364Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249574364_sobw60dhe",
+        "timestamp": "2026-01-12T20:26:14.364Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:14.364Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249583295_3msz8gtlz",
+    "workflowId": "wf_1768249583293_2lxqx71b2",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:23.296Z",
+    "logs": [
+      {
+        "id": "log_1768249583300_524c1itxe",
+        "timestamp": "2026-01-12T20:26:23.300Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249583474_r8kkbppw3",
+        "timestamp": "2026-01-12T20:26:23.474Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249583474_k7m324of7",
+        "timestamp": "2026-01-12T20:26:23.474Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:23.474Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768249584282_z6l1ulc36",
+    "workflowId": "wf_1768249584280_acb2m9h43",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:26:24.282Z",
+    "logs": [
+      {
+        "id": "log_1768249584286_qqry4m1qa",
+        "timestamp": "2026-01-12T20:26:24.286Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249584400_gsmzuvska",
+        "timestamp": "2026-01-12T20:26:24.400Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768249584400_bk8wk8e9f",
+        "timestamp": "2026-01-12T20:26:24.400Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:26:24.400Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768250369667_gw6x1vxwq",
+    "workflowId": "wf_1768250369664_8th9iini0",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:39:29.667Z",
+    "logs": [
+      {
+        "id": "log_1768250369672_5a5u1ja8r",
+        "timestamp": "2026-01-12T20:39:29.672Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768250369820_rwx6ue2wq",
+        "timestamp": "2026-01-12T20:39:29.820Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768250369820_52orzuywe",
+        "timestamp": "2026-01-12T20:39:29.820Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:39:29.820Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
+  },
+  {
+    "id": "exec_1768250374524_yzote9du8",
+    "workflowId": "wf_1768250374522_bidpaidar",
+    "status": "completed",
+    "startedAt": "2026-01-12T20:39:34.524Z",
+    "logs": [
+      {
+        "id": "log_1768250374529_iu7xlxe1d",
+        "timestamp": "2026-01-12T20:39:34.529Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768250374640_ely77t934",
+        "timestamp": "2026-01-12T20:39:34.640Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_1"
+      },
+      {
+        "id": "log_1768250374640_tfiwkt72h",
+        "timestamp": "2026-01-12T20:39:34.640Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T20:39:34.640Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
   }
 ]

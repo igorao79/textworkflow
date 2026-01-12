@@ -166,6 +166,10 @@ async function simulateTaskExecution(taskDescription: string): Promise<void> {
 }
 
 // Функция для получения текущего состояния очереди
+// Кэш для предотвращения ненужных пересозданий объектов
+let lastQueueState: any = null;
+let lastResult: any = null;
+
 export function getQueueState(): {
   tasks: QueueTask[];
   queueStats: {
@@ -183,7 +187,24 @@ export function getQueueState(): {
     total: number;
   };
 } {
+  // Проверяем, изменилось ли состояние очереди
+  const currentState = {
+    queueLength: queueState.length,
+    queueSize: queue.size,
+    queuePending: queue.pending,
+    queueIsPaused: queue.isPaused,
+    taskStatuses: queueState.map(t => ({ id: t.id, status: t.status }))
+  };
+
+  const stateChanged = !lastQueueState || JSON.stringify(lastQueueState) !== JSON.stringify(currentState);
+
+  if (!stateChanged && lastResult) {
+    // Возвращаем кэшированный результат, если состояние не изменилось
+    return lastResult;
+  }
+
   console.log('getQueueState called, queueState length:', queueState.length);
+
   // Подсчитываем статистику задач
   const taskStats = queueState.reduce(
     (stats, task) => {
@@ -196,7 +217,7 @@ export function getQueueState(): {
 
   console.log('getQueueState taskStats:', taskStats);
 
-  return {
+  const result = {
     tasks: [...queueState], // Возвращаем копию массива
     queueStats: {
       size: queue.size,
@@ -207,6 +228,12 @@ export function getQueueState(): {
     },
     taskStats,
   };
+
+  // Кэшируем результат
+  lastQueueState = currentState;
+  lastResult = result;
+
+  return result;
 }
 
 // Функция для очистки завершенных задач (старше определенного времени)
