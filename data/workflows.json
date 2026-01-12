@@ -1,5 +1,183 @@
 [
   {
+    "name": "string",
+    "description": "string",
+    "trigger": {
+      "id": "string",
+      "type": "webhook",
+      "config": {}
+    },
+    "actions": [
+      {
+        "id": "string",
+        "type": "http",
+        "config": {},
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768253490789_64ajw2itj",
+    "createdAt": "2026-01-12T21:31:30.789Z",
+    "updatedAt": "2026-01-12T21:31:30.789Z"
+  },
+  {
+    "name": "Workflow 1768252062797",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1768252057502",
+      "type": "email",
+      "config": {
+        "from": "onboarding@resend.dev",
+        "to": ""
+      }
+    },
+    "actions": [
+      {
+        "id": "action_1",
+        "type": "telegram",
+        "config": {
+          "chatId": "",
+          "message": "ываывавы"
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768252063218_9edt4y2qt",
+    "createdAt": "2026-01-12T21:07:43.218Z",
+    "updatedAt": "2026-01-12T21:07:43.218Z"
+  },
+  {
+    "name": "Workflow 1768251968606",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1768251965606",
+      "type": "email",
+      "config": {
+        "from": "onboarding@resend.dev",
+        "to": ""
+      }
+    },
+    "actions": [
+      {
+        "id": "action_2",
+        "type": "telegram",
+        "config": {
+          "chatId": "",
+          "message": "выфвфыв"
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768251968619_dhu28iafg",
+    "createdAt": "2026-01-12T21:06:08.619Z",
+    "updatedAt": "2026-01-12T21:06:08.619Z"
+  },
+  {
+    "name": "Workflow 1768251848682",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1768251668086",
+      "type": "email",
+      "config": {
+        "from": "onboarding@resend.dev",
+        "subject": "",
+        "body": ""
+      }
+    },
+    "actions": [
+      {
+        "id": "action_2",
+        "type": "telegram",
+        "config": {
+          "chatId": "",
+          "message": "вфцвв"
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768251848710_3ljavrvu2",
+    "createdAt": "2026-01-12T21:04:08.710Z",
+    "updatedAt": "2026-01-12T21:04:08.710Z"
+  },
+  {
+    "name": "Workflow 1768251824564",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1768251668086",
+      "type": "email",
+      "config": {
+        "from": "onboarding@resend.dev",
+        "subject": "",
+        "body": ""
+      }
+    },
+    "actions": [
+      {
+        "id": "action_2",
+        "type": "telegram",
+        "config": {
+          "chatId": "",
+          "message": ""
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768251829279_v6o0eu5lx",
+    "createdAt": "2026-01-12T21:03:49.279Z",
+    "updatedAt": "2026-01-12T21:03:49.279Z"
+  },
+  {
+    "name": "Workflow 1768251640764",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1",
+      "type": "webhook",
+      "config": {
+        "url": "",
+        "method": "POST",
+        "headers": {}
+      }
+    },
+    "actions": [
+      {
+        "id": "action_1",
+        "type": "email",
+        "config": {
+          "to": "samptv59@gmail.com",
+          "subject": "dassad",
+          "body": "asdasdasd"
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768251640774_6kb14zpnv",
+    "createdAt": "2026-01-12T21:00:40.774Z",
+    "updatedAt": "2026-01-12T21:00:40.774Z"
+  },
+  {
     "name": "Workflow 1768251582682",
     "description": "",
     "trigger": {
@@ -2036,157 +2214,27 @@
     "updatedAt": "2026-01-11T23:09:47.857Z"
   },
   {
-    "name": "Workflow 1768251640764",
-    "description": "",
+    "name": "string",
+    "description": "string",
     "trigger": {
-      "id": "trigger_1",
+      "id": "string",
       "type": "webhook",
-      "config": {
-        "url": "",
-        "method": "POST",
-        "headers": {}
-      }
+      "config": {}
     },
     "actions": [
       {
-        "id": "action_1",
-        "type": "email",
-        "config": {
-          "to": "samptv59@gmail.com",
-          "subject": "dassad",
-          "body": "asdasdasd"
-        },
+        "id": "string",
+        "type": "http",
+        "config": {},
         "position": {
-          "x": 100,
-          "y": 100
+          "x": 0,
+          "y": 0
         }
       }
     ],
     "isActive": true,
-    "id": "wf_1768251640774_6kb14zpnv",
-    "createdAt": "2026-01-12T21:00:40.774Z",
-    "updatedAt": "2026-01-12T21:00:40.774Z"
-  },
-  {
-    "name": "Workflow 1768251824564",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1768251668086",
-      "type": "email",
-      "config": {
-        "from": "onboarding@resend.dev",
-        "subject": "",
-        "body": ""
-      }
-    },
-    "actions": [
-      {
-        "id": "action_2",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": ""
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768251829279_v6o0eu5lx",
-    "createdAt": "2026-01-12T21:03:49.279Z",
-    "updatedAt": "2026-01-12T21:03:49.279Z"
-  },
-  {
-    "name": "Workflow 1768251848682",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1768251668086",
-      "type": "email",
-      "config": {
-        "from": "onboarding@resend.dev",
-        "subject": "",
-        "body": ""
-      }
-    },
-    "actions": [
-      {
-        "id": "action_2",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "вфцвв"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768251848710_3ljavrvu2",
-    "createdAt": "2026-01-12T21:04:08.710Z",
-    "updatedAt": "2026-01-12T21:04:08.710Z"
-  },
-  {
-    "name": "Workflow 1768251968606",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1768251965606",
-      "type": "email",
-      "config": {
-        "from": "onboarding@resend.dev",
-        "to": ""
-      }
-    },
-    "actions": [
-      {
-        "id": "action_2",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "выфвфыв"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768251968619_dhu28iafg",
-    "createdAt": "2026-01-12T21:06:08.619Z",
-    "updatedAt": "2026-01-12T21:06:08.619Z"
-  },
-  {
-    "name": "Workflow 1768252062797",
-    "description": "",
-    "trigger": {
-      "id": "trigger_1768252057502",
-      "type": "email",
-      "config": {
-        "from": "onboarding@resend.dev",
-        "to": ""
-      }
-    },
-    "actions": [
-      {
-        "id": "action_1",
-        "type": "telegram",
-        "config": {
-          "chatId": "",
-          "message": "ываывавы"
-        },
-        "position": {
-          "x": 100,
-          "y": 100
-        }
-      }
-    ],
-    "isActive": true,
-    "id": "wf_1768252063218_9edt4y2qt",
-    "createdAt": "2026-01-12T21:07:43.218Z",
-    "updatedAt": "2026-01-12T21:07:43.218Z"
+    "id": "wf_1768253675704_ze2c1lr98",
+    "createdAt": "2026-01-12T21:34:35.704Z",
+    "updatedAt": "2026-01-12T21:34:35.704Z"
   }
 ]

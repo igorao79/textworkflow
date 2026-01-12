@@ -4,9 +4,8 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ workflowId: string }> }
+  context: { params: Promise<{}> }
 ) {
-  const { workflowId } = await params;
   return NextResponse.json({ error: 'This endpoint is disabled' }, { status: 403 });
 }
 
