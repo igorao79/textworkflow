@@ -24,7 +24,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
         config = { schedule: '1', timezone: 'Europe/Moscow' } as CronTriggerConfig; // По умолчанию каждую минуту
         break;
       case 'email':
-        config = { from: 'onboarding@resend.dev', to: '' } as EmailTriggerConfig;
+        config = { from: 'onboarding@resend.dev', to: 'samptv59@gmail.com' } as EmailTriggerConfig;
         break;
       default:
         config = { url: '', method: 'POST', headers: {} } as WebhookTriggerConfig; // fallback
@@ -103,7 +103,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
                 id="cron-timezone"
                 value="Europe/Moscow (MSK)"
                 disabled
-                className="bg-gray-50"
+                className="bg-muted cursor-not-allowed text-muted-foreground"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Московское время (UTC+3)
@@ -150,7 +150,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
                   value="onboarding@resend.dev"
                   readOnly
                   disabled
-                  className="bg-muted cursor-not-allowed"
+                  className="bg-muted cursor-not-allowed text-muted-foreground"
                   title="Отправитель фиксирован для использования Resend"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -158,19 +158,18 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
                 </p>
               </div>
               <div>
-                <Label htmlFor="email-to">Получатель тестового письма</Label>
+                <Label htmlFor="email-to">Получатель (фиксированный)</Label>
                 <Input
                   id="email-to"
-                  value={(trigger.config as EmailTriggerConfig).to || ''}
-                  onChange={(e) => onTriggerChange({
-                    ...trigger,
-                    config: { ...trigger.config, to: e.target.value }
-                  })}
-                  placeholder="samptv59@gmail.com"
+                  value="samptv59@gmail.com"
+                  readOnly
+                  disabled
+                  className="bg-muted cursor-not-allowed text-muted-foreground"
+                  title="Получатель фиксирован"
                   type="email"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Email для получения тестового письма при активации
+                  Фиксированный получатель для тестирования
                 </p>
               </div>
             </div>

@@ -154,28 +154,28 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
           <div className="space-y-3">
             <div>
               <Label htmlFor={`email-from-${action.id}`} className="mb-2 block">Отправитель (фиксированный)</Label>
-              <Input
-                id={`email-from-${action.id}`}
-                value="onboarding@resend.dev"
-                readOnly
-                disabled
-                className="bg-muted cursor-not-allowed"
-                title="Отправитель фиксирован"
-              />
+                <Input
+                  id={`email-from-${action.id}`}
+                  value="onboarding@resend.dev"
+                  readOnly
+                  disabled
+                  className="bg-muted cursor-not-allowed text-muted-foreground"
+                  title="Отправитель фиксирован"
+                />
               <p className="text-xs text-muted-foreground mt-1">
                 Фиксированный отправитель через Resend
               </p>
             </div>
             <div>
               <Label htmlFor={`email-to-${action.id}`} className="mb-2 block">Получатель (фиксированный)</Label>
-              <Input
-                id={`email-to-${action.id}`}
-                value="samptv59@gmail.com"
-                readOnly
-                disabled
-                className="bg-muted cursor-not-allowed"
-                title="Получатель фиксирован"
-              />
+                <Input
+                  id={`email-to-${action.id}`}
+                  value="samptv59@gmail.com"
+                  readOnly
+                  disabled
+                  className="bg-muted cursor-not-allowed text-muted-foreground"
+                  title="Получатель фиксирован"
+                />
               <p className="text-xs text-muted-foreground mt-1">
                 Фиксированный получатель для тестирования
               </p>
