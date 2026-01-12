@@ -27,9 +27,8 @@ export interface CronTriggerConfig {
 }
 
 export interface EmailTriggerConfig {
-  from?: string;
-  subject?: string;
-  body?: string;
+  from: string; // Фиксированный отправитель: onboarding@resend.dev
+  to?: string; // Email получателя тестового письма
 }
 
 export interface WorkflowAction {

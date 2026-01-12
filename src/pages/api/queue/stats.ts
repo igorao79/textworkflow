@@ -47,23 +47,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const oneMinuteAgo = Date.now() - 60000;
     const recentCronTasks = pQueueState.tasks.filter(task =>
       task.task.startsWith('Cron workflow:') &&
-      task.endTime && task.endTime.getTime() > oneMinuteAgo
+      task.endTime && task.endTime > oneMinuteAgo
     ).length;
 
     // Объединяем статистику
     const combinedStats = {
-      ...bullStats,
-      // Добавляем PQueue статистику + активные cron задачи
-      active: bullStats.active + pQueueState.queueStats.pending + activeCronTasks.length, // выполняющиеся + активные cron
-      waiting: bullStats.waiting, // ожидающие остаются от Bull
-      completedCount: bullStats.completedCount + pQueueState.taskStats.completed, // завершенные из Bull + завершенные из PQueue
-      failedCount: bullStats.failedCount + pQueueState.taskStats.failed, // ошибки из Bull + ошибки из PQueue
-      totalJobs: bullStats.totalJobs + pQueueState.tasks.length, // общее количество задач
-      pQueueActive: pQueueState.queueStats.pending, // активные задачи PQueue
-      pQueueCompleted: pQueueState.taskStats.completed, // завершенные задачи PQueue
-      pQueueFailed: pQueueState.taskStats.failed, // ошибки PQueue
-      cronTasksLastMinute: recentCronTasks, // cron задачи за последнюю минуту
-      activeCronTasks: activeCronTasks.length, // количество активных cron задач
+      // Bull статистика (копируем все поля)
+      ...(bullStats || {}),
+      // Переопределяем поля с PQueue статистикой
+      active: ((bullStats as any)?.active || 0) + pQueueState.queueStats.pending + activeCronTasks.length,
+      completedCount: ((bullStats as any)?.completedCount || 0) + pQueueState.taskStats.completed,
+      failedCount: ((bullStats as any)?.failedCount || 0) + pQueueState.taskStats.failed,
+      totalJobs: ((bullStats as any)?.totalJobs || 0) + pQueueState.tasks.length,
+      // Дополнительные поля
+      pQueueActive: pQueueState.queueStats.pending,
+      pQueueCompleted: pQueueState.taskStats.completed,
+      pQueueFailed: pQueueState.taskStats.failed,
+      activeCronTasks: activeCronTasks.length,
+      recentCronTasks,
     };
 
     res.status(200).json(combinedStats);

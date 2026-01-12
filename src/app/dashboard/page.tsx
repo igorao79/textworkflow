@@ -187,7 +187,7 @@ export default function DashboardPage() {
           }
           return prev;
         });
-        setPQueueStats(prev => {
+        setPQueueStats((prev: any) => {
           // Проверяем, изменились ли данные
           if (JSON.stringify(prev) !== JSON.stringify(pQueueState.queueStats)) {
             return pQueueState.queueStats;

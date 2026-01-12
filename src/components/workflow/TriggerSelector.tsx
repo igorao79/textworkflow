@@ -24,7 +24,7 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
         config = { schedule: '1', timezone: 'Europe/Moscow' }; // По умолчанию каждую минуту
         break;
       case 'email':
-        config = { from: '', subject: '', body: '' };
+        config = { from: 'onboarding@resend.dev', to: '' };
         break;
     }
 
@@ -142,41 +142,35 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="email-from">От кого</Label>
+                <Label htmlFor="email-from">От кого (фиксированный)</Label>
                 <Input
                   id="email-from"
-                  value={(trigger.config as EmailTriggerConfig).from || ''}
-                  onChange={(e) => onTriggerChange({
-                    ...trigger,
-                    config: { ...trigger.config, from: e.target.value }
-                  })}
-                  placeholder="trigger@yourdomain.com"
+                  value="onboarding@resend.dev"
+                  readOnly
+                  disabled
+                  className="bg-muted cursor-not-allowed"
+                  title="Отправитель фиксирован для использования Resend"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Фиксированный отправитель через Resend
+                </p>
               </div>
               <div>
-                <Label htmlFor="email-subject">Тема</Label>
+                <Label htmlFor="email-to">Получатель тестового письма</Label>
                 <Input
-                  id="email-subject"
-                  value={(trigger.config as EmailTriggerConfig).subject || ''}
+                  id="email-to"
+                  value={(trigger.config as EmailTriggerConfig).to || ''}
                   onChange={(e) => onTriggerChange({
                     ...trigger,
-                    config: { ...trigger.config, subject: e.target.value }
+                    config: { ...trigger.config, to: e.target.value }
                   })}
-                  placeholder="Тема триггерного письма"
+                  placeholder="samptv59@gmail.com"
+                  type="email"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Email для получения тестового письма при активации
+                </p>
               </div>
-            </div>
-            <div>
-              <Label htmlFor="email-body">Текст письма</Label>
-              <Input
-                id="email-body"
-                value={(trigger.config as EmailTriggerConfig).body || ''}
-                onChange={(e) => onTriggerChange({
-                  ...trigger,
-                  config: { ...trigger.config, body: e.target.value }
-                })}
-                placeholder="Ключевые слова или шаблон для активации"
-              />
             </div>
           </div>
         );

@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Workflow, WorkflowAction, WorkflowTrigger } from '@/types/workflow';
+import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
 import { CheckCircle, RotateCcw, Play } from 'lucide-react';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
@@ -326,11 +326,49 @@ function DropZone({ children }: { children: React.ReactNode }) {
 }
 
 
+// Функция валидации действия (копия из WorkflowNode)
+const validateAction = (action: WorkflowAction): boolean => {
+  switch (action.type) {
+    case 'email':
+      const emailConfig = action.config as EmailActionConfig;
+      return !!(emailConfig.to && emailConfig.subject && emailConfig.body);
+    case 'telegram':
+      const telegramConfig = action.config as TelegramActionConfig;
+      return !!(telegramConfig.message && telegramConfig.message.trim() !== '');
+    case 'http':
+      const httpConfig = action.config as HttpActionConfig;
+      return !!(httpConfig.url && httpConfig.method);
+    case 'database':
+      const dbConfig = action.config as DatabaseActionConfig;
+      if (!dbConfig.operation || !dbConfig.table) return false;
+      if ((dbConfig.operation === 'insert' || dbConfig.operation === 'update') && !dbConfig.data) return false;
+      if ((dbConfig.operation === 'update' || dbConfig.operation === 'delete') && !dbConfig.where) return false;
+      return true;
+    case 'transform':
+      const transformConfig = action.config as TransformActionConfig;
+      return !!(transformConfig.input && transformConfig.transformation && transformConfig.output);
+    default:
+      return false;
+  }
+};
+
 export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSubmitting, setIsSubmitting }: WorkflowEditorProps) {
   const actionCounterRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  // Проверяем валидность всего workflow
+  const isWorkflowValid = React.useMemo(() => {
+    // Должен быть хотя бы один триггер
+    if (!workflowData.trigger || !workflowData.trigger.type) return false;
+
+    // Должно быть хотя бы одно действие
+    if (!workflowData.actions || workflowData.actions.length === 0) return false;
+
+    // Все действия должны быть валидными
+    return workflowData.actions.every(action => validateAction(action));
+  }, [workflowData.trigger, workflowData.actions]);
 
   // Логируем изменения showExecutionMonitor
   React.useEffect(() => {
@@ -604,15 +642,23 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
           <div className="flex justify-center mt-6">
             <Button
               onClick={() => {
-                if (workflowData.actions.length === 0) return;
+                if (!isWorkflowValid) return;
                 setShowExecutionMonitor(true);
               }}
-              disabled={workflowData.actions.length === 0}
+              disabled={!isWorkflowValid}
               size="lg"
-              className="px-8 py-3 text-lg font-semibold"
+              className={`px-8 py-3 text-lg font-semibold ${
+                !isWorkflowValid
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-primary/90'
+              }`}
             >
               <Play className="w-5 h-5 mr-2" />
-              Запустить Workflow
+              {!isWorkflowValid
+                ? (workflowData.actions.length === 0
+                    ? 'Добавьте действия для запуска'
+                    : 'Заполните все поля действий')
+                : 'Запустить Workflow'}
             </Button>
           </div>
         </div>

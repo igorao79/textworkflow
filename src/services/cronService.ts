@@ -234,7 +234,7 @@ export function createCronTask(workflow: Workflow): boolean {
 
     } catch (cronError) {
       console.error(`💥 CronService: Failed to create cron job for workflow ${workflow.id} with schedule "${schedule}":`, cronError);
-      console.error('💥 CronService: Error details:', cronError.message, cronError.stack);
+      console.error('💥 CronService: Error details:', (cronError as Error)?.message, (cronError as Error)?.stack);
       return false;
     }
   } catch (error) {

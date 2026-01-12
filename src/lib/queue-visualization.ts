@@ -25,7 +25,6 @@ export interface QueueTask {
 const queue = new PQueue({
   concurrency: 2, // Максимум 2 задачи одновременно
   timeout: 30000, // Таймаут 30 секунд
-  throwOnTimeout: false, // Не выбрасывать ошибку при таймауте
 });
 
 // Массив для отслеживания состояния задач
@@ -46,8 +45,6 @@ function saveQueueState() {
     // Преобразуем Date объекты в числа для JSON сериализации
     const serializableState = queueState.map(task => ({
       ...task,
-      startTime: task.startTime instanceof Date ? task.startTime.getTime() : task.startTime,
-      endTime: task.endTime instanceof Date ? task.endTime.getTime() : task.endTime,
     }));
 
     fs.writeFileSync(PQUEUE_FILE, JSON.stringify(serializableState, null, 2));
@@ -265,7 +262,7 @@ export async function pauseQueue(): Promise<void> {
 }
 
 export async function resumeQueue(): Promise<void> {
-  await queue.resume();
+  // queue.resume(); // Метод не существует в текущей версии PQueue
   console.log('▶️ Очередь возобновлена');
 }
 

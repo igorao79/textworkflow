@@ -58,6 +58,24 @@ export function WorkflowForm() {
       }
 
       console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
+
+      // Активируем workflow для email триггера
+      if (workflowData.trigger.type === 'email') {
+        console.log('📧 Activating email trigger workflow...');
+        try {
+          const activateResponse = await fetch(`/api/cron/activate/${result.workflowId}`, {
+            method: 'POST',
+          });
+
+          if (activateResponse.ok) {
+            console.log('✅ Email trigger workflow activated successfully');
+          } else {
+            console.warn('⚠️ Failed to activate email trigger workflow');
+          }
+        } catch (activateError) {
+          console.warn('⚠️ Error activating email trigger workflow:', activateError);
+        }
+      }
     } catch (error) {
       console.error('Ошибка при запуске workflow:', error);
     } finally {
