@@ -614,12 +614,16 @@ export function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'up
     updatedAt: new Date(),
   };
 
+  console.log('📝 createWorkflow: Creating workflow:', newWorkflow.id, newWorkflow.name, 'active:', newWorkflow.isActive, 'trigger:', newWorkflow.trigger.type);
+
   workflows.push(newWorkflow);
   saveWorkflows(workflows);
+  console.log('💾 createWorkflow: Workflow saved, total workflows:', workflows.length);
   return newWorkflow;
 }
 
 export function getWorkflows(): Workflow[] {
+  console.log('📂 getWorkflows: Returning workflows from memory, count:', workflows.length);
   // Сортируем по дате создания в обратном порядке (новые первыми)
   return workflows.sort((a, b) => {
     const aTime = new Date(a.createdAt).getTime();

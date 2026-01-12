@@ -19,7 +19,7 @@ export function NotificationsBell() {
     const initialNotifications = notificationService.getNotifications();
     return initialNotifications.map((n, index) => ({
       ...n,
-      id: `notification-${Date.now()}-${index}`,
+      id: n.id || `notification-${Date.now()}-${index}`,
       timestamp: n.timestamp || new Date(),
       read: n.read !== undefined ? n.read : false,
     }));
@@ -31,7 +31,7 @@ export function NotificationsBell() {
     const unsubscribe = notificationService.subscribe((newNotifications) => {
       const formattedNotifications: Notification[] = newNotifications.map((n, index) => ({
         ...n,
-        id: `notification-${Date.now()}-${index}`, // Генерируем ID на основе индекса
+        id: n.id || `notification-${Date.now()}-${index}`,
         timestamp: n.timestamp || new Date(),
         read: n.read !== undefined ? n.read : false,
       }));
@@ -45,9 +45,11 @@ export function NotificationsBell() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAsRead = (id: string) => {
-    const index = notifications.findIndex(n => n.id === id);
-    if (index !== -1) {
-      notificationService.markAsRead(index);
+    // Находим индекс в массиве сервиса по ID
+    const serviceNotifications = notificationService.getNotifications();
+    const serviceIndex = serviceNotifications.findIndex(n => n.id === id);
+    if (serviceIndex !== -1) {
+      notificationService.markAsRead(serviceIndex);
     }
   };
 
@@ -56,9 +58,11 @@ export function NotificationsBell() {
   };
 
   const deleteNotification = (id: string) => {
-    const index = notifications.findIndex(n => n.id === id);
-    if (index !== -1) {
-      notificationService.deleteNotification(index);
+    // Находим индекс в массиве сервиса по ID
+    const serviceNotifications = notificationService.getNotifications();
+    const serviceIndex = serviceNotifications.findIndex(n => n.id === id);
+    if (serviceIndex !== -1) {
+      notificationService.deleteNotification(serviceIndex);
     }
   };
 
@@ -150,7 +154,7 @@ export function NotificationsBell() {
               </div>
             ) : (
               <div className="space-y-3">
-                {notifications.map((notification) => (
+                {notifications.filter(notification => !notification.read).map((notification) => (
                   <div
                     key={notification.id}
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -175,9 +179,11 @@ export function NotificationsBell() {
                           <p className="text-sm text-muted-foreground mb-2">
                             {notification.message}
                           </p>
-                          {notification.workflowName && (
+                          {(notification.workflowId || notification.workflowName) && (
                             <p className="text-xs text-muted-foreground mb-1">
-                              Workflow: {notification.workflowName}
+                              {notification.workflowId && `ID: ${notification.workflowId}`}
+                              {notification.workflowId && notification.workflowName && ' • '}
+                              {notification.workflowName && notification.workflowName}
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground">

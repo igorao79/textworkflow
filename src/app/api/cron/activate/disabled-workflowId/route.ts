@@ -4,9 +4,9 @@ import { updateCronTasks } from '@/services/cronService';
 export const dynamic = 'force-dynamic';
 
 // export async function POST(
-  request: NextRequest,
-  { params }: { params: { workflowId: string } }
-) {
+//   request: NextRequest,
+//   { params }: { params: { workflowId: string } }
+// ) {
   console.log('🚀 API /cron/activate/[workflowId] handler called!');
   console.log('📨 Request method:', request.method);
   console.log('🔗 Request URL:', request.url);

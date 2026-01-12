@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Clock, Activity } from 'lucide-react';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
 import { TriggerSelector } from './TriggerSelector';
@@ -32,25 +32,25 @@ interface WorkflowEditorProps {
   workflowData: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>;
   onWorkflowChange: (data: WorkflowEditorProps['workflowData']) => void;
   onSubmit?: () => void;
-  isSubmitting?: boolean;
-  setIsSubmitting?: (submitting: boolean) => void;
+  workflowId?: string;
+  workflowName?: string;
 }
 
 // Компонент для отображения выполнения workflow
-function ExecutionMonitorModal({
+export function ExecutionMonitorModal({
   isOpen,
   onClose,
   onExecute,
   actions,
-  isSubmitting,
-  setIsSubmitting
+  workflowId,
+  workflowName
 }: {
   isOpen: boolean;
   onClose: () => void;
   onExecute?: () => void;
   actions: WorkflowAction[];
-  isSubmitting?: boolean;
-  setIsSubmitting?: (submitting: boolean) => void;
+  workflowId?: string;
+  workflowName?: string;
 }) {
   const [, setCurrentStep] = useState(0);
   const [executionSteps, setExecutionSteps] = useState<Array<{
@@ -64,6 +64,7 @@ function ExecutionMonitorModal({
   // Флаг для предотвращения повторного запуска
   const [hasStartedExecution, setHasStartedExecution] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [executionProgress, setExecutionProgress] = useState(0);
 
 
@@ -72,14 +73,16 @@ function ExecutionMonitorModal({
     if (!onExecute || isSubmitting || hasStartedExecution) return;
 
     setIsExecuting(true);
-    setIsSubmitting?.(true);
+    setIsSubmitting(true);
     setHasStartedExecution(true);
     setExecutionProgress(0);
 
     // Отправляем уведомление о начале выполнения
     notifyInfo(
       'Workflow запущен',
-      `Начато выполнение workflow с ${actions.length} действиями`
+      `Начато выполнение workflow с ${actions.length} действиями`,
+      workflowId,
+      workflowName
     );
 
     // Инициализируем шаги
@@ -102,7 +105,6 @@ function ExecutionMonitorModal({
             : s
         ));
 
-
         // Имитируем задержку выполнения
         await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -119,24 +121,26 @@ function ExecutionMonitorModal({
 
       }
 
-      setExecutionProgress(100);
-
       // Выполняем реальный workflow
       await onExecute();
 
       // Отправляем уведомление об успешном завершении
       notifySuccess(
         'Workflow выполнен',
-        `Все ${actions.length} действий завершены успешно`
+        `Все ${actions.length} действий завершены успешно`,
+        workflowId,
+        workflowName
       );
 
     } catch (error) {
-      console.error('❌ Workflow execution failed:', error);
+      console.error('Workflow execution failed:', error);
 
       // Отправляем уведомление об ошибке
       notifyError(
         'Ошибка выполнения Workflow',
-        `Произошла ошибка при выполнении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`
+        `Произошла ошибка при выполнении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+        workflowId,
+        workflowName
       );
 
       // Обновляем статус failed для текущего шага
@@ -147,11 +151,10 @@ function ExecutionMonitorModal({
       ));
 
     } finally {
-      setIsSubmitting?.(false);
+      setIsSubmitting(false);
       setIsExecuting(false);
-      setExecutionProgress(100);
     }
-  }, [onExecute, setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
+  }, [onExecute, setIsSubmitting, isSubmitting, hasStartedExecution, actions, workflowId, workflowName]);
 
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {
@@ -215,20 +218,31 @@ function ExecutionMonitorModal({
           </div>
 
           <div className="text-center py-8 text-muted-foreground">
-            {isSubmitting ? (
+            {isExecuting ? (
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            ) : (
+            ) : hasStartedExecution && executionSteps.some(step => step.status === 'completed') ? (
               <div className="rounded-full h-12 w-12 bg-green-500 mx-auto mb-4 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
+            ) : (
+              <div className="rounded-full h-12 w-12 bg-gray-300 mx-auto mb-4 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-gray-600" />
+              </div>
             )}
             <p className="text-lg font-medium">
-              {isSubmitting ? 'Выполнение workflow' : 'Workflow выполнен!'}
+              {isExecuting
+                ? 'Выполнение workflow'
+                : hasStartedExecution && executionSteps.some(step => step.status === 'completed')
+                  ? 'Workflow выполнен!'
+                  : 'Готов к выполнению'
+              }
             </p>
             <p className="text-sm mt-2">
-              {isSubmitting
+              {isExecuting
                 ? 'Пожалуйста, подождите завершения всех операций'
-                : 'Все действия успешно выполнены'
+                : hasStartedExecution && executionSteps.some(step => step.status === 'completed')
+                  ? 'Все действия успешно выполнены'
+                  : 'Нажмите "Выполнить" для запуска workflow'
               }
             </p>
           </div>
@@ -271,7 +285,7 @@ function ExecutionMonitorModal({
           )}
 
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
-            {!isExecuting && hasStartedExecution && (
+            {!isExecuting && hasStartedExecution && executionSteps.some(step => step.status === 'completed') && (
               <Button
                 variant="default"
                 onClick={() => {
@@ -279,7 +293,7 @@ function ExecutionMonitorModal({
                   setIsExecuting(false);
                   setExecutionSteps([]);
                   setExecutionProgress(0);
-                  setIsSubmitting?.(false);
+                  setIsSubmitting(false);
                   // Перезапустим выполнение
                   setTimeout(() => {
                     executeWorkflow();
@@ -287,7 +301,8 @@ function ExecutionMonitorModal({
                 }}
                 disabled={isSubmitting}
               >
-                🔄 Запустить заново
+                <Activity className="w-4 h-4 mr-2" />
+                Запустить заново
               </Button>
             )}
             <Button
@@ -329,7 +344,7 @@ function DropZone({ children }: { children: React.ReactNode }) {
 }
 
 
-export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSubmitting, setIsSubmitting }: WorkflowEditorProps) {
+export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, workflowId, workflowName }: WorkflowEditorProps) {
   const actionCounterRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
@@ -654,13 +669,13 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                     onClick={() => {
                       setShowConfirmDialog(true);
                     }}
-                    disabled={isSubmitting || !isWorkflowValid || hasExecuted}
+                    disabled={!isWorkflowValid || hasExecuted}
                     size="lg"
                     className="px-8 py-3 text-lg font-semibold"
                   >
-                    {isSubmitting ? 'Запуск...' : hasExecuted ? 'Workflow запущен' : 'Запустить Workflow'}
+                    {hasExecuted ? 'Workflow запущен' : 'Запустить Workflow'}
                   </Button>
-                  {hasExecuted && !isSubmitting && (
+                  {hasExecuted && (
                     <Button
                       onClick={() => {
                         setHasExecuted(false);
@@ -670,9 +685,8 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                       variant="outline"
                       size="sm"
                       className="mt-2"
-                      disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Выполняется...' : 'Запустить заново'}
+                      Запустить заново
                     </Button>
                   )}
                   {!isWorkflowValid && workflowData.actions.length > 0 && (
@@ -763,8 +777,8 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
         onClose={() => setShowExecutionMonitor(false)}
         onExecute={onSubmit}
         actions={workflowData.actions}
-        isSubmitting={isSubmitting}
-        setIsSubmitting={setIsSubmitting}
+        workflowId={workflowId}
+        workflowName={workflowName}
       />
 
     </DndContext>

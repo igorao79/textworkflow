@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkflowEditor } from './WorkflowEditor';
 import { Workflow } from '@/types/workflow';
+import { ExecutionMonitorModal } from './WorkflowEditor';
 
 export function WorkflowForm() {
 
@@ -15,53 +16,45 @@ export function WorkflowForm() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [workflowId, setWorkflowId] = useState<string | undefined>();
+  const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
 
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    setIsSubmitting(true);
 
-    console.log('🚀 handleSubmit called, sending workflow to API...');
+    console.log('🚀 handleSubmit called, creating workflow first...');
     console.log('📋 Workflow data:', workflowData);
 
     try {
-      // Отправляем данные на сервер для создания и запуска workflow
-      const response = await fetch('/api/workflows/run', {
+      // Сначала создаем workflow без выполнения
+      const createResponse = await fetch('/api/workflows', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          workflowData: {
-            ...workflowData,
-            name: workflowData.name || `Workflow ${Date.now()}`,
-            isActive: true
-          },
-          triggerData: {
-            name: 'Workflow User',
-            email: 'noreply@workflow.com',
-            message: 'Workflow executed successfully'
-          }
+          ...workflowData,
+          name: workflowData.name || `Workflow ${Date.now()}`,
+          isActive: true
         }),
       });
 
-      const result = await response.json();
+      const createResult = await createResponse.json();
 
-      console.log('📡 API response received:', {
-        status: response.status,
-        ok: response.ok,
-        result: result
-      });
-
-      if (!response.ok) {
-        throw new Error(result.error || result.details || 'Failed to create and run workflow');
+      if (!createResponse.ok) {
+        throw new Error(createResult.error || 'Failed to create workflow');
       }
 
-      console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
+      console.log(`✅ Workflow создан! ID: ${createResult.workflow.id}`);
+      setWorkflowId(createResult.workflow.id);
+
+      // Теперь открываем модалку выполнения
+      setShowExecutionMonitor(true);
+
     } catch (error) {
-      console.error('Ошибка при запуске workflow:', error);
-    } finally {
-      setIsSubmitting(false);
+      console.error('Ошибка при создании workflow:', error);
+      alert('Ошибка при создании workflow');
     }
   };
 
@@ -78,11 +71,43 @@ export function WorkflowForm() {
             workflowData={workflowData}
             onWorkflowChange={setWorkflowData}
             onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            setIsSubmitting={setIsSubmitting}
+            workflowId={workflowId}
+            workflowName={workflowData.name}
           />
         </CardContent>
       </Card>
+
+      {/* Модалка выполнения workflow */}
+      <ExecutionMonitorModal
+        isOpen={showExecutionMonitor}
+        onClose={() => setShowExecutionMonitor(false)}
+        onExecute={async () => {
+          // Выполняем workflow через API
+          const executeResponse = await fetch('/api/workflows/run', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              workflowId: workflowId,
+              triggerData: {
+                name: 'Workflow User',
+                email: 'noreply@workflow.com',
+                message: 'Workflow executed successfully'
+              }
+            }),
+          });
+
+          if (!executeResponse.ok) {
+            throw new Error('Failed to execute workflow');
+          }
+
+          return executeResponse.json();
+        }}
+        actions={workflowData.actions}
+        workflowId={workflowId}
+        workflowName={workflowData.name}
+      />
     </div>
   );
 }

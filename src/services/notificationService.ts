@@ -8,6 +8,7 @@ export interface NotificationData {
   workflowName?: string;
   timestamp?: Date;
   read?: boolean;
+  id?: string;
 }
 
 class NotificationService {
@@ -16,7 +17,12 @@ class NotificationService {
 
   // Отправка toast уведомления
   sendToast(data: NotificationData) {
-    const { type, title, message } = data;
+    const { type, title, message, workflowId, workflowName } = data;
+
+    // Формируем сообщение с ID и именем workflow если они есть
+    const fullTitle = workflowId && workflowName
+      ? `${title} (ID: ${workflowId}, ${workflowName})`
+      : title;
 
     const toastOptions = {
       duration: 5000,
@@ -30,16 +36,19 @@ class NotificationService {
 
     switch (type) {
       case 'success':
-        toast.success(`${title}: ${message}`, toastOptions);
+        toast.success(`${fullTitle}: ${message}`, toastOptions);
         break;
       case 'error':
-        toast.error(`${title}: ${message}`, toastOptions);
+        toast.error(`${fullTitle}: ${message}`, toastOptions);
         break;
       case 'warning':
-        toast(`${title}: ${message}`, { ...toastOptions, icon: '⚠️' });
+        toast(`${fullTitle}: ${message}`, {
+          ...toastOptions,
+          icon: '⚠️'
+        });
         break;
       default:
-        toast(`${title}: ${message}`, toastOptions);
+        toast(`${fullTitle}: ${message}`, toastOptions);
     }
   }
 
@@ -47,6 +56,7 @@ class NotificationService {
   addNotification(data: NotificationData) {
     const notification = {
       ...data,
+      id: data.id || `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: data.timestamp || new Date(),
       read: data.read !== undefined ? data.read : false,
     };

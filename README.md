@@ -1,225 +1,95 @@
-# Workflow Builder
+# Workflow System
 
-Современный визуальный конструктор автоматизированных процессов (workflow) с drag-and-drop интерфейсом.
+## Architecture
 
-## 🚀 Возможности
+This system uses a proper microservices architecture for background job processing:
 
-- **Визуальный редактор workflow** с drag-and-drop интерфейсом
-- **Три типа триггеров**: Webhook, Cron расписание, Email
-- **Пять типов действий**:
-  - HTTP запросы
-  - Отправка Email (через Resend)
-  - Отправка Telegram сообщений
-  - Операции с базой данных
-  - Трансформация данных
-- **Очередь задач** с Bull.js
-- **Логирование** выполнения шагов
-- **Обработка ошибок** с retry и уведомлениями
-- **REST API** с Swagger документацией
-- **Адаптивный дизайн** с черно-красной палитрой
+### Components
 
-## 🛠️ Технологии
+1. **Next.js Frontend** - Web interface and API routes
+2. **Workflow Worker** - Background job processor for workflow execution and cron scheduling
+3. **Redis** - Queue storage and communication between services
 
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **UI**: Shadcn/ui, Tailwind CSS
-- **Drag & Drop**: @dnd-kit
-- **Очередь**: Bull.js, Redis
-- **Email**: Resend
-- **Telegram**: Telegraf
-- **API**: REST с Swagger документацией
+### Architecture Diagram
 
-## 📋 Предварительные требования
+```
+┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐
+│   Next.js API   │    │    Redis     │    │  Worker Process │
+│                 │    │              │    │                 │
+│ • add(job)      │◄──►│ • Bull Queue  │◄──►│ • process(job)  │
+│ • get stats     │    │ • Cron state  │    │ • cron.schedule │
+│ • UI            │    │              │    │                 │
+└─────────────────┘    └──────────────┘    └─────────────────┘
+```
+
+## Setup and Running
+
+### Prerequisites
 
 - Node.js 18+
-- Redis (для очереди задач)
-- npm или yarn
+- Redis server running on localhost:6379 (or set REDIS_URL env var)
+- PostgreSQL database (configured in .env)
 
-## 🚀 Быстрый старт
+### Installation
 
-1. **Клонируйте репозиторий**
-   ```bash
-   git clone <repository-url>
-   cd workflow
-   ```
-
-2. **Установите зависимости**
-   ```bash
-   npm install
-   ```
-
-3. **Настройте переменные окружения (опционально)**
-   ```bash
-   cp env-example.txt .env.local
-   ```
-
-   Для тестирования можно оставить API ключи пустыми. Отредактируйте `.env.local` при необходимости:
-   ```env
-   RESEND_API_KEY=your_resend_api_key_here
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-   ```
-
-   **Примечание:** Без API ключей будут работать только базовые функции workflow. Email и Telegram действия будут возвращать ошибки.
-
-4. **Хранение данных:**
-   ```
-   Данные сохраняются в папке /data/:
-   - workflows.json - созданные workflow
-   - executions.json - история выполнений
-
-   Данные сохраняются между перезапусками сервера.
-   ```
-
-5. **Запустите приложение:**
-   ```bash
-   # На macOS с Homebrew
-   brew services start redis
-
-   # На Ubuntu/Debian
-   sudo systemctl start redis-server
-
-   # Или используйте Docker
-   docker run -d -p 6379:6379 redis:alpine
-   ```
-
-5. **Запустите приложение**
-   ```bash
-   # Полный запуск (Next.js + Worker + Cron)
-   npm run dev:full
-
-   # Или по отдельности:
-   npm run dev              # Next.js приложение
-   npm run queue:worker     # Обработчик очереди
-   npm run cron:runner      # Cron задачи
-   ```
-
-6. **Откройте браузер**
-   ```
-   http://localhost:3000
-   ```
-
-## 📖 Использование
-
-### Создание Workflow
-
-1. Перейдите на главную страницу
-2. Заполните форму с данными пользователя
-3. В разделе "Редактор Workflow":
-   - Выберите тип триггера (Webhook/Cron/Email)
-   - Перетащите действия из палитры в рабочую область
-   - Настройте параметры каждого действия
-4. Нажмите "Запустить Workflow"
-
-### API Документация
-
-Документация API доступна по адресу:
-```
-http://localhost:3000/api-docs
+```bash
+npm install
 ```
 
-### Webhook триггеры
+### Running the System
 
-Для webhook триггеров используйте endpoint:
-```
-POST /api/webhooks/{workflowId}
-```
-
-## 🏗️ Архитектура
-
-```
-src/
-├── app/                 # Next.js App Router
-│   ├── api/            # API endpoints
-│   ├── api-docs/       # Swagger документация
-│   └── globals.css     # Стили с черно-красной палитрой
-├── components/         # React компоненты
-│   ├── ui/            # Shadcn/ui компоненты
-│   └── workflow/      # Компоненты workflow
-├── lib/               # Утилиты и конфигурации
-│   └── queue.ts       # Bull.js очередь
-├── services/          # Бизнес-логика
-│   └── workflowService.ts
-├── types/            # TypeScript типы
-└── utils/            # Вспомогательные функции
-
-scripts/               # Скрипты для запуска
-├── worker.js         # Обработчик очереди
-└── cron-runner.js    # Cron задачи
+**Terminal 1 - Worker Process:**
+```bash
+npm run worker
 ```
 
-## 🔧 Конфигурация
-
-### Переменные окружения
-
-| Переменная | Описание | Значение по умолчанию |
-|------------|----------|----------------------|
-| `RESEND_API_KEY` | API ключ Resend для отправки email | - |
-| `TELEGRAM_BOT_TOKEN` | Токен Telegram бота | - |
-| `REDIS_URL` | URL Redis сервера | `redis://127.0.0.1:6379` |
-| `FROM_EMAIL` | Email отправителя | `noreply@yourdomain.com` |
-
-### Настройка Redis
-
-По умолчанию используется локальный Redis. Для продакшена настройте внешний Redis:
-
-```env
-REDIS_URL=redis://username:password@host:port
+**Terminal 2 - Next.js App:**
+```bash
+npm run dev
 ```
 
-## 📊 Мониторинг
+### What Each Process Does
 
-### Логи выполнения
+**Worker Process (`npm run worker`):**
+- Processes workflow execution jobs from the queue
+- Runs cron schedulers for active cron workflows
+- Handles workflow execution logic
+- Restores cron tasks on startup
 
-Логи выполнения workflow доступны через API:
-```
-GET /api/executions?workflowId={id}
-```
+**Next.js App (`npm run dev`):**
+- Web interface for managing workflows
+- API routes for CRUD operations
+- Adds jobs to the queue (producer)
+- Displays queue statistics
 
-### Статус очереди
+## Development Notes
 
-Для мониторинга Bull.js очереди можно использовать:
-- Bull Dashboard
-- Redis CLI: `redis-cli monitor`
+- **Never run Bull queue processing in Next.js API routes** - they are serverless and don't maintain state
+- **Cron schedulers must run in long-lived processes** - not in serverless functions
+- **Use Redis for communication between processes** - not files or memory
 
-## 🚀 Деплой
+## Troubleshooting
 
-### Vercel
+### Queue stats show 0
 
-1. Подключите репозиторий к Vercel
-2. Добавьте переменные окружения
-3. Настройте Redis (например, Upstash)
-4. Деплой
+Make sure both processes are running:
+```bash
+# Terminal 1
+npm run worker
 
-### Docker
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
+# Terminal 2
+npm run dev
 ```
 
-## 🤝 Contributing
+### Cron workflows don't trigger
 
-1. Fork проект
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
+Cron schedulers run in the worker process. Check worker logs for cron activity.
 
-## 📄 Лицензия
+### Redis connection issues
 
-Этот проект лицензирован под MIT License - см. файл [LICENSE](LICENSE) для деталей.
+Make sure Redis is running:
+```bash
+redis-server
+```
 
-## 📞 Поддержка
-
-Если у вас возникли вопросы или проблемы:
-1. Проверьте [Issues](issues) на GitHub
-2. Создайте новый issue с детальным описанием
-3. Свяжитесь с командой разработчиков
-
----
-
-Создано с ❤️ для автоматизации рабочих процессов
+Or set `REDIS_URL` environment variable.

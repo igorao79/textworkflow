@@ -52,10 +52,25 @@ export default function DashboardPage() {
   const loadCronTasks = async () => {
     try {
       setCronTasksLoading(true);
-      const response = await fetch('/api/cron');
+
+      // Добавляем timeout на случай зависания запроса
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Cron tasks loading timeout')), 3000);
+      });
+
+      const response = await Promise.race([
+        fetch('/api/cron'),
+        timeoutPromise
+      ]) as Response;
+
       if (response.ok) {
         const cronTasksData = await response.json();
-        setCronTasks(cronTasksData);
+
+        // Проверяем, изменились ли данные, чтобы избежать ненужных перерендериваний
+        setCronTasks(prevTasks => {
+          const changed = JSON.stringify(prevTasks) !== JSON.stringify(cronTasksData);
+          return changed ? cronTasksData : prevTasks;
+        });
       } else {
         // Если API недоступен, сбрасываем статусы
         setCronTasks([]);
@@ -65,6 +80,28 @@ export default function DashboardPage() {
       setCronTasks([]);
     } finally {
       setCronTasksLoading(false);
+    }
+  };
+
+  const loadQueueStats = async () => {
+    try {
+      const response = await fetch('/api/queue/stats', { cache: 'no-store' });
+      if (response.ok) {
+        const queueStatsData = await response.json();
+        console.log('📊 Queue stats updated:', queueStatsData);
+        setQueueStats(prevStats => {
+          // Проверяем, изменились ли данные
+          const changed = JSON.stringify(prevStats) !== JSON.stringify(queueStatsData);
+          if (changed) {
+            console.log('📊 Queue stats CHANGED:', prevStats, '->', queueStatsData);
+          }
+          return changed ? queueStatsData : prevStats;
+        });
+      } else {
+        console.error('❌ Failed to load queue stats:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('💥 Error loading queue stats:', error);
     }
   };
 
@@ -139,12 +176,20 @@ export default function DashboardPage() {
   useEffect(() => {
     loadData();
 
-    // Автообновление cron задач каждые 5 секунд
+    // Автообновление cron задач каждые 30 секунд
     const cronInterval = setInterval(() => {
       loadCronTasks();
+    }, 30000);
+
+    // Автообновление статистики очереди каждые 5 секунд
+    const queueInterval = setInterval(() => {
+      loadQueueStats();
     }, 5000);
 
-    return () => clearInterval(cronInterval);
+    return () => {
+      clearInterval(cronInterval);
+      clearInterval(queueInterval);
+    };
   }, [loadData]);
 
   const toggleQueuePause = async () => {
@@ -306,7 +351,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
                 Dashboard
@@ -319,7 +364,8 @@ export default function DashboardPage() {
               onClick={loadUsers}
               disabled={usersLoading}
               variant="outline"
-              className="gap-2"
+              size="sm"
+              className="gap-2 w-full sm:w-auto"
             >
               {usersLoading ? (
                 <>
@@ -329,7 +375,8 @@ export default function DashboardPage() {
               ) : (
                 <>
                   <FileText className="w-4 h-4" />
-                  Получить пользователей
+                  <span className="hidden xs:inline">Получить пользователей</span>
+                  <span className="xs:hidden">Пользователи</span>
                 </>
               )}
             </Button>
@@ -439,6 +486,8 @@ export default function DashboardPage() {
                             if (response.ok) {
                               // Обновляем статус всех задач на неактивные
                               setCronTasks(prev => prev.map(task => ({ ...task, isRunning: false })));
+                              // Обновляем статистику очереди
+                              await loadQueueStats();
                             }
                           } catch (error) {
                             console.error('Error stopping all cron tasks:', error);
@@ -464,24 +513,29 @@ export default function DashboardPage() {
                       const isRunning = task?.isRunning || false;
 
                       return (
-                        <div key={workflow.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                            <div>
-                              <p className="font-medium">{workflow.name}</p>
+                        <div key={workflow.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg gap-2">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${isRunning ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">{workflow.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {isRunning ? 'Запущена' : 'Остановлена'}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-muted-foreground hidden sm:block">
                                 Расписание: {workflow.trigger.type === 'cron' ? (workflow.trigger.config as CronTriggerConfig).schedule || 'Не задано' : 'Не задано'} • {workflow.actions.length} действий
+                              </p>
+                              {/* На мобильных показываем сокращенную версию */}
+                              <p className="text-xs text-muted-foreground sm:hidden">
+                                {workflow.actions.length} акт. • {workflow.trigger.type === 'cron' ? (workflow.trigger.config as CronTriggerConfig).schedule || 'Нет' : 'Нет'}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             {!isRunning ? (
                               <Button
                                 variant="default"
                                 size="sm"
+                                className="p-2"
                                 onClick={async () => {
                                   console.log('🔥 Dashboard: Starting cron activation for workflow:', workflow.id);
 
@@ -513,7 +567,9 @@ export default function DashboardPage() {
                                           return [...prev, { workflowId: workflow.id, isRunning: true, nextExecution: null }];
                                         }
                                       });
-                                      console.log('✅ Dashboard: UI state updated successfully');
+                                      // Обновляем статистику очереди
+                                      await loadQueueStats();
+                                      console.log('✅ Dashboard: UI state and queue stats updated successfully');
                                     } else {
                                       const errorText = await response.text();
                                       console.error('❌ Dashboard: Cron activation failed:', {
@@ -529,13 +585,14 @@ export default function DashboardPage() {
                                   }
                                 }}
                               >
-                                <Play className="w-4 h-4 mr-1" />
-                                Запустить
+                                <Play className="w-4 h-4" />
+                                <span className="hidden sm:inline ml-1">Запустить</span>
                               </Button>
                             ) : (
                               <Button
                                 variant="outline"
                                 size="sm"
+                                className="p-2"
                                 onClick={async () => {
                                   try {
                                     setCronTasksLoading(true);
@@ -547,6 +604,8 @@ export default function DashboardPage() {
                                       setCronTasks(prev => prev.map(t =>
                                         t.workflowId === workflow.id ? { ...t, isRunning: false } : t
                                       ));
+                                      // Обновляем статистику очереди
+                                      await loadQueueStats();
                                     }
                                   } catch (error) {
                                     console.error('Error stopping cron task:', error);
@@ -555,13 +614,56 @@ export default function DashboardPage() {
                                   }
                                 }}
                               >
-                                <Pause className="w-4 h-4 mr-1" />
-                                Остановить
+                                <Pause className="w-4 h-4" />
+                                <span className="hidden sm:inline ml-1">Остановить</span>
                               </Button>
                             )}
                             <Button
                               variant="destructive"
                               size="sm"
+                              className="p-2 sm:hidden"
+                              onClick={async () => {
+                                try {
+                                  // Если это cron workflow, сначала останавливаем cron задачу
+                                  if (workflow.trigger.type === 'cron') {
+                                    console.log('🛑 Stopping cron task before deleting workflow:', workflow.id);
+                                    try {
+                                      await fetch(`/api/cron/deactivate/${workflow.id}`, {
+                                        method: 'DELETE'
+                                      });
+                                      // Обновляем локальное состояние cron задач
+                                      setCronTasks(prev => prev.map(t =>
+                                        t.workflowId === workflow.id ? { ...t, isRunning: false } : t
+                                      ));
+                                    } catch (cronError) {
+                                      console.warn('⚠️ Failed to stop cron task, but continuing with workflow deletion:', cronError);
+                                    }
+                                  }
+
+                                  // Удаляем сам workflow
+                                  const response = await fetch(`/api/workflows/${workflow.id}`, {
+                                    method: 'DELETE'
+                                  });
+                                  if (response.ok) {
+                                    // Обновляем локальное состояние - удаляем workflow из списка
+                                    setWorkflows(prev => prev.filter(w => w.id !== workflow.id));
+                                    // Также удаляем из списка cron задач
+                                    setCronTasks(prev => prev.filter(t => t.workflowId !== workflow.id));
+                                  } else {
+                                    alert('Ошибка при удалении workflow');
+                                  }
+                                } catch (error) {
+                                  console.error('Error deleting workflow:', error);
+                                  alert('Ошибка при удалении workflow');
+                                }
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="hidden sm:flex"
                               onClick={async () => {
                                 try {
                                   // Если это cron workflow, сначала останавливаем cron задачу
@@ -673,6 +775,14 @@ export default function DashboardPage() {
                         </>
                       )}
                     </Button>
+                    <Button
+                      onClick={loadQueueStats}
+                      variant="outline"
+                      size="sm"
+                      title="Обновить статистику"
+                    >
+                      🔄
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -724,32 +834,34 @@ export default function DashboardPage() {
                 ) : (
                   <div className="space-y-4">
                     {currentWorkflows.map((workflow) => (
-                      <div key={workflow.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <h3 className="font-medium">{workflow.name}</h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
-                                {getTriggerTypeLabel(workflow.trigger.type)}
-                              </Badge>
-                              {workflow.trigger.type === 'cron' && (
-                                <Badge variant="secondary" className="text-xs">
-                                  {(workflow.trigger.config as CronTriggerConfig).schedule ? `Расписание: ${(workflow.trigger.config as CronTriggerConfig).schedule}` : 'Без расписания'}
+                      <div key={workflow.id} className="border rounded-lg p-3 sm:p-4">
+                        <div className="flex flex-col gap-2 mb-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium truncate">{workflow.name}</h3>
+                              <div className="flex items-center gap-1 mt-1">
+                                <Badge variant="outline" className="text-xs flex-shrink-0">
+                                  {getTriggerTypeLabel(workflow.trigger.type)}
                                 </Badge>
-                              )}
+                                <Badge variant={workflow.isActive ? 'default' : 'secondary'} className="text-xs flex-shrink-0">
+                                  {workflow.isActive ? 'Активен' : 'Неактивен'}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
-                          <Badge variant={workflow.isActive ? 'default' : 'secondary'}>
-                            {workflow.isActive ? 'Активен' : 'Неактивен'}
-                          </Badge>
+                          {workflow.trigger.type === 'cron' && (
+                            <div className="text-xs text-muted-foreground truncate">
+                              Расписание: {(workflow.trigger.config as CronTriggerConfig).schedule || 'Не задано'}
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                           {workflow.description || 'Без описания'}
                         </p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4 text-xs text-muted-foreground">
                           <span>Действий: {workflow.actions.length}</span>
-                          <span>Создан: {formatDate(workflow.createdAt.toString())}</span>
-                          <span>Обновлен: {formatDate(workflow.updatedAt.toString())}</span>
+                          <span className="truncate">Создан: {formatDate(workflow.createdAt.toString())}</span>
+                          <span className="truncate">Обновлен: {formatDate(workflow.updatedAt.toString())}</span>
                         </div>
                       </div>
                     ))}
@@ -989,7 +1101,7 @@ export default function DashboardPage() {
 
         {/* Модалка с пользователями */}
         <Dialog open={showUsersModal} onOpenChange={setShowUsersModal}>
-          <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] sm:max-h-[80vh] w-full">
             <DialogHeader>
               <DialogTitle>Пользователи базы данных</DialogTitle>
               <DialogDescription>
@@ -1009,28 +1121,31 @@ export default function DashboardPage() {
                     Всего пользователей: {users.length}
                   </div>
                   <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium">ID</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Имя</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium">Создан</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {users.map((user) => (
-                          <tr key={user.id} className="hover:bg-muted/50">
-                            <td className="px-4 py-3 text-sm">{user.id}</td>
-                            <td className="px-4 py-3 text-sm font-medium">{user.name}</td>
-                            <td className="px-4 py-3 text-sm">{user.email}</td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">
-                              {formatDate(user.created_at)}
-                            </td>
+                    {/* Горизонтальный скролл для таблицы на мобильных */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[600px]">
+                        <thead className="bg-muted/50">
+                          <tr>
+                            <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium min-w-[80px]">ID</th>
+                            <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium min-w-[120px]">Имя</th>
+                            <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium min-w-[200px]">Email</th>
+                            <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium min-w-[120px]">Создан</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y">
+                          {users.map((user) => (
+                            <tr key={user.id} className="hover:bg-muted/50">
+                              <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm">{user.id}</td>
+                              <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium break-words">{user.name}</td>
+                              <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm break-all">{user.email}</td>
+                              <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                                {formatDate(user.created_at)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}

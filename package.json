@@ -6,6 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
+    "worker": "node workflow-worker.js",
     "lint": "eslint",
     "view-data": "ts-node scripts/view-data.ts"
   },

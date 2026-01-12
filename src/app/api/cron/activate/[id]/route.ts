@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateCronTasks } from '@/services/cronService';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,12 +22,8 @@ export async function POST(
   try {
     const resolvedParams = await params;
     console.log('🔥 API /cron/activate: Resolved params:', resolvedParams);
-    console.log('🔥 API /cron/activate: Params type:', typeof resolvedParams);
-    console.log('🔥 API /cron/activate: Params keys:', Object.keys(resolvedParams || {}));
 
     const workflowId = resolvedParams.id;
-    console.log('🔥 API /cron/activate: Extracted workflowId:', workflowId);
-
     console.log('🔥 API /cron/activate: Extracted workflowId:', workflowId);
 
     if (!workflowId) {
@@ -36,12 +31,36 @@ export async function POST(
       return NextResponse.json({ error: 'Workflow ID is required' }, { status: 400 });
     }
 
-    // Останавливаем существующую задачу для этого workflow перед активацией новой
-    const { stopCronTask } = await import('@/services/cronService');
-    stopCronTask(workflowId);
+    // Импортируем функции
+    const { stopCronTask, startCronTask } = await import('@/services/cronService');
 
-    // Активируем cron задачи (это пересоздаст задачу для данного workflow)
-    await updateCronTasks();
+    // Останавливаем существующую задачу для этого workflow перед активацией новой
+    const stopped = stopCronTask(workflowId);
+    console.log('🛑 Stopped existing task for workflow:', workflowId, 'result:', stopped);
+
+    // Активируем cron задачу для конкретного workflow
+    console.log('🚀 Starting cron task for workflow:', workflowId);
+    const started = await startCronTask(workflowId);
+    console.log('✅ Cron task start result:', started);
+
+    if (!started) {
+      console.error('❌ Failed to start cron task for workflow:', workflowId);
+      return NextResponse.json({
+        error: 'Failed to start cron task',
+        workflowId
+      }, { status: 500 });
+    }
+
+    // Проверяем, создалась ли задача
+    const { getActiveCronTasks } = await import('@/services/cronService');
+    const activeTasks = getActiveCronTasks();
+    console.log('📊 Active cron tasks after activation:', activeTasks.length, activeTasks);
+
+    // Дополнительная проверка - попробуем получить задачи еще раз через небольшую задержку
+    setTimeout(async () => {
+      const tasksAfterDelay = getActiveCronTasks();
+      console.log('📊 Active cron tasks after 1 second delay:', tasksAfterDelay.length, tasksAfterDelay);
+    }, 1000);
 
     console.log('✅ Cron task activated for workflow:', workflowId);
 
