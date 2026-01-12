@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { WorkflowAction, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
-import { Trash2, Settings, Mail, Send, Globe, Database, RefreshCw, Wrench } from 'lucide-react';
+import { Trash2, Settings, Mail, Send, Globe, Database, RefreshCw, Wrench, GripVertical } from 'lucide-react';
 
 // Вспомогательные функции для иконок и названий
 export const getActionIcon = (type: string) => {
@@ -89,6 +89,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -368,7 +369,6 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
     }
   };
 
-  console.log('WorkflowNode render:', action.id, 'index:', index, 'display number:', index !== undefined ? index + 1 : '?');
 
   return (
     <div
@@ -380,13 +380,33 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
       {/* Основной квадратный узел */}
       <div
         className={`
-          relative w-20 h-20 bg-card border-2 border-border rounded-lg shadow-sm cursor-move
+          relative w-20 h-20 bg-card border-2 border-border rounded-lg shadow-sm
           flex flex-col items-center justify-center gap-1
           hover:shadow-md hover:border-primary transition-all duration-200 group
           ${isDragging ? 'shadow-lg scale-110 border-primary' : ''}
         `}
-        {...listeners}
       >
+        {/* Drag Handle - Ползунок для перетаскивания */}
+        <div
+          ref={setActivatorNodeRef}
+          className={`
+            absolute -top-3 left-1/2 transform -translate-x-1/2
+            w-8 h-6 bg-primary rounded-md shadow-md
+            flex items-center justify-center cursor-grab active:cursor-grabbing
+            hover:bg-primary/90 transition-all duration-200
+            select-none border border-primary-foreground/20
+            group-hover:opacity-100 opacity-80 md:opacity-70
+            ${isDragging ? 'cursor-grabbing shadow-lg scale-105 bg-primary/90' : ''}
+            min-h-[24px] min-w-[32px] /* Минимальный размер для touch устройств */
+          `}
+          {...listeners}
+          title="Перетащить"
+          role="button"
+          tabIndex={0}
+          aria-label="Перетащить элемент"
+        >
+          <GripVertical className="w-3 h-3 text-primary-foreground drop-shadow-sm" />
+        </div>
         {/* Номер задачи */}
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm border-2 border-card">
           {index !== undefined ? index + 1 : action.id.split('_').pop() || '?'}

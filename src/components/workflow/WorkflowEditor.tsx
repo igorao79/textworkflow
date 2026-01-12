@@ -5,7 +5,8 @@ import { getActionTitle } from './WorkflowNode';
 import {
   DndContext,
   DragEndEvent,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   useDroppable,
@@ -48,7 +49,6 @@ function ExecutionMonitorModal({
   isSubmitting?: boolean;
   setIsSubmitting?: (submitting: boolean) => void;
 }) {
-  console.log('🎬 ExecutionMonitorModal render, isOpen:', isOpen);
   const [, setCurrentStep] = useState(0);
   const [executionSteps, setExecutionSteps] = useState<Array<{
     id: string;
@@ -66,7 +66,6 @@ function ExecutionMonitorModal({
   const executeWorkflow = React.useCallback(async () => {
     if (!onExecute || isSubmitting || hasStartedExecution) return;
 
-    console.log('🚀 Starting workflow execution with step tracking...');
     setIsExecuting(true);
     setIsSubmitting?.(true);
     setHasStartedExecution(true);
@@ -91,7 +90,6 @@ function ExecutionMonitorModal({
             : s
         ));
 
-        console.log(`▶️ Executing step: ${step.title}`);
 
         // Имитируем задержку выполнения
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -103,12 +101,10 @@ function ExecutionMonitorModal({
             : s
         ));
 
-        console.log(`✅ Step completed: ${step.title}`);
       }
 
       // Выполняем реальный workflow
       await onExecute();
-      console.log('✅ Workflow execution completed');
 
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
@@ -129,7 +125,6 @@ function ExecutionMonitorModal({
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {
     if (isOpen && !isExecuting && executionSteps.length > 0 && hasStartedExecution) {
-      console.log('🎬 Execution completed, keeping modal open for results...');
       // Не закрываем автоматически, даем пользователю посмотреть результаты
     }
   }, [isOpen, isExecuting, executionSteps, hasStartedExecution]);
@@ -137,7 +132,6 @@ function ExecutionMonitorModal({
   // Инициализируем шаги выполнения при открытии модального окна (только один раз)
   React.useEffect(() => {
     if (isOpen && actions.length > 0 && !hasStartedExecution) {
-      console.log('🎬 Initializing execution steps for actions:', actions.length);
       setHasStartedExecution(true);
 
       const steps = actions.map(action => ({
@@ -147,11 +141,9 @@ function ExecutionMonitorModal({
       }));
       setExecutionSteps(steps);
       setCurrentStep(0);
-      console.log('✅ Execution steps initialized:', steps.length);
 
       // Автоматически запускаем выполнение через 1 секунду
       setTimeout(() => {
-        console.log('🚀 Auto-starting workflow execution...');
         executeWorkflow();
       }, 1000);
     }
@@ -170,7 +162,6 @@ function ExecutionMonitorModal({
 
   return (
       <Dialog open={isOpen} onOpenChange={(open) => {
-        console.log('🎪 Dialog onOpenChange called with:', open);
         if (!open) onClose();
       }}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[80vh] overflow-y-auto sm:w-[90vw] md:w-[80vw] lg:w-[70vw]">
@@ -237,7 +228,6 @@ function ExecutionMonitorModal({
               <Button
                 variant="default"
                 onClick={() => {
-                  console.log('🔄 Restarting workflow execution...');
                   setHasStartedExecution(false);
                   setIsExecuting(false);
                   setExecutionSteps([]);
@@ -300,7 +290,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
 
   // Логируем изменения showExecutionMonitor
   React.useEffect(() => {
-    console.log('🔄 showExecutionMonitor changed to:', showExecutionMonitor, 'at', new Date().toISOString());
+    // Monitor state changes for debugging if needed
   }, [showExecutionMonitor]);
 
   useEffect(() => {
@@ -322,9 +312,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
 
   // Проверка валидности всех действий
   const isWorkflowValid = React.useMemo(() => {
-    console.log('🔍 Checking workflow validity, actions count:', workflowData.actions.length);
     if (workflowData.actions.length === 0) {
-      console.log('❌ No actions in workflow');
       return false;
     }
 
@@ -341,27 +329,22 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
           return httpConfig.url && httpConfig.method;
         case 'database':
           const dbConfig = action.config as DatabaseActionConfig;
-          console.log('🔍 Validating database action:', dbConfig);
 
           // Проверяем основные поля
           if (!dbConfig.operation || !dbConfig.table) {
-            console.log('❌ Missing operation or table');
             return false;
           }
 
           // Для INSERT и UPDATE проверяем data
           if ((dbConfig.operation === 'insert' || dbConfig.operation === 'update') && !dbConfig.data) {
-            console.log('❌ Missing data for INSERT/UPDATE operation');
             return false;
           }
 
           // Для UPDATE и DELETE проверяем where
           if ((dbConfig.operation === 'update' || dbConfig.operation === 'delete') && !dbConfig.where) {
-            console.log('❌ Missing where conditions for UPDATE/DELETE operation');
             return false;
           }
 
-          console.log('✅ Database action is valid');
           return true;
         case 'transform':
           const transformConfig = action.config as TransformActionConfig;
@@ -371,14 +354,19 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
       }
     });
 
-    console.log('✅ Workflow validation result:', isValid);
     return isValid;
   }, [workflowData.actions]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     })
   );
@@ -485,23 +473,16 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
   };
 
   const handleChangePosition = (actionId: string, newIndex: number) => {
-    console.log('handleChangePosition called:', actionId, 'to index:', newIndex);
-
     const actions = [...workflowData.actions];
     const currentIndex = actions.findIndex(action => action.id === actionId);
 
-    console.log('currentIndex:', currentIndex, 'actions length:', actions.length);
-
     if (currentIndex === -1 || newIndex < 0 || newIndex >= actions.length) {
-      console.log('Invalid indices, returning');
       return;
     }
 
     // Перемещаем элемент на новую позицию
     const [movedAction] = actions.splice(currentIndex, 1);
     actions.splice(newIndex, 0, movedAction);
-
-    console.log('New actions order:', actions.map(a => a.id));
 
     onWorkflowChange({ ...workflowData, actions });
   };
@@ -639,16 +620,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                 <div className="flex justify-center flex-col items-center mt-6">
                   <Button
                     onClick={() => {
-                      console.log('🎯 "Запустить Workflow" button clicked');
-                      console.log('📊 Validation status:', {
-                        isSubmitting,
-                        isWorkflowValid,
-                        actionsCount: workflowData.actions.length,
-                        buttonDisabled: isSubmitting || !isWorkflowValid || hasExecuted
-                      });
-                      console.log('🎪 Opening confirmation dialog');
                       setShowConfirmDialog(true);
-                      console.log('✅ Confirmation dialog opened');
                     }}
                     disabled={isSubmitting || !isWorkflowValid || hasExecuted}
                     size="lg"
@@ -742,11 +714,9 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
             </Button>
             <Button
               onClick={() => {
-                console.log('🚀 Confirmed workflow execution');
                 setShowConfirmDialog(false);
                 setShowExecutionMonitor(true);
                 setHasExecuted(true);
-                console.log('✅ Execution monitor opened');
               }}
             >
               🚀 Запустить Workflow
