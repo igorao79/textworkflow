@@ -331,7 +331,7 @@ const validateAction = (action: WorkflowAction): boolean => {
   switch (action.type) {
     case 'email':
       const emailConfig = action.config as EmailActionConfig;
-      return !!(emailConfig.to && emailConfig.subject && emailConfig.body);
+      return !!(emailConfig.subject && emailConfig.body);
     case 'telegram':
       const telegramConfig = action.config as TelegramActionConfig;
       return !!(telegramConfig.message && telegramConfig.message.trim() !== '');
@@ -467,7 +467,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
   const getDefaultConfig = (actionType: string) => {
     switch (actionType) {
       case 'email':
-        return { to: '', subject: '', body: '' };
+        return { from: 'onboarding@resend.dev', to: 'samptv59@gmail.com', subject: '', body: '' };
       case 'http':
         return { url: '', method: 'GET', headers: {} };
       case 'telegram':
@@ -656,8 +656,18 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
               <Play className="w-5 h-5 mr-2" />
               {!isWorkflowValid
                 ? (workflowData.actions.length === 0
-                    ? 'Добавьте действия для запуска'
-                    : 'Заполните все поля действий')
+                    ? (
+                        <>
+                          <span className="hidden sm:inline">Добавьте действия для запуска</span>
+                          <span className="sm:hidden">Добавьте действия</span>
+                        </>
+                      )
+                    : (
+                        <>
+                          <span className="hidden sm:inline">Заполните все поля действий</span>
+                          <span className="sm:hidden">Заполните поля</span>
+                        </>
+                      ))
                 : 'Запустить Workflow'}
             </Button>
           </div>

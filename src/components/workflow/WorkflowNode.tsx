@@ -125,7 +125,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
     switch (action.type) {
       case 'email':
         const emailConfig = tempConfig as EmailActionConfig;
-        return emailConfig.to && emailConfig.subject && emailConfig.body;
+        return emailConfig.subject && emailConfig.body;
       case 'telegram':
         const telegramConfig = tempConfig as TelegramActionConfig;
         return telegramConfig.message && telegramConfig.message.trim() !== '';
@@ -153,25 +153,32 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
         return (
           <div className="space-y-3">
             <div>
-              <Label htmlFor={`email-from-${action.id}`} className="mb-2 block">Отправитель (опционально)</Label>
+              <Label htmlFor={`email-from-${action.id}`} className="mb-2 block">Отправитель (фиксированный)</Label>
               <Input
                 id={`email-from-${action.id}`}
-                value={emailConfig.from || ''}
-                onChange={(e) => updateTempConfig({ from: e.target.value })}
-                placeholder="noreply@your-verified-domain.com"
+                value="onboarding@resend.dev"
+                readOnly
+                disabled
+                className="bg-muted cursor-not-allowed"
+                title="Отправитель фиксирован"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Оставьте пустым для использования домена Resend
+                Фиксированный отправитель через Resend
               </p>
             </div>
             <div>
-              <Label htmlFor={`email-to-${action.id}`} className="mb-2 block">Получатель (опционально)</Label>
+              <Label htmlFor={`email-to-${action.id}`} className="mb-2 block">Получатель (фиксированный)</Label>
               <Input
                 id={`email-to-${action.id}`}
-                value={emailConfig.to || ''}
-                onChange={(e) => updateTempConfig({ to: e.target.value })}
-                placeholder="Оставьте пустым для использования email из формы"
+                value="samptv59@gmail.com"
+                readOnly
+                disabled
+                className="bg-muted cursor-not-allowed"
+                title="Получатель фиксирован"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Фиксированный получатель для тестирования
+              </p>
             </div>
             <div>
               <Label htmlFor={`email-subject-${action.id}`} className="mb-2 block">Тема</Label>
@@ -350,7 +357,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
                 rows={2}
               />
             </div>
-            <div>
+            <div className="mb-4">
               <Label htmlFor={`transform-output-${action.id}`} className="mb-2 block">Выходная переменная</Label>
               <Input
                 id={`transform-output-${action.id}`}
