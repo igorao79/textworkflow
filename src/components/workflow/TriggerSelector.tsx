@@ -18,16 +18,16 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
 
     switch (type) {
       case 'webhook':
-        config = { url: '', method: 'POST', headers: {} };
+        config = { url: '', method: 'POST', headers: {} } as WebhookTriggerConfig;
         break;
       case 'cron':
-        config = { schedule: '1', timezone: 'Europe/Moscow' }; // По умолчанию каждую минуту
+        config = { schedule: '1', timezone: 'Europe/Moscow' } as CronTriggerConfig; // По умолчанию каждую минуту
         break;
       case 'email':
-        config = { from: 'onboarding@resend.dev', to: '' };
+        config = { from: 'onboarding@resend.dev', to: '' } as EmailTriggerConfig;
         break;
       default:
-        config = { url: '', method: 'POST', headers: {} }; // fallback
+        config = { url: '', method: 'POST', headers: {} } as WebhookTriggerConfig; // fallback
     }
 
     onTriggerChange({
