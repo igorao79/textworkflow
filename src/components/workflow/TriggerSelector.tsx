@@ -14,7 +14,7 @@ interface TriggerSelectorProps {
 
 export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorProps) {
   const handleTypeChange = (type: 'webhook' | 'cron' | 'email') => {
-    let config = {};
+    let config: WebhookTriggerConfig | CronTriggerConfig | EmailTriggerConfig;
 
     switch (type) {
       case 'webhook':
@@ -26,6 +26,8 @@ export function TriggerSelector({ trigger, onTriggerChange }: TriggerSelectorPro
       case 'email':
         config = { from: 'onboarding@resend.dev', to: '' };
         break;
+      default:
+        config = { url: '', method: 'POST', headers: {} }; // fallback
     }
 
     onTriggerChange({

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Home, Menu, X } from 'lucide-react';
+import { BarChart3, Home, Menu, X, FileText } from 'lucide-react';
 
 export function Header() {
   const pathname = usePathname();
@@ -42,6 +42,16 @@ export function Header() {
               >
                 <BarChart3 className="w-4 h-4" />
                 Dashboard
+              </Button>
+            </Link>
+            <Link href="/api-docs">
+              <Button
+                variant={pathname === '/api-docs' ? 'default' : 'ghost'}
+                size="sm"
+                className="gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                API Docs
               </Button>
             </Link>
           </nav>
@@ -85,6 +95,16 @@ export function Header() {
                 >
                   <BarChart3 className="w-4 h-4" />
                   Dashboard
+                </Button>
+              </Link>
+              <Link href="/api-docs" onClick={() => setIsMenuOpen(false)}>
+                <Button
+                  variant={pathname === '/api-docs' ? 'default' : 'ghost'}
+                  size="sm"
+                  className="w-full justify-start gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  API Docs
                 </Button>
               </Link>
             </nav>
