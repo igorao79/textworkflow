@@ -19,11 +19,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
+import { CheckCircle } from 'lucide-react';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
 import { TriggerSelector } from './TriggerSelector';
+import { notifySuccess, notifyError, notifyInfo } from '@/services/notificationService';
 
 interface WorkflowEditorProps {
   workflowData: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>;
@@ -61,6 +64,8 @@ function ExecutionMonitorModal({
   // Флаг для предотвращения повторного запуска
   const [hasStartedExecution, setHasStartedExecution] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [executionProgress, setExecutionProgress] = useState(0);
+
 
   // Функция для выполнения workflow с отслеживанием шагов
   const executeWorkflow = React.useCallback(async () => {
@@ -69,6 +74,13 @@ function ExecutionMonitorModal({
     setIsExecuting(true);
     setIsSubmitting?.(true);
     setHasStartedExecution(true);
+    setExecutionProgress(0);
+
+    // Отправляем уведомление о начале выполнения
+    notifyInfo(
+      'Workflow запущен',
+      `Начато выполнение workflow с ${actions.length} действиями`
+    );
 
     // Инициализируем шаги
     const steps = actions.map(action => ({
@@ -101,13 +113,31 @@ function ExecutionMonitorModal({
             : s
         ));
 
+        // Обновляем прогресс
+        const progress = Math.round(((i + 1) / steps.length) * 100);
+        setExecutionProgress(progress);
+
       }
+
+      setExecutionProgress(100);
 
       // Выполняем реальный workflow
       await onExecute();
 
+      // Отправляем уведомление об успешном завершении
+      notifySuccess(
+        'Workflow выполнен',
+        `Все ${actions.length} действий завершены успешно`
+      );
+
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
+
+      // Отправляем уведомление об ошибке
+      notifyError(
+        'Ошибка выполнения Workflow',
+        `Произошла ошибка при выполнении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`
+      );
 
       // Обновляем статус failed для текущего шага
       setExecutionSteps(prev => prev.map(s =>
@@ -119,6 +149,7 @@ function ExecutionMonitorModal({
     } finally {
       setIsSubmitting?.(false);
       setIsExecuting(false);
+      setExecutionProgress(100);
     }
   }, [onExecute, setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
 
@@ -155,6 +186,7 @@ function ExecutionMonitorModal({
       setHasStartedExecution(false);
       setIsExecuting(false);
       setExecutionSteps([]);
+      setExecutionProgress(0);
     }
   }, [isOpen]);
 
@@ -173,8 +205,23 @@ function ExecutionMonitorModal({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Прогресс выполнения</span>
+              <span>{executionProgress}%</span>
+            </div>
+            <Progress value={executionProgress} className="w-full" />
+          </div>
+
           <div className="text-center py-8 text-muted-foreground">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            {isSubmitting ? (
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            ) : (
+              <div className="rounded-full h-12 w-12 bg-green-500 mx-auto mb-4 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+            )}
             <p className="text-lg font-medium">
               {isSubmitting ? 'Выполнение workflow' : 'Workflow выполнен!'}
             </p>
@@ -231,6 +278,7 @@ function ExecutionMonitorModal({
                   setHasStartedExecution(false);
                   setIsExecuting(false);
                   setExecutionSteps([]);
+                  setExecutionProgress(0);
                   setIsSubmitting?.(false);
                   // Перезапустим выполнение
                   setTimeout(() => {
@@ -365,8 +413,8 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        delay: 150,
+        tolerance: 8,
       },
     })
   );
@@ -472,20 +520,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
     onWorkflowChange({ ...workflowData, actions: updatedActions });
   };
 
-  const handleChangePosition = (actionId: string, newIndex: number) => {
-    const actions = [...workflowData.actions];
-    const currentIndex = actions.findIndex(action => action.id === actionId);
-
-    if (currentIndex === -1 || newIndex < 0 || newIndex >= actions.length) {
-      return;
-    }
-
-    // Перемещаем элемент на новую позицию
-    const [movedAction] = actions.splice(currentIndex, 1);
-    actions.splice(newIndex, 0, movedAction);
-
-    onWorkflowChange({ ...workflowData, actions });
-  };
 
   const handleTriggerChange = (trigger: WorkflowTrigger) => {
     onWorkflowChange({ ...workflowData, trigger });
@@ -592,8 +626,6 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                                       index={globalIndex}
                                       onUpdate={handleActionUpdate}
                                       onDelete={handleActionDelete}
-                                      onChangePosition={handleChangePosition}
-                                      totalActions={workflowData.actions.length}
                                     />
 
                                     {/* Стрелка вниз внутри столбца */}

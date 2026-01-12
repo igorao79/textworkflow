@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Workflow, WorkflowExecution, CronTriggerConfig } from '@/types/workflow';
 import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle, Pause, Play as PlayIcon, FileText, Trash2 } from 'lucide-react';
 import { Tooltip, ResponsiveContainer, PieChart, Pie } from 'recharts';
@@ -37,6 +39,14 @@ export default function DashboardPage() {
   const [currentWorkflowsPage, setCurrentWorkflowsPage] = useState(1);
   const [currentExecutionsPage, setCurrentExecutionsPage] = useState(1);
   const [queueActionLoading, setQueueActionLoading] = useState(false);
+  const [users, setUsers] = useState<Array<{
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+  }>>([]);
+  const [showUsersModal, setShowUsersModal] = useState(false);
+  const [usersLoading, setUsersLoading] = useState(false);
   const itemsPerPage = 5;
 
   const loadCronTasks = async () => {
@@ -160,6 +170,25 @@ export default function DashboardPage() {
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      setUsersLoading(true);
+      const response = await fetch('/api/users');
+      if (response.ok) {
+        const usersData = await response.json();
+        setUsers(usersData);
+        setShowUsersModal(true);
+      } else {
+        alert('Ошибка при загрузке пользователей');
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      alert('Ошибка при загрузке пользователей');
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -277,12 +306,34 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Управление workflow и мониторинг выполнений
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Управление workflow и мониторинг выполнений
+              </p>
+            </div>
+            <Button
+              onClick={loadUsers}
+              disabled={usersLoading}
+              variant="outline"
+              className="gap-2"
+            >
+              {usersLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                  Загрузка...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  Получить пользователей
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Статистика */}
@@ -513,6 +564,23 @@ export default function DashboardPage() {
                               size="sm"
                               onClick={async () => {
                                 try {
+                                  // Если это cron workflow, сначала останавливаем cron задачу
+                                  if (workflow.trigger.type === 'cron') {
+                                    console.log('🛑 Stopping cron task before deleting workflow:', workflow.id);
+                                    try {
+                                      await fetch(`/api/cron/deactivate/${workflow.id}`, {
+                                        method: 'DELETE'
+                                      });
+                                      // Обновляем локальное состояние cron задач
+                                      setCronTasks(prev => prev.map(t =>
+                                        t.workflowId === workflow.id ? { ...t, isRunning: false } : t
+                                      ));
+                                    } catch (cronError) {
+                                      console.warn('⚠️ Failed to stop cron task, but continuing with workflow deletion:', cronError);
+                                    }
+                                  }
+
+                                  // Удаляем сам workflow
                                   const response = await fetch(`/api/workflows/${workflow.id}`, {
                                     method: 'DELETE'
                                   });
@@ -918,6 +986,63 @@ export default function DashboardPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Модалка с пользователями */}
+        <Dialog open={showUsersModal} onOpenChange={setShowUsersModal}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Пользователи базы данных</DialogTitle>
+              <DialogDescription>
+                Список всех пользователей из таблицы test_users
+              </DialogDescription>
+            </DialogHeader>
+
+            <ScrollArea className="max-h-96">
+              {users.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Нет пользователей в базе данных</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Всего пользователей: {users.length}
+                  </div>
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-medium">ID</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium">Имя</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium">Создан</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {users.map((user) => (
+                          <tr key={user.id} className="hover:bg-muted/50">
+                            <td className="px-4 py-3 text-sm">{user.id}</td>
+                            <td className="px-4 py-3 text-sm font-medium">{user.name}</td>
+                            <td className="px-4 py-3 text-sm">{user.email}</td>
+                            <td className="px-4 py-3 text-sm text-muted-foreground">
+                              {formatDate(user.created_at)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </ScrollArea>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowUsersModal(false)}>
+                Закрыть
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

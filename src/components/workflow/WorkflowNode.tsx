@@ -40,52 +40,21 @@ interface WorkflowNodeProps {
   index?: number;
   onUpdate: (actionId: string, updates: Partial<WorkflowAction>) => void;
   onDelete: (actionId: string) => void;
-  onChangePosition?: (actionId: string, newPosition: number) => void;
-  totalActions?: number;
 }
 
-export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePosition, totalActions = 0 }: WorkflowNodeProps) {
+export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNodeProps) {
   const [tempConfig, setTempConfig] = React.useState(action.config);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isDraggingState, setIsDraggingState] = React.useState(false);
-  const [dialogJustClosed, setDialogJustClosed] = React.useState(false);
-  const [positionInput, setPositionInput] = React.useState('');
-  const [positionError, setPositionError] = React.useState('');
-
-  // Текущая позиция элемента (1-based)
-  const currentPosition = (index !== undefined ? index + 1 : 1);
+  const [dialogKey, setDialogKey] = React.useState(0);
+  const [initialConfig, setInitialConfig] = React.useState<WorkflowAction['config'] | null>(null);
 
   // Обновляем tempConfig при изменении action.config
   React.useEffect(() => {
     setTempConfig(action.config);
+    setInitialConfig(action.config);
   }, [action.config]);
 
-  // Синхронизируем positionInput с текущей позицией при открытии модалки
-  React.useEffect(() => {
-    if (isDialogOpen) {
-      console.log('Dialog opened for:', action.id, 'current position:', currentPosition);
-      setPositionInput(currentPosition.toString());
-      setPositionError('');
-    }
-  }, [isDialogOpen, currentPosition, action.id]);
-
-  const handlePositionChange = (value: string) => {
-    setPositionInput(value);
-    setPositionError('');
-
-    const numValue = parseInt(value);
-    if (isNaN(numValue) || numValue < 1 || numValue > 20) {
-      setPositionError('Позиция должна быть числом от 1 до 20');
-      return;
-    }
-
-    if (numValue > totalActions) {
-      setPositionError(`Позиция не может быть больше количества задач (${totalActions})`);
-      return;
-    }
-
-    // Валидация будет выполняться при сохранении
-  };
 
   const {
     attributes,
@@ -110,21 +79,11 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
 
   // Обработчик клика на квадратик
   const handleNodeClick = () => {
-    // Не открываем модалку если элемент перетаскивается или только что закрыли
-    if (isDraggingState || dialogJustClosed) return;
+    // Не открываем модалку если элемент перетаскивается
+    if (isDraggingState) return;
     setIsDialogOpen(true);
   };
 
-  // Обработчик изменения состояния модалки
-  const handleDialogOpenChange = (open: boolean) => {
-    setIsDialogOpen(open);
-    if (!open) {
-      // Модалка закрыта, устанавливаем флаг чтобы предотвратить повторное открытие
-      setDialogJustClosed(true);
-      // Сбрасываем флаг через небольшую задержку
-      setTimeout(() => setDialogJustClosed(false), 100);
-    }
-  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -134,44 +93,58 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
 
 
   const handleSave = () => {
-    console.log('handleSave called for:', action.id, 'current position:', currentPosition, 'requested position:', positionInput);
     console.log('Action config being saved:', {
       type: action.type,
       config: tempConfig
     });
 
-    // Проверяем позицию
-    const numPosition = parseInt(positionInput);
-
-    console.log('numPosition:', numPosition, 'currentPosition:', currentPosition);
-
-    if (numPosition !== currentPosition && onChangePosition) {
-      if (numPosition < 1 || numPosition > 20) {
-        setPositionError('Позиция должна быть числом от 1 до 20');
-        return;
-      }
-      if (numPosition > totalActions) {
-        setPositionError(`Позиция не может быть больше количества задач (${totalActions})`);
-        return;
-      }
-      console.log('Calling onChangePosition with:', action.id, numPosition - 1);
-      onChangePosition(action.id, numPosition - 1); // Конвертируем в 0-based индекс
-    }
-
     onUpdate(action.id, { config: tempConfig });
     setIsDialogOpen(false);
+    setDialogKey(prev => prev + 1); // Принудительно перерендериваем Dialog
   };
 
   const handleCancel = () => {
     setTempConfig(action.config); // Сбрасываем изменения
-    setPositionInput(currentPosition.toString()); // Сбрасываем позицию к текущей
-    setPositionError(''); // Сбрасываем ошибку
+    setInitialConfig(action.config); // Сбрасываем начальные значения
     setIsDialogOpen(false);
+    setDialogKey(prev => prev + 1); // Принудительно перерендериваем Dialog
   };
 
   const updateTempConfig = (updates: Partial<EmailActionConfig | TelegramActionConfig | HttpActionConfig | DatabaseActionConfig | TransformActionConfig>) => {
     setTempConfig(prev => ({ ...prev, ...updates }));
   };
+
+  // Проверяем, есть ли изменения
+  const hasChanges = React.useMemo(() => {
+    if (!initialConfig) return false;
+    return JSON.stringify(tempConfig) !== JSON.stringify(initialConfig);
+  }, [tempConfig, initialConfig]);
+
+  // Проверяем валидность данных
+  const isValid = React.useMemo(() => {
+    switch (action.type) {
+      case 'email':
+        const emailConfig = tempConfig as EmailActionConfig;
+        return emailConfig.to && emailConfig.subject && emailConfig.body;
+      case 'telegram':
+        const telegramConfig = tempConfig as TelegramActionConfig;
+        return telegramConfig.message && telegramConfig.message.trim() !== '';
+      case 'http':
+        const httpConfig = tempConfig as HttpActionConfig;
+        return httpConfig.url && httpConfig.method;
+      case 'database':
+        const dbConfig = tempConfig as DatabaseActionConfig;
+        if (!dbConfig.operation || !dbConfig.table) return false;
+        if ((dbConfig.operation === 'insert' || dbConfig.operation === 'update') && !dbConfig.data) return false;
+        if ((dbConfig.operation === 'update' || dbConfig.operation === 'delete') && !dbConfig.where) return false;
+        return true;
+      case 'transform':
+        const transformConfig = tempConfig as TransformActionConfig;
+        return transformConfig.input && transformConfig.transformation && transformConfig.output;
+      default:
+        return false;
+    }
+  }, [tempConfig, action.type]);
 
   const renderActionConfig = () => {
     switch (action.type) {
@@ -402,23 +375,22 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
       className={`relative ${isDragging ? 'z-50' : ''}`}
       {...attributes}
     >
-      <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-        {/* Основной квадратный узел */}
-        <div
-          className={`
-            relative w-15 h-15 bg-card border-2 border-border rounded-lg shadow-sm
-            flex flex-col items-center justify-center p-0
-            hover:shadow-md hover:border-primary transition-all duration-200 group cursor-pointer
-            ${isDragging ? 'shadow-lg scale-110 border-primary cursor-grabbing' : ''}
-          `}
-          onClick={handleNodeClick}
-        >
+      {/* Основной квадратный узел */}
+      <div
+        className={`
+          relative w-15 h-15 bg-card border-2 border-border rounded-lg shadow-sm
+          flex flex-col items-center justify-center p-0
+          hover:shadow-md hover:border-primary transition-all duration-200 group cursor-pointer
+          ${isDragging ? 'shadow-lg scale-110 border-primary cursor-grabbing' : ''}
+        `}
+        onClick={handleNodeClick}
+      >
         {/* Drag Handle - Ползунок для перетаскивания */}
         <div
           ref={setActivatorNodeRef}
           className={`
             absolute -top-3 left-1/2 transform -translate-x-1/2
-            w-4 h-4 bg-primary rounded-md shadow-md
+            w-8 h-6 bg-primary rounded-md shadow-md
             flex items-center justify-center cursor-grab active:cursor-grabbing
             hover:bg-primary/90 transition-all duration-200
             select-none border border-primary-foreground/20
@@ -444,8 +416,19 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
           {React.createElement(getActionIcon(action.type), { className: "w-4 h-4" })}
         </div>
+      </div>
 
-
+      <Dialog
+        open={isDialogOpen}
+        key={`dialog-${action.id}-${dialogKey}`}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsDialogOpen(false);
+            setInitialConfig(action.config); // Сбрасываем начальные значения при закрытии
+            setDialogKey(prev => prev + 1);
+          }
+        }}
+      >
         <DialogContent className="w-[95vw] max-w-md sm:w-[90vw] md:w-[80vw]">
           <DialogHeader>
             <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
@@ -454,49 +437,44 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-96 overflow-y-auto px-3">
-            {/* Поле позиции */}
-            <div className="mb-4 pb-4 border-b">
-              <Label htmlFor={`position-${action.id}`} className="mb-2 block">Позиция</Label>
-              <Input
-                id={`position-${action.id}`}
-                type="number"
-                min="1"
-                max="20"
-                value={positionInput}
-                onChange={(e) => handlePositionChange(e.target.value)}
-                className={positionError ? 'border-destructive' : ''}
-              />
-              {positionError && (
-                <p className="text-sm text-destructive mt-1">{positionError}</p>
-              )}
-            </div>
-
             {renderActionConfig()}
           </div>
           <div className="flex justify-between items-center pt-4 border-t">
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onDelete(action.id);
                 setIsDialogOpen(false);
+                setDialogKey(prev => prev + 1);
               }}
             >
               Удалить действие
             </Button>
 
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <Button variant="outline" onClick={handleCancel}>
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancel();
+                }}
+              >
                 Отмена
               </Button>
-              <Button onClick={handleSave}>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSave();
+                }}
+                disabled={!hasChanges || !isValid}
+              >
                 Сохранить
               </Button>
             </div>
           </div>
         </DialogContent>
-      </div>
-
       </Dialog>
     </div>
   );

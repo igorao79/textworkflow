@@ -804,5 +804,53 @@
       "timestamp": "2026-01-12T00:18:00.081Z",
       "timezone": "Europe/Moscow"
     }
+  },
+  {
+    "id": "exec_1768226913312_9jl9tycw9",
+    "workflowId": "wf_1768226913310_2t089zj13",
+    "status": "completed",
+    "startedAt": "2026-01-12T14:08:33.312Z",
+    "logs": [
+      {
+        "id": "log_1768226913314_4eiq6bjl2",
+        "timestamp": "2026-01-12T14:08:33.314Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768226913954_agjtfkguj",
+        "timestamp": "2026-01-12T14:08:33.954Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_2"
+      },
+      {
+        "id": "log_1768226913954_kvdb1s0cr",
+        "timestamp": "2026-01-12T14:08:33.954Z",
+        "level": "info",
+        "message": "Executing action: telegram",
+        "actionId": "action_3"
+      },
+      {
+        "id": "log_1768226914060_tbi4gxyy3",
+        "timestamp": "2026-01-12T14:08:34.060Z",
+        "level": "info",
+        "message": "Action telegram completed successfully",
+        "actionId": "action_3"
+      },
+      {
+        "id": "log_1768226914060_kbxvv5h0m",
+        "timestamp": "2026-01-12T14:08:34.060Z",
+        "level": "info",
+        "message": "Workflow execution completed successfully"
+      }
+    ],
+    "completedAt": "2026-01-12T14:08:34.060Z",
+    "result": {
+      "name": "Workflow User",
+      "email": "noreply@workflow.com",
+      "message": "Workflow executed successfully"
+    }
   }
 ]
