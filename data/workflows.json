@@ -496,7 +496,7 @@
       "id": "trigger_1768174189463",
       "type": "cron",
       "config": {
-        "schedule": "1",
+        "schedule": "* * * * *",
         "timezone": "Europe/Moscow"
       }
     },
@@ -518,5 +518,35 @@
     "id": "wf_1768174204850_j3s912k1k",
     "createdAt": "2026-01-11T23:30:04.850Z",
     "updatedAt": "2026-01-11T23:30:04.850Z"
+  },
+  {
+    "name": "Workflow 1768175698074",
+    "description": "",
+    "trigger": {
+      "id": "trigger_1768175690195",
+      "type": "cron",
+      "config": {
+        "schedule": "* * * * *",
+        "timezone": "Europe/Moscow"
+      }
+    },
+    "actions": [
+      {
+        "id": "action_1",
+        "type": "telegram",
+        "config": {
+          "chatId": "",
+          "message": "fsdfds"
+        },
+        "position": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    ],
+    "isActive": true,
+    "id": "wf_1768175698945_6mozvvmtw",
+    "createdAt": "2026-01-11T23:54:58.945Z",
+    "updatedAt": "2026-01-11T23:54:58.945Z"
   }
 ]

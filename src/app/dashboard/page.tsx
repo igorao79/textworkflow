@@ -382,7 +382,7 @@ export default function DashboardPage() {
                         if (confirm(`Остановить все ${runningCount} активных cron задач?`)) {
                           try {
                             setCronTasksLoading(true);
-                            const response = await fetch('/api/cron?workflowId=all', {
+                            const response = await fetch('/api/cron', {
                               method: 'DELETE'
                             });
                             if (response.ok) {
@@ -435,15 +435,14 @@ export default function DashboardPage() {
                                   console.log('🔥 Dashboard: Starting cron activation for workflow:', workflow.id);
 
                                   try {
-                                    console.log('📡 Dashboard: Sending request to /api/cron/activate');
+                                    console.log('📡 Dashboard: Sending request to /api/cron/activate/' + workflow.id);
 
                                     // Отправляем запрос на сервер для активации cron задачи
-                                    const response = await fetch('/api/cron/activate', {
+                                    const response = await fetch(`/api/cron/activate/${workflow.id}`, {
                                       method: 'POST',
                                       headers: {
                                         'Content-Type': 'application/json',
-                                      },
-                                      body: JSON.stringify({ workflowId: workflow.id })
+                                      }
                                     });
 
                                     console.log('📡 Dashboard: Response received:', {
@@ -489,7 +488,7 @@ export default function DashboardPage() {
                                 onClick={async () => {
                                   try {
                                     setCronTasksLoading(true);
-                                    const response = await fetch(`/api/cron?workflowId=${workflow.id}`, {
+                                    const response = await fetch(`/api/cron/deactivate/${workflow.id}`, {
                                       method: 'DELETE'
                                     });
                                     if (response.ok) {
