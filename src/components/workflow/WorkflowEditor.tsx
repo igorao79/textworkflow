@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Workflow, WorkflowAction, WorkflowTrigger, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, RotateCcw, Play } from 'lucide-react';
 import { WorkflowNode } from './WorkflowNode';
 import { ActionPalette } from './ActionPalette';
 import { TriggerSelector } from './TriggerSelector';
@@ -287,7 +287,8 @@ function ExecutionMonitorModal({
                 }}
                 disabled={isSubmitting}
               >
-                🔄 Запустить заново
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Запустить заново
               </Button>
             )}
             <Button
@@ -751,7 +752,8 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
                 setHasExecuted(true);
               }}
             >
-              🚀 Запустить Workflow
+              <Play className="w-4 h-4 mr-2" />
+              Запустить Workflow
             </Button>
           </DialogFooter>
         </DialogContent>

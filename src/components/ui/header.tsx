@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Home, Menu, X } from 'lucide-react';
-import { NotificationsBell } from './notifications-bell';
 
 export function Header() {
   const pathname = usePathname();
@@ -25,7 +24,6 @@ export function Header() {
 
           {/* Десктопная навигация */}
           <nav className="hidden md:flex items-center gap-2">
-            <NotificationsBell />
             <Link href="/">
               <Button
                 variant={pathname === '/' ? 'default' : 'ghost'}
@@ -50,7 +48,6 @@ export function Header() {
 
           {/* Мобильная навигация */}
           <div className="md:hidden flex items-center gap-2">
-            <NotificationsBell />
             <Button
               variant="ghost"
               size="sm"

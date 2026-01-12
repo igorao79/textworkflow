@@ -41,7 +41,6 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [currentWorkflowsPage, setCurrentWorkflowsPage] = useState(1);
   const [currentExecutionsPage, setCurrentExecutionsPage] = useState(1);
-  const [queueActionLoading, setQueueActionLoading] = useState(false);
   const [users, setUsers] = useState<Array<{
     id: number;
     name: string;
@@ -183,29 +182,6 @@ export default function DashboardPage() {
       clearInterval(queueInterval);
     };
   }, [loadData]);
-
-  const toggleQueuePause = async () => {
-    if (queueActionLoading) return;
-
-    setQueueActionLoading(true);
-    try {
-      const action = queueStats?.paused ? 'resume' : 'pause';
-      const response = await fetch('/api/queue/pause', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      });
-
-      if (response.ok) {
-        // Перезагрузить данные
-        await loadData();
-      }
-    } catch (error) {
-      console.error('Error toggling queue pause:', error);
-    } finally {
-      setQueueActionLoading(false);
-    }
-  };
 
   const loadUsers = async () => {
     try {
@@ -369,49 +345,6 @@ export default function DashboardPage() {
                   Получить пользователей
                 </>
               )}
-            </Button>
-            <Button
-              onClick={async () => {
-                console.log('🔥 Testing API call...');
-                try {
-                  const response = await fetch('/api/test');
-                  const data = await response.json();
-                  console.log('✅ API test response:', data);
-                  alert('API работает! Проверьте логи сервера.');
-                } catch (error) {
-                  console.error('❌ API test failed:', error);
-                  alert('API не работает! Ошибка: ' + error);
-                }
-              }}
-              variant="outline"
-              className="gap-2"
-            >
-              <Activity className="w-4 h-4" />
-              Тест API
-            </Button>
-            <Button
-              onClick={async () => {
-                console.log('🔥 Testing POST API call...');
-                try {
-                  const response = await fetch('/api/cron/activate/test-workflow-post', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    }
-                  });
-                  const data = await response.json();
-                  console.log('✅ POST API test response:', data);
-                  alert('POST API работает! Ответ: ' + JSON.stringify(data));
-                } catch (error) {
-                  console.error('❌ POST API test failed:', error);
-                  alert('POST API не работает! Ошибка: ' + error);
-                }
-              }}
-              variant="outline"
-              className="gap-2"
-            >
-              <Activity className="w-4 h-4" />
-              Тест POST API
             </Button>
           </div>
         </div>
@@ -612,8 +545,8 @@ export default function DashboardPage() {
                                   }
                                 }}
                               >
-                                <Play className="w-4 h-4 mr-1" />
-                                Запустить
+                                <Play className="w-4 h-4 mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline">Запустить</span>
                               </Button>
                             ) : (
                               <Button
@@ -768,47 +701,6 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={toggleQueuePause}
-                      disabled={queueActionLoading}
-                      variant={queueStats.paused ? "default" : "outline"}
-                      size="sm"
-                      className="flex-1"
-                    >
-                      {queueActionLoading ? (
-                        <>
-                          <div className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                          Выполнение...
-                        </>
-                      ) : queueStats.paused ? (
-                        <>
-                          <PlayIcon className="w-4 h-4 mr-2" />
-                          Возобновить
-                        </>
-                      ) : (
-                        <>
-                          <Pause className="w-4 h-4 mr-2" />
-                          Приостановить
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        try {
-                          await fetch('/api/test-queue', { method: 'POST' });
-                          // Состояние обновится автоматически через интервал
-                        } catch (error) {
-                          console.error('Failed to add demo tasks:', error);
-                        }
-                      }}
-                      variant="outline"
-                      size="sm"
-                      title="Добавить демо-задачи для тестирования"
-                    >
-                      <Play className="w-4 h-4" />
-                    </Button>
-                  </div>
                 </div>
               </CardContent>
             </Card>

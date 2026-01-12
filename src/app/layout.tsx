@@ -56,7 +56,13 @@ export default function RootLayout({
             style: {
               background: '#363636',
               color: '#fff',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
             },
+          }}
+          containerStyle={{
+            top: 20,
+            right: 20,
           }}
         />
       </body>

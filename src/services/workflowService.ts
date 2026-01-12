@@ -576,13 +576,33 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
   }
 }
 
-async function executeTransformAction(config: TransformActionConfig, data: Record<string, unknown>): Promise<void> {
+async function executeTransformAction(config: TransformActionConfig, fullData: Record<string, unknown>): Promise<void> {
   // Простая трансформация данных с помощью Function constructor
   // В продакшене использовать более безопасный подход
   try {
-    const transformFunction = new Function('data', `return ${config.transformation}`);
-    const result = transformFunction(data);
-    data[config.output] = result;
+    // Извлекаем значение по пути config.input
+    let inputValue: unknown;
+
+    if (config.input === '.' || config.input === 'data' || !config.input.trim()) {
+      // Используем весь объект данных
+      inputValue = fullData;
+    } else if (config.input.startsWith('data.')) {
+      // Простой путь вида data.email, data.name и т.д.
+      const path = config.input.replace('data.', '');
+      inputValue = fullData[path];
+    } else {
+      // Пытаемся найти значение по ключу
+      inputValue = fullData[config.input];
+    }
+
+    // Добавляем return для выражений, которые должны вернуть результат
+    const transformCode = config.transformation.trim().startsWith('return ')
+      ? config.transformation
+      : `return ${config.transformation}`;
+
+    const transformFunction = new Function('data', transformCode);
+    const result = transformFunction(inputValue);
+    fullData[config.output] = result;
   } catch (error) {
     throw new Error(`Transformation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

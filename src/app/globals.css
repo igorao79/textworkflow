@@ -83,3 +83,38 @@
   }
 
 }
+
+/* Плавные анимации для toast уведомлений */
+.Toastify__toast {
+  animation: slideInRight 0.3s ease-out, fadeOut 0.4s ease-in 3.6s forwards !important;
+}
+
+.Toastify__toast-enter {
+  animation: slideInRight 0.3s ease-out !important;
+}
+
+.Toastify__toast-exit {
+  animation: fadeOut 0.4s ease-in !important;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

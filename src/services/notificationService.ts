@@ -19,13 +19,20 @@ class NotificationService {
     const { type, title, message } = data;
 
     const toastOptions = {
-      duration: 5000,
+      duration: 4000, // Уменьшаем до 4 секунд для более быстрого исчезновения
       style: {
         border: '1px solid',
         borderColor: type === 'success' ? '#10b981' :
                      type === 'error' ? '#ef4444' :
                      type === 'warning' ? '#f59e0b' : '#3b82f6',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transform: 'translateX(0)',
+        opacity: 1,
       },
+      // Настройки анимации для плавного появления справа
+      position: 'top-right' as const,
     };
 
     switch (type) {
