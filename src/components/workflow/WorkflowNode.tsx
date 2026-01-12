@@ -8,9 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { WorkflowAction, EmailActionConfig, TelegramActionConfig, HttpActionConfig, DatabaseActionConfig, TransformActionConfig } from '@/types/workflow';
-import { Trash2, Settings, Mail, Send, Globe, Database, RefreshCw, Wrench, GripVertical } from 'lucide-react';
+import { Mail, Send, Globe, Database, RefreshCw, Wrench, GripVertical } from 'lucide-react';
 
 // Вспомогательные функции для иконок и названий
 export const getActionIcon = (type: string) => {
@@ -47,6 +47,8 @@ interface WorkflowNodeProps {
 export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePosition, totalActions = 0 }: WorkflowNodeProps) {
   const [tempConfig, setTempConfig] = React.useState(action.config);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isDraggingState, setIsDraggingState] = React.useState(false);
+  const [dialogJustClosed, setDialogJustClosed] = React.useState(false);
   const [positionInput, setPositionInput] = React.useState('');
   const [positionError, setPositionError] = React.useState('');
 
@@ -100,6 +102,29 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
       action
     }
   });
+
+  // Синхронизируем локальное состояние с isDragging
+  React.useEffect(() => {
+    setIsDraggingState(isDragging);
+  }, [isDragging]);
+
+  // Обработчик клика на квадратик
+  const handleNodeClick = () => {
+    // Не открываем модалку если элемент перетаскивается или только что закрыли
+    if (isDraggingState || dialogJustClosed) return;
+    setIsDialogOpen(true);
+  };
+
+  // Обработчик изменения состояния модалки
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      // Модалка закрыта, устанавливаем флаг чтобы предотвратить повторное открытие
+      setDialogJustClosed(true);
+      // Сбрасываем флаг через небольшую задержку
+      setTimeout(() => setDialogJustClosed(false), 100);
+    }
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -377,21 +402,23 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
       className={`relative ${isDragging ? 'z-50' : ''}`}
       {...attributes}
     >
-      {/* Основной квадратный узел */}
-      <div
-        className={`
-          relative w-20 h-20 bg-card border-2 border-border rounded-lg shadow-sm
-          flex flex-col items-center justify-center gap-1
-          hover:shadow-md hover:border-primary transition-all duration-200 group
-          ${isDragging ? 'shadow-lg scale-110 border-primary' : ''}
-        `}
-      >
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
+        {/* Основной квадратный узел */}
+        <div
+          className={`
+            relative w-15 h-15 bg-card border-2 border-border rounded-lg shadow-sm
+            flex flex-col items-center justify-center p-0
+            hover:shadow-md hover:border-primary transition-all duration-200 group cursor-pointer
+            ${isDragging ? 'shadow-lg scale-110 border-primary cursor-grabbing' : ''}
+          `}
+          onClick={handleNodeClick}
+        >
         {/* Drag Handle - Ползунок для перетаскивания */}
         <div
           ref={setActivatorNodeRef}
           className={`
             absolute -top-3 left-1/2 transform -translate-x-1/2
-            w-8 h-6 bg-primary rounded-md shadow-md
+            w-4 h-4 bg-primary rounded-md shadow-md
             flex items-center justify-center cursor-grab active:cursor-grabbing
             hover:bg-primary/90 transition-all duration-200
             select-none border border-primary-foreground/20
@@ -408,7 +435,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
           <GripVertical className="w-3 h-3 text-primary-foreground drop-shadow-sm" />
         </div>
         {/* Номер задачи */}
-        <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold shadow-sm border-2 border-card">
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border-2 border-card">
           {index !== undefined ? index + 1 : action.id.split('_').pop() || '?'}
         </div>
 
@@ -418,87 +445,59 @@ export function WorkflowNode({ action, index, onUpdate, onDelete, onChangePositi
           {React.createElement(getActionIcon(action.type), { className: "w-4 h-4" })}
         </div>
 
-        {/* Кнопки управления */}
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-6 h-6 p-0 hover:bg-secondary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDialogOpen(true);
-                }}
-              >
-                <Settings className="w-3 h-3" />
+
+        <DialogContent className="w-[95vw] max-w-md sm:w-[90vw] md:w-[80vw]">
+          <DialogHeader>
+            <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
+            <DialogDescription>
+              Настройте параметры действия workflow
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-96 overflow-y-auto px-3">
+            {/* Поле позиции */}
+            <div className="mb-4 pb-4 border-b">
+              <Label htmlFor={`position-${action.id}`} className="mb-2 block">Позиция</Label>
+              <Input
+                id={`position-${action.id}`}
+                type="number"
+                min="1"
+                max="20"
+                value={positionInput}
+                onChange={(e) => handlePositionChange(e.target.value)}
+                className={positionError ? 'border-destructive' : ''}
+              />
+              {positionError && (
+                <p className="text-sm text-destructive mt-1">{positionError}</p>
+              )}
+            </div>
+
+            {renderActionConfig()}
+          </div>
+          <div className="flex justify-between items-center pt-4 border-t">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                onDelete(action.id);
+                setIsDialogOpen(false);
+              }}
+            >
+              Удалить действие
+            </Button>
+
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <Button variant="outline" onClick={handleCancel}>
+                Отмена
               </Button>
-            </DialogTrigger>
-            <DialogContent className="w-[95vw] max-w-md sm:w-[90vw] md:w-[80vw]">
-              <DialogHeader>
-                <DialogTitle>{getActionTitle(action.type)}</DialogTitle>
-                <DialogDescription>
-                  Настройте параметры действия workflow
-                </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-96 overflow-y-auto px-3">
-                {/* Поле позиции */}
-                <div className="mb-4 pb-4 border-b">
-                  <Label htmlFor={`position-${action.id}`} className="mb-2 block">Позиция</Label>
-                  <Input
-                    id={`position-${action.id}`}
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={positionInput}
-                    onChange={(e) => handlePositionChange(e.target.value)}
-                    className={positionError ? 'border-destructive' : ''}
-                  />
-                  {positionError && (
-                    <p className="text-sm text-destructive mt-1">{positionError}</p>
-                  )}
-                </div>
-
-                {renderActionConfig()}
-              </div>
-              <div className="flex justify-between items-center pt-4 border-t">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => {
-                    onDelete(action.id);
-                    setIsDialogOpen(false);
-                  }}
-                >
-                  Удалить действие
-                </Button>
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                  <Button variant="outline" onClick={handleCancel}>
-                    Отмена
-                  </Button>
-                  <Button onClick={handleSave}>
-                    Сохранить
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-6 h-6 p-0 text-destructive hover:text-destructive hover:bg-secondary"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(action.id);
-            }}
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
-        </div>
-
+              <Button onClick={handleSave}>
+                Сохранить
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
       </div>
 
+      </Dialog>
     </div>
   );
 }
