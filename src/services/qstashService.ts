@@ -54,9 +54,16 @@ interface QStashWebhookPayload {
 
 export async function createQStashSchedule(workflowId: string, cronExpression: string): Promise<QStashSchedule> {
   console.log(`🚀 Creating QStash schedule for workflow: ${workflowId} with cron: ${cronExpression}`);
+  console.log(`🔍 Environment check - NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`🔍 NEXT_PUBLIC_APP_URL: ${process.env.NEXT_PUBLIC_APP_URL}`);
 
   // В режиме разработки отключаем QStash и используем node-cron как fallback
-  if (process.env.NODE_ENV === 'development') {
+  const isDevelopment = process.env.NODE_ENV === 'development' || !process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_APP_URL.includes('localhost') || process.env.NEXT_PUBLIC_APP_URL.includes('127.0.0.1');
+
+  if (isDevelopment) {
+    console.log('🧪 Development/local mode detected, using node-cron fallback');
+    console.log(`📋 NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`📋 NEXT_PUBLIC_APP_URL: ${process.env.NEXT_PUBLIC_APP_URL}`);
     console.log('🧪 Development mode: QStash disabled, using node-cron fallback');
 
     // Импортируем старый cron сервис для development
@@ -199,12 +206,20 @@ export async function verifyQStashWebhook(signature: string, body: string, url: 
 
 export async function processQStashWebhook(payload: QStashWebhookPayload): Promise<void> {
   console.log('🎣 Processing QStash webhook payload:', payload);
+  console.log('📊 Payload details:', {
+    workflowId: payload.workflowId,
+    trigger: payload.trigger,
+    source: payload.source,
+    timestamp: payload.timestamp
+  });
 
   try {
     const { workflowId, trigger, timestamp, source } = payload;
 
     if (source !== 'qstash' || trigger !== 'cron') {
       console.warn('⚠️ Invalid webhook payload - not from QStash cron');
+      console.warn('📋 Expected source: qstash, trigger: cron');
+      console.warn('📋 Received source:', source, 'trigger:', trigger);
       return;
     }
 
@@ -214,10 +229,12 @@ export async function processQStashWebhook(payload: QStashWebhookPayload): Promi
     }
 
     console.log(`🚀 Executing workflow ${workflowId} from QStash webhook`);
+    console.log('⏰ Execution timestamp:', timestamp || new Date().toISOString());
 
     // Импортируем функцию выполнения workflow
     const { executeWorkflow } = await import('./workflowService');
 
+    console.log('🔄 Calling executeWorkflow...');
     await executeWorkflow(workflowId, {
       trigger: 'cron',
       timestamp: timestamp || new Date().toISOString(),
@@ -228,6 +245,10 @@ export async function processQStashWebhook(payload: QStashWebhookPayload): Promi
 
   } catch (error) {
     console.error('❌ Failed to process QStash webhook:', error);
+    console.error('💥 Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     throw error;
   }
 }

@@ -68,7 +68,40 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 3. Проверьте логи - должна создаться QStash schedule
 4. Через минуту webhook от QStash выполнит workflow
 
-#### Тестирование с ngrok (опционально):
+#### Настройка на Vercel
+
+1. **Перейдите в Vercel Dashboard**
+2. **Выберите ваш проект** (textworkflow)
+3. **Settings → Environment Variables**
+4. **Добавьте переменные:**
+   ```
+   NEXT_PUBLIC_APP_URL=https://textworkflow.vercel.app
+   QSTASH_TOKEN=ваш_qstash_token
+   QSTASH_CURRENT_SIGNING_KEY=ваш_current_key
+   QSTASH_NEXT_SIGNING_KEY=ваш_next_key
+   ```
+5. **Redeploy приложение**
+
+#### Тестирование webhook endpoint
+
+Проверьте, что ваш webhook endpoint доступен:
+
+```bash
+# Проверка доступности
+curl https://textworkflow.vercel.app/api/qstash/test
+
+# Ручное тестирование webhook
+curl -X POST https://textworkflow.vercel.app/api/qstash/test \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workflowId": "wf_1768308471546_qawi1psng",
+    "trigger": "cron",
+    "source": "qstash",
+    "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+  }'
+```
+
+### Тестирование с ngrok (опционально):
 ```bash
 # Установите ngrok
 npm install -g ngrok
@@ -143,6 +176,19 @@ Node-cron задачи автоматически удалятся при пер
 - **Причина:** QStash не может достичь localhost
 - **Решение:** В development режиме QStash автоматически отключается
 - **Альтернатива:** Используйте ngrok для тестирования QStash локально
+
+### QStash schedule создан, но webhook не приходит
+- **Проверьте URL:** Убедитесь, что `NEXT_PUBLIC_APP_URL` указывает на публично доступный домен
+- **Тестируйте endpoint:** `GET https://your-domain.com/api/qstash/test`
+- **Проверьте логи:** Ищите сообщения в логах сервера от QStash webhook
+- **Firewall:** Убедитесь, что порт 443 открыт и доступен извне
+- **SSL:** Webhook endpoint должен быть HTTPS
+
+### Vercel специфические проблемы
+- **Environment Variables:** Убедитесь, что переменные установлены в Vercel Dashboard, а не в .env.local
+- **Redeploy:** После изменения переменных нужно сделать redeploy
+- **URL format:** Используйте полный URL с https://
+- **Vercel domains:** Убедитесь, что домен textworkflow.vercel.app активен
 
 ### Webhook не приходит
 - Проверьте `NEXT_PUBLIC_APP_URL` (не должен быть localhost)

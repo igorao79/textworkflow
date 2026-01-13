@@ -5,6 +5,12 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   console.log('🎣 QStash webhook received');
+  console.log('📋 Request details:', {
+    url: request.url,
+    method: request.method,
+    headers: Object.fromEntries(request.headers.entries()),
+    timestamp: new Date().toISOString()
+  });
 
   try {
     // Получаем данные для верификации
@@ -12,10 +18,11 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const url = request.url;
 
-    console.log('📋 Webhook headers:', {
+    console.log('📋 Webhook data:', {
       signature: signature?.substring(0, 50) + '...',
       url,
-      bodyLength: body.length
+      bodyLength: body.length,
+      body: body.substring(0, 200) + '...' // Логируем первые 200 символов body
     });
 
     // Верифицируем подпись
@@ -57,9 +64,17 @@ export async function POST(request: NextRequest) {
 // Метод для тестирования (без верификации)
 export async function PUT(request: NextRequest) {
   console.log('🧪 Test QStash webhook received (no verification)');
+  console.log('📋 Test request details:', {
+    url: request.url,
+    method: request.method,
+    headers: Object.fromEntries(request.headers.entries()),
+    timestamp: new Date().toISOString()
+  });
 
   try {
     const body = await request.text();
+    console.log('📋 Test webhook body:', body.substring(0, 500) + '...');
+
     let payload;
 
     try {
@@ -69,11 +84,18 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
 
+    console.log('📋 Parsed test payload:', payload);
+
     // Обрабатываем webhook без верификации (для тестирования)
     await processQStashWebhook(payload);
 
     console.log('✅ Test QStash webhook processed successfully');
-    return NextResponse.json({ received: true, processed: true, test: true });
+    return NextResponse.json({
+      received: true,
+      processed: true,
+      test: true,
+      payload: payload
+    });
 
   } catch (error) {
     console.error('💥 Error processing test QStash webhook:', error);
