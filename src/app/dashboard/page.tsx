@@ -33,6 +33,43 @@ export default function DashboardPage() {
     nextExecution: Date | null;
   }>>([]);
   const [cronTasksLoading, setCronTasksLoading] = useState(false);
+  const [stopAllModalOpen, setStopAllModalOpen] = useState(false);
+
+  // Обработчик остановки всех cron задач
+  const handleStopAllCronTasks = async () => {
+    try {
+      setCronTasksLoading(true);
+      console.log('🛑 Stopping all cron tasks');
+
+      const response = await fetch('/api/cron', {
+        method: 'DELETE'
+      });
+
+      const responseData = await response.json();
+      console.log('🛑 Stop all cron response:', response.status, responseData);
+
+      if (response.ok) {
+        console.log('✅ All cron tasks stopped successfully');
+        // Обновляем статус всех задач на неактивные
+        setCronTasks(prev => prev.map(task => ({ ...task, isRunning: false })));
+
+        // Также обновляем статусы workflows в списке workflows
+        setWorkflows(prev => prev.map(w =>
+          w.trigger.type === 'cron' ? { ...w, isActive: false } : w
+        ));
+
+        setStopAllModalOpen(false);
+      } else {
+        console.error('❌ Failed to stop all cron tasks:', responseData);
+        alert('Ошибка при остановке всех cron задач: ' + (responseData.error || 'Неизвестная ошибка'));
+      }
+    } catch (error) {
+      console.error('💥 Exception stopping all cron tasks:', error);
+      alert('Ошибка при остановке всех cron задач');
+    } finally {
+      setCronTasksLoading(false);
+    }
+  };
 
   // Получаем все workflow с cron триггером
   const cronWorkflows = workflows.filter(w => w.trigger.type === 'cron');
@@ -513,42 +550,9 @@ export default function DashboardPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={async () => {
+                      onClick={() => {
                         if (cronTasksLoading) return; // Предотвращаем множественные клики
-
-                        const runningCount = cronTasks.filter(task => task.isRunning).length;
-                        if (confirm(`Остановить все ${runningCount} активных cron задач?`)) {
-                          try {
-                            setCronTasksLoading(true);
-                            console.log('🛑 Stopping all cron tasks');
-
-                            const response = await fetch('/api/cron', {
-                              method: 'DELETE'
-                            });
-
-                            const responseData = await response.json();
-                            console.log('🛑 Stop all cron response:', response.status, responseData);
-
-                            if (response.ok) {
-                              console.log('✅ All cron tasks stopped successfully');
-                              // Обновляем статус всех задач на неактивные
-                              setCronTasks(prev => prev.map(task => ({ ...task, isRunning: false })));
-
-                              // Также обновляем статусы workflows в списке workflows
-                              setWorkflows(prev => prev.map(w =>
-                                w.trigger.type === 'cron' ? { ...w, isActive: false } : w
-                              ));
-                            } else {
-                              console.error('❌ Failed to stop all cron tasks:', responseData);
-                              alert('Ошибка при остановке всех cron задач: ' + (responseData.error || 'Неизвестная ошибка'));
-                            }
-                          } catch (error) {
-                            console.error('💥 Exception stopping all cron tasks:', error);
-                            alert('Ошибка при остановке всех cron задач');
-                          } finally {
-                            setCronTasksLoading(false);
-                          }
-                        }
+                        setStopAllModalOpen(true);
                       }}
                     >
                       {cronTasksLoading ? (
@@ -1200,6 +1204,55 @@ export default function DashboardPage() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowUsersModal(false)}>
                 Закрыть
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Модальное окно остановки всех cron задач */}
+        <Dialog open={stopAllModalOpen} onOpenChange={setStopAllModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Pause className="w-5 h-5 text-orange-500" />
+                Остановить все cron задачи
+              </DialogTitle>
+              <DialogDescription className="text-left">
+                Вы действительно хотите остановить все активные cron задачи?
+                <br />
+                <strong>{cronTasks.filter(task => task.isRunning).length} задач</strong> будут остановлены.
+                <br />
+                <span className="text-sm text-muted-foreground mt-2 block">
+                  Это действие нельзя отменить. Задачи можно будет запустить заново.
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setStopAllModalOpen(false)}
+                disabled={cronTasksLoading}
+                className="w-full sm:w-auto"
+              >
+                Отмена
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleStopAllCronTasks}
+                disabled={cronTasksLoading}
+                className="w-full sm:w-auto"
+              >
+                {cronTasksLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Останавливаю...
+                  </>
+                ) : (
+                  <>
+                    <Pause className="w-4 h-4 mr-2" />
+                    Остановить все
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
