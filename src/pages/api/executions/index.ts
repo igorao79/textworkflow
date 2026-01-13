@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (req.method) {
       case 'GET':
         const { workflowId: queryWorkflowId } = req.query;
-        const executions = getExecutions(queryWorkflowId as string);
+        const executions = await getExecutions(queryWorkflowId as string);
         res.status(200).json(executions);
         break;
 

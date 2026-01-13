@@ -31,7 +31,7 @@ import { notifySuccess, notifyError, notifyInfo } from '@/services/notificationS
 interface WorkflowEditorProps {
   workflowData: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>;
   onWorkflowChange: (data: WorkflowEditorProps['workflowData']) => void;
-  onSubmit?: () => void;
+  onSubmit?: () => Promise<void> | void;
   isSubmitting?: boolean;
   setIsSubmitting?: (submitting: boolean) => void;
 }
@@ -64,21 +64,19 @@ function ExecutionMonitorModal({
   const [hasStartedExecution, setHasStartedExecution] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionProgress, setExecutionProgress] = useState(0);
+  const [successNotificationSent, setSuccessNotificationSent] = useState(false);
 
   // Функция для выполнения workflow с отслеживанием шагов
-  const executeWorkflow = React.useCallback(async () => {
-    if (!onExecute || isSubmitting || hasStartedExecution) return;
+  const executeWorkflow = React.useCallback(async (submitFn?: () => Promise<void> | void) => {
+    if (isSubmitting || hasStartedExecution) return;
+
+    const executeFn = submitFn || (() => Promise.resolve());
 
     setIsExecuting(true);
     setIsSubmitting?.(true);
     setHasStartedExecution(true);
     setExecutionProgress(1); // Начинаем с 1%, чтобы показать что выполнение началось
-
-    // Отправляем уведомление о начале выполнения
-    notifyInfo(
-      'Workflow запущен',
-      `Начато выполнение workflow с ${actions.length} действиями`
-    );
+    setSuccessNotificationSent(false); // Сбрасываем флаг уведомления
 
     // Инициализируем шаги
     const steps = actions.map(action => ({
@@ -120,16 +118,23 @@ function ExecutionMonitorModal({
       setExecutionProgress(100);
 
       // Выполняем реальный workflow
-      await onExecute();
+      if (executeFn) {
+        await executeFn();
+      }
 
-      // Отправляем уведомление об успешном завершении
-      notifySuccess(
-        'Workflow выполнен',
-        `Все ${actions.length} действий завершены успешно`
-      );
+      // Устанавливаем статус завершения ТОЛЬКО после успешного выполнения
+      setIsSubmitting?.(false);
+      setIsExecuting(false);
+
+      // Уведомление будет отправлено автоматически через useEffect при достижении 100%
 
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
+
+      // Устанавливаем статус завершения даже при ошибке
+      setIsSubmitting?.(false);
+      setIsExecuting(false);
+      setExecutionProgress(100);
 
       // Отправляем уведомление об ошибке
       notifyError(
@@ -145,11 +150,37 @@ function ExecutionMonitorModal({
       ));
 
     } finally {
-      setIsSubmitting?.(false);
-      setIsExecuting(false);
-      setExecutionProgress(100);
+      // Гарантируем, что статус завершения установлен в любом случае
+      console.log('🔄 Finally block: ensuring completion state...');
+      if (executionProgress < 100) {
+        setExecutionProgress(100);
+      }
+      // Не устанавливаем isSubmitting здесь, чтобы не конфликтовать с успешным выполнением
+      setSuccessNotificationSent(false); // Сбрасываем флаг для следующего запуска
     }
-  }, [onExecute, setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
+  }, [setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
+
+  // Гарантируем корректное отображение завершения и уведомление
+  React.useEffect(() => {
+    if (executionProgress === 100 && hasStartedExecution && !successNotificationSent) {
+      // Если прогресс 100%, гарантируем правильное состояние
+      if (isSubmitting) {
+        console.log('🔧 Fixing completion state: progress 100%, but still submitting');
+        setIsSubmitting?.(false);
+        setIsExecuting(false);
+      }
+
+      // Гарантируем отправку уведомления об успехе (только один раз)
+      if (!isSubmitting) {
+        console.log('📢 Guaranteed success notification for 100% progress');
+        setSuccessNotificationSent(true);
+        notifySuccess(
+          'Workflow выполнен',
+          `Все ${actions.length} действий завершены успешно`
+        );
+      }
+    }
+  }, [executionProgress, isSubmitting, hasStartedExecution, successNotificationSent, setIsSubmitting, actions.length]);
 
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {
@@ -161,7 +192,7 @@ function ExecutionMonitorModal({
   // Автоматически запускаем выполнение при открытии модального окна
   React.useEffect(() => {
     if (isOpen && !hasStartedExecution && onExecute) {
-      executeWorkflow();
+      executeWorkflow(onExecute);
     }
   }, [isOpen, hasStartedExecution, onExecute, executeWorkflow]);
 
@@ -172,6 +203,7 @@ function ExecutionMonitorModal({
       setIsExecuting(false);
       setExecutionSteps([]);
       setExecutionProgress(0);
+      setSuccessNotificationSent(false);
     }
   }, [isOpen]);
 
@@ -276,6 +308,7 @@ function ExecutionMonitorModal({
                   setExecutionSteps([]);
                   setExecutionProgress(0);
                   setIsSubmitting?.(false);
+                  setSuccessNotificationSent(false);
                   // Перезапустим выполнение
                   setTimeout(() => {
                     executeWorkflow();

@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (req.method) {
       case 'GET':
-        const execution = getExecution(id);
+        const execution = await getExecution(id);
         if (!execution) {
           return res.status(404).json({ error: 'Execution not found' });
         }

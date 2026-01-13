@@ -1,7 +1,7 @@
 import * as cron from 'node-cron';
 import fs from 'fs';
 import path from 'path';
-import { executeWorkflow, getWorkflows, saveWorkflows } from './workflowService';
+import { executeWorkflow, getWorkflows, saveWorkflows, getExecutions } from './workflowService';
 import { WorkflowExecution, Workflow } from '../types/workflow';
 import { addTask } from '../lib/queue-visualization';
 
@@ -260,7 +260,7 @@ function getNextExecutionTime(): Date | null {
 }
 
 async function checkAndStopDuplicateTasks() {
-  const executions = loadExecutions();
+  const executions = await getExecutions();
 
   // Группируем executions по workflowId
   const executionsByWorkflow = executions.reduce((acc, execution) => {
@@ -286,7 +286,7 @@ async function checkAndStopDuplicateTasks() {
                 execution.status = 'failed';
                 execution.error = 'Duplicate execution stopped';
                 execution.completedAt = new Date();
-                updateExecutionInFile(execution);
+                await updateExecutionInFile(execution);
               }
             }
   }

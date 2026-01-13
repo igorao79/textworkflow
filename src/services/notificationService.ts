@@ -19,7 +19,7 @@ class NotificationService {
     const { type, title, message } = data;
 
     const toastOptions = {
-      duration: 4000, // Уменьшаем до 4 секунд для более быстрого исчезновения
+      duration: 4000, // Стандартная длительность показа уведомлений
       style: {
         border: '1px solid',
         borderColor: type === 'success' ? '#10b981' :
