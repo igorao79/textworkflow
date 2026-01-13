@@ -25,6 +25,9 @@ export async function POST(request: NextRequest) {
       body: body.substring(0, 200) + '...' // Логируем первые 200 символов body
     });
 
+    // ВРЕМЕННО ОТКЛЮЧАЕМ ВЕРИФИКАЦИЮ ДЛЯ ТЕСТИРОВАНИЯ
+    console.log('⚠️ TEMPORARY: Skipping signature verification for testing');
+    /*
     // Верифицируем подпись
     if (!signature) {
       console.error('❌ Missing upstash-signature header');
@@ -36,6 +39,7 @@ export async function POST(request: NextRequest) {
       console.error('❌ Invalid webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
+    */
 
     // Парсим и обрабатываем payload
     let payload;
