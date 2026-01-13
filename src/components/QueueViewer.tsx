@@ -257,6 +257,37 @@ export default function QueueViewer() {
               Очистить все
             </Button>
             <Button
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  const response = await fetch('/api/queue/process', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+                  const result = await response.json();
+                  if (response.ok) {
+                    console.log('✅ Queue processed:', result);
+                  } else {
+                    setError(result.error || 'Не удалось обработать очередь');
+                  }
+                  await fetchQueueState(); // Обновляем состояние после обработки
+                } catch (err) {
+                  setError('Не удалось обработать очередь');
+                  console.error('Ошибка при обработке очереди:', err);
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              variant="default"
+              size="sm"
+              disabled={isLoading}
+            >
+              <Play className="w-4 h-4 mr-1" />
+              Обработать очередь
+            </Button>
+            <Button
               onClick={fetchQueueState}
               variant="outline"
               size="sm"

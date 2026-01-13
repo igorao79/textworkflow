@@ -434,6 +434,28 @@ export default function ApiDocsPage() {
             }
           }
         }
+       },
+      '/api/queue/process': {
+        post: {
+          summary: 'Обработать следующую задачу из очереди',
+          responses: {
+            200: {
+              description: 'Задача обработана',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string' },
+                      jobId: { type: 'string' },
+                      result: { type: 'object' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   };
