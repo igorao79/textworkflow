@@ -34,6 +34,55 @@ export default function DashboardPage() {
   }>>([]);
   const [cronTasksLoading, setCronTasksLoading] = useState(false);
   const [stopAllDialogOpen, setStopAllDialogOpen] = useState(false);
+  const [activateDialogOpen, setActivateDialogOpen] = useState(false);
+  const [workflowToActivate, setWorkflowToActivate] = useState<Workflow | null>(null);
+
+  // Функция для активации cron workflow
+  const activateCronWorkflow = async () => {
+    if (!workflowToActivate) return;
+
+    try {
+      setCronTasksLoading(true);
+      console.log('🔥 Dashboard: Starting cron activation for workflow:', workflowToActivate.id);
+
+      // Отправляем запрос на сервер для активации cron задачи
+      const response = await fetch(`/api/cron/activate/${workflowToActivate.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      console.log('📡 Dashboard: Response received:', {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      });
+
+      const responseData = await response.json();
+      console.log('📡 Dashboard: Response data:', responseData);
+
+      if (response.ok) {
+        console.log('✅ Dashboard: Cron activation successful, updating UI state');
+
+        // Обновляем локальное состояние
+        await loadCronTasks();
+        // Workflows будут автоматически обновлены через useEffect
+
+        console.log('✅ Dashboard: UI state updated successfully');
+      } else {
+        console.error('❌ Dashboard: Cron activation failed:', responseData);
+        alert('Ошибка при активации cron задачи: ' + (responseData.error || 'Неизвестная ошибка'));
+      }
+    } catch (error) {
+      console.error('💥 Dashboard: Error activating cron workflow:', error);
+      alert('Ошибка при активации cron задачи: ' + (error instanceof Error ? error.message : 'Неизвестная ошибка'));
+    } finally {
+      setCronTasksLoading(false);
+      setActivateDialogOpen(false);
+      setWorkflowToActivate(null);
+    }
+  };
 
   // Функция для остановки всех cron задач
   const stopAllCronTasks = async () => {
@@ -596,74 +645,17 @@ export default function DashboardPage() {
                                 variant="default"
                                 size="sm"
                                 disabled={cronTasksLoading}
-                                onClick={async () => {
-                                  // Добавляем подтверждение перед активацией
-                                  const confirmActivate = window.confirm(
-                                    `Активировать cron workflow "${workflow.name}"?\n\nЭто создаст расписание в QStash и workflow будет выполняться автоматически.`
-                                  );
-
-                                  if (!confirmActivate) return;
-
-                                  if (cronTasksLoading) return; // Предотвращаем множественные клики
-
-                                  console.log('🔥 Dashboard: Starting cron activation for workflow:', workflow.id);
-
-                                  try {
-                                    setCronTasksLoading(true);
-                                    console.log('📡 Dashboard: Sending request to /api/cron/activate/' + workflow.id);
-
-                                    // Отправляем запрос на сервер для активации cron задачи
-                                    const response = await fetch(`/api/cron/activate/${workflow.id}`, {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                      }
-                                    });
-
-                                    console.log('📡 Dashboard: Response received:', {
-                                      status: response.status,
-                                      ok: response.ok,
-                                      statusText: response.statusText
-                                    });
-
-                                    // Проверяем тело ответа
-                                    const responseData = await response.json();
-                                    console.log('📡 Dashboard: Response data:', responseData);
-
-                                    if (response.ok) {
-                                      console.log('✅ Dashboard: Cron activation successful, updating UI state');
-                                      // Обновляем локальное состояние - показываем задачу как запущенную
-                                      setCronTasks(prev => {
-                                        const existing = prev.find(t => t.workflowId === workflow.id);
-                                        if (existing) {
-                                          return prev.map(t => t.workflowId === workflow.id ? { ...t, isRunning: true } : t);
-                                        } else {
-                                          return [...prev, { workflowId: workflow.id, isRunning: true, nextExecution: null }];
-                                        }
-                                      });
-                                      console.log('✅ Dashboard: UI state updated successfully');
-                                    } else {
-                                      console.error('❌ Dashboard: Cron activation failed:', {
-                                        status: response.status,
-                                        statusText: response.statusText,
-                                        errorData: responseData
-                                      });
-                                      alert('Ошибка при активации cron задачи: ' + (responseData.error || 'Неизвестная ошибка'));
-                                    }
-                                  } catch (error) {
-                                    console.error('💥 Dashboard: Exception during cron activation:', error);
-                                    alert('Ошибка при активации cron задачи');
-                                  } finally {
-                                    setCronTasksLoading(false);
-                                  }
+                                onClick={() => {
+                                  setWorkflowToActivate(workflow);
+                                  setActivateDialogOpen(true);
                                 }}
                               >
                                 {cronTasksLoading ? (
-                                  <Loader2 className="w-4 h-4 mr-1 sm:mr-2 animate-spin" />
+                                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
                                 ) : (
-                                  <Play className="w-4 h-4 mr-1 sm:mr-2" />
+                                  <Play className="w-4 h-4 mr-1" />
                                 )}
-                                <span className="hidden sm:inline">Запустить</span>
+                                Запустить
                               </Button>
                             ) : (
                               <Button
@@ -1264,6 +1256,61 @@ export default function DashboardPage() {
                     Остановить все
                   </>
                 )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Модалка подтверждения активации cron workflow */}
+        <Dialog open={activateDialogOpen} onOpenChange={setActivateDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Play className="w-5 h-5 text-green-500" />
+                Активировать cron workflow
+              </DialogTitle>
+              <DialogDescription className="text-left">
+                Вы действительно хотите активировать cron workflow?
+                <br />
+                <span className="font-medium text-foreground">
+                  Workflow: {workflowToActivate?.name}
+                </span>
+                <br />
+                <span className="text-sm text-muted-foreground">
+                  Расписание: {workflowToActivate?.trigger.type === 'cron' ?
+                    (workflowToActivate.trigger.config as CronTriggerConfig).schedule || 'Не задано' :
+                    'Не задано'}
+                </span>
+                <br />
+                <span className="text-sm text-muted-foreground">
+                  Действий: {workflowToActivate?.actions.length || 0}
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActivateDialogOpen(false);
+                  setWorkflowToActivate(null);
+                }}
+                disabled={cronTasksLoading}
+                className="w-full sm:w-auto"
+              >
+                Отмена
+              </Button>
+              <Button
+                variant="default"
+                onClick={activateCronWorkflow}
+                disabled={cronTasksLoading}
+                className="w-full sm:w-auto"
+              >
+                {cronTasksLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Play className="w-4 h-4 mr-2" />
+                )}
+                Активировать
               </Button>
             </DialogFooter>
           </DialogContent>
