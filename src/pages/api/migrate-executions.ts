@@ -77,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('❌ Migration failed:', error);
     res.status(500).json({
       error: 'Migration failed',
-      details: error.message
+      details: error instanceof Error ? error.message : String(error)
     });
   }
 }

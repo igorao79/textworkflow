@@ -65,6 +65,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({ success: true, message: 'Executions tables created successfully' });
   } catch (error) {
     console.error('❌ Error creating executions tables:', error);
-    res.status(500).json({ error: 'Failed to create executions tables', details: error.message });
+    res.status(500).json({ error: 'Failed to create executions tables', details: error instanceof Error ? error.message : String(error) });
   }
 }
