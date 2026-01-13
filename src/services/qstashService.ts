@@ -228,62 +228,33 @@ export async function processQStashWebhook(payload: QStashWebhookPayload): Promi
       return;
     }
 
-    console.log(`🚀 Queueing workflow ${workflowId} from QStash webhook`);
+    console.log(`🚀 Executing workflow ${workflowId} from QStash webhook`);
     console.log('⏰ Execution timestamp:', timestamp || new Date().toISOString());
 
-    // Добавляем задачу в очередь вместо прямого выполнения
-    const { getQueueService } = await import('../lib/queue-service');
-    const queueService = getQueueService();
+    // Импортируем функцию выполнения workflow
+    const { executeWorkflow } = await import('./workflowService');
+
+    console.log('🔄 Calling executeWorkflow...');
 
     try {
-      const triggerData = {
+      await executeWorkflow(workflowId, {
         trigger: 'cron',
         timestamp: timestamp || new Date().toISOString(),
         source: 'qstash'
-      };
+      });
 
-      const { jobId } = await queueService.addJob(workflowId, triggerData);
-
-      console.log(`✅ Workflow ${workflowId} queued successfully from QStash (jobId: ${jobId})`);
-
-      // Проверяем, можем ли мы автоматически обработать очередь
-      // (только если это не production, чтобы избежать рекурсии)
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔄 Auto-processing queue in development mode...');
-        try {
-          // Импортируем и вызываем обработчик очереди
-          const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/queue/process`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ Queue auto-processed:', result);
-          } else {
-            console.warn('⚠️ Failed to auto-process queue:', await response.text());
-          }
-        } catch (autoProcessError) {
-          console.warn('⚠️ Failed to auto-process queue:', autoProcessError);
-          // Это не критично, задача останется в очереди
-        }
-      }
-
-    } catch (queueError) {
-      console.error(`❌ Failed to queue workflow ${workflowId}:`, queueError);
-
-      // Если workflow не найден - логируем предупреждение вместо падения
-      if (queueError instanceof Error && queueError.message.includes('not found')) {
-        console.warn(`⚠️ Workflow ${workflowId} not found or deleted, skipping queue`);
+      console.log(`✅ Workflow ${workflowId} executed successfully from QStash`);
+    } catch (executionError) {
+      // Если workflow не найден или уже удален - логируем предупреждение вместо падения
+      if (executionError instanceof Error && executionError.message.includes('not found')) {
+        console.warn(`⚠️ Workflow ${workflowId} not found or deleted, skipping execution`);
         console.warn('📋 This can happen if workflow was deleted but QStash schedule is still active');
         console.warn('🔧 Solution: Delete old schedules in QStash dashboard or recreate workflow');
         return; // Не бросаем ошибку, просто выходим
       }
 
       // Для других ошибок - бросаем дальше
-      throw queueError;
+      throw executionError;
     }
 
   } catch (error) {

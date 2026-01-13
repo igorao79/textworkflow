@@ -33,10 +33,10 @@ export default function DashboardPage() {
     nextExecution: Date | null;
   }>>([]);
   const [cronTasksLoading, setCronTasksLoading] = useState(false);
-  const [stopAllModalOpen, setStopAllModalOpen] = useState(false);
+  const [stopAllDialogOpen, setStopAllDialogOpen] = useState(false);
 
-  // Обработчик остановки всех cron задач
-  const handleStopAllCronTasks = async () => {
+  // Функция для остановки всех cron задач
+  const stopAllCronTasks = async () => {
     try {
       setCronTasksLoading(true);
       console.log('🛑 Stopping all cron tasks');
@@ -58,7 +58,7 @@ export default function DashboardPage() {
           w.trigger.type === 'cron' ? { ...w, isActive: false } : w
         ));
 
-        setStopAllModalOpen(false);
+        setStopAllDialogOpen(false);
       } else {
         console.error('❌ Failed to stop all cron tasks:', responseData);
         alert('Ошибка при остановке всех cron задач: ' + (responseData.error || 'Неизвестная ошибка'));
@@ -551,8 +551,10 @@ export default function DashboardPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        if (cronTasksLoading) return; // Предотвращаем множественные клики
-                        setStopAllModalOpen(true);
+                        const runningCount = cronTasks.filter(task => task.isRunning).length;
+                        if (runningCount > 0) {
+                          setStopAllDialogOpen(true);
+                        }
                       }}
                     >
                       {cronTasksLoading ? (
@@ -1209,28 +1211,30 @@ export default function DashboardPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Модальное окно остановки всех cron задач */}
-        <Dialog open={stopAllModalOpen} onOpenChange={setStopAllModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+        {/* Модалка подтверждения остановки всех cron задач */}
+        <Dialog open={stopAllDialogOpen} onOpenChange={setStopAllDialogOpen}>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Pause className="w-5 h-5 text-orange-500" />
+                <Pause className="w-5 h-5 text-destructive" />
                 Остановить все cron задачи
               </DialogTitle>
               <DialogDescription className="text-left">
                 Вы действительно хотите остановить все активные cron задачи?
                 <br />
-                <strong>{cronTasks.filter(task => task.isRunning).length} задач</strong> будут остановлены.
+                <span className="font-medium text-foreground">
+                  Активных задач: {cronTasks.filter(task => task.isRunning).length}
+                </span>
                 <br />
-                <span className="text-sm text-muted-foreground mt-2 block">
-                  Это действие нельзя отменить. Задачи можно будет запустить заново.
+                <span className="text-sm text-muted-foreground">
+                  Это действие нельзя отменить.
                 </span>
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
               <Button
                 variant="outline"
-                onClick={() => setStopAllModalOpen(false)}
+                onClick={() => setStopAllDialogOpen(false)}
                 disabled={cronTasksLoading}
                 className="w-full sm:w-auto"
               >
@@ -1238,14 +1242,14 @@ export default function DashboardPage() {
               </Button>
               <Button
                 variant="destructive"
-                onClick={handleStopAllCronTasks}
+                onClick={stopAllCronTasks}
                 disabled={cronTasksLoading}
                 className="w-full sm:w-auto"
               >
                 {cronTasksLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Останавливаю...
+                    Останавливаем...
                   </>
                 ) : (
                   <>
