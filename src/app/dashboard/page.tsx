@@ -597,6 +597,13 @@ export default function DashboardPage() {
                                 size="sm"
                                 disabled={cronTasksLoading}
                                 onClick={async () => {
+                                  // Добавляем подтверждение перед активацией
+                                  const confirmActivate = window.confirm(
+                                    `Активировать cron workflow "${workflow.name}"?\n\nЭто создаст расписание в QStash и workflow будет выполняться автоматически.`
+                                  );
+
+                                  if (!confirmActivate) return;
+
                                   if (cronTasksLoading) return; // Предотвращаем множественные клики
 
                                   console.log('🔥 Dashboard: Starting cron activation for workflow:', workflow.id);
