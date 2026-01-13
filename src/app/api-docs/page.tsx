@@ -487,7 +487,6 @@ export default function ApiDocsPage() {
             .swagger-ui .tabs > div,
             .swagger-ui .tab-header,
             .swagger-ui button[role="tab"] {
-              border-radius: 12px 12px 0 0 !important;
               margin-right: 4px !important;
               cursor: pointer !important;
               transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -650,6 +649,27 @@ export default function ApiDocsPage() {
               z-index: 1;
             }
 
+            /* Убираем все outline эффекты */
+            .swagger-ui * {
+              outline: none !important;
+            }
+
+            .swagger-ui *:focus {
+              outline: none !important;
+            }
+
+            .swagger-ui *:focus-visible {
+              outline: none !important;
+            }
+
+            .swagger-ui .opblock-summary:focus {
+              outline: none !important;
+            }
+
+            .swagger-ui a:focus {
+              outline: none !important;
+            }
+
             /* Темная тема только для основных элементов */
             .swagger-ui {
               color: hsl(var(--foreground)) !important;
@@ -773,33 +793,38 @@ export default function ApiDocsPage() {
             .swagger-ui .opblock-summary-method {
               font-weight: bold !important;
               padding: 6px 12px !important;
-              border-radius: 4px !important;
               font-size: 12px !important;
+              border-radius: 0 !important;
             }
 
             .swagger-ui .opblock-summary-method[data-method="get"] {
               background: #61affe !important;
               color: white !important;
+              border-radius: 0 !important;
             }
 
             .swagger-ui .opblock-summary-method[data-method="post"] {
               background: #49cc90 !important;
               color: white !important;
+              border-radius: 0 !important;
             }
 
             .swagger-ui .opblock-summary-method[data-method="put"] {
               background: #fca130 !important;
               color: white !important;
+              border-radius: 0 !important;
             }
 
             .swagger-ui .opblock-summary-method[data-method="patch"] {
               background: #50e3c2 !important;
               color: white !important;
+              border-radius: 0 !important;
             }
 
             .swagger-ui .opblock-summary-method[data-method="delete"] {
               background: #f93e3e !important;
               color: white !important;
+              border-radius: 0 !important;
             }
 
             /* Выделение блоков операций */
@@ -821,7 +846,6 @@ export default function ApiDocsPage() {
               font-weight: 600 !important;
               padding: 12px 16px !important;
               margin: 16px 0 8px 0 !important;
-              border-radius: 6px !important;
               background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)) 70%, hsl(var(--muted))) !important;
               color: hsl(var(--primary-foreground)) !important;
               border-left: 4px solid hsl(var(--accent)) !important;
@@ -831,7 +855,6 @@ export default function ApiDocsPage() {
             /* Информационные секции */
             .swagger-ui .info {
               background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted) / 0.5)) !important;
-              border-radius: 16px !important;
               padding: 24px !important;
               margin-bottom: 24px !important;
               border: 1px solid hsl(var(--border)) !important;
@@ -1082,7 +1105,6 @@ export default function ApiDocsPage() {
               transform: translateY(-50%);
               width: 8px;
               height: 8px;
-              border-radius: 50%;
               box-shadow: 0 0 8px currentColor;
             }
 
@@ -1239,27 +1261,21 @@ export default function ApiDocsPage() {
             .swagger-ui .copy-to-clipboard {
               background: hsl(var(--primary)) !important;
               color: hsl(var(--primary-foreground)) !important;
-              border-radius: 4px !important;
             }
 
             /* Раскрывающиеся секции - сильно выделенные */
             .swagger-ui .opblock-summary {
               background: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted))) !important;
-              border: 2px solid hsl(var(--border)) !important;
-              border-radius: 8px !important;
               padding: 12px 16px !important;
               margin: 4px 0 !important;
               cursor: pointer !important;
               transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
               position: relative !important;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
             }
 
             .swagger-ui .opblock-summary:hover {
               background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--card))) !important;
-              border-color: hsl(var(--primary)) !important;
               transform: translateX(4px) !important;
-              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
             }
 
             .swagger-ui .opblock-summary:focus {
@@ -1270,7 +1286,6 @@ export default function ApiDocsPage() {
             /* Стрелки раскрытия */
             .swagger-ui .opblock-summary .opblock-summary-control {
               background: hsl(var(--primary)) !important;
-              border-radius: 50% !important;
               width: 24px !important;
               height: 24px !important;
               display: flex !important;
@@ -1316,25 +1331,42 @@ export default function ApiDocsPage() {
               background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) !important;
               color: hsl(var(--primary-foreground)) !important;
               border: none !important;
-              border-radius: 6px !important;
-              padding: 6px 10px !important;
-              font-size: 12px !important;
+              padding: 10px 16px !important;
+              font-size: 14px !important;
               font-weight: 600 !important;
               cursor: pointer !important;
               transition: all 0.3s ease !important;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
               text-transform: uppercase !important;
               letter-spacing: 0.5px !important;
+              min-width: 80px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              gap: 6px !important;
+              position: relative !important;
+              overflow: hidden !important;
             }
 
             .swagger-ui .copy-to-clipboard:hover {
               background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary))) !important;
-              transform: translateY(-1px) !important;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+              transform: translateY(-2px) scale(1.05) !important;
+              filter: brightness(1.1) !important;
             }
 
             .swagger-ui .copy-to-clipboard:active {
-              transform: translateY(0) !important;
+              transform: translateY(0) scale(0.98) !important;
+            }
+
+            /* Анимация успешного копирования */
+            .swagger-ui .copy-to-clipboard.copied {
+              background: linear-gradient(135deg, #10b981, #059669) !important;
+              animation: copySuccess 0.8s ease-out !important;
+            }
+
+            @keyframes copySuccess {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.1); }
+              100% { transform: scale(1); }
             }
 
             /* Выпадающие списки */
@@ -1342,7 +1374,6 @@ export default function ApiDocsPage() {
               background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted))) !important;
               color: hsl(var(--foreground)) !important;
               border: 2px solid hsl(var(--border)) !important;
-              border-radius: 6px !important;
               padding: 8px 12px !important;
               font-size: 14px !important;
               cursor: pointer !important;
@@ -1395,7 +1426,6 @@ export default function ApiDocsPage() {
             .swagger-ui .tab {
               background: linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted) / 0.8)) !important;
               border: 2px solid hsl(var(--border)) !important;
-              border-radius: 12px 12px 0 0 !important;
               margin-right: 4px !important;
               cursor: pointer !important;
               transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1421,7 +1451,6 @@ export default function ApiDocsPage() {
             .swagger-ui button[role="tab"] {
               background: linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted) / 0.8)) !important;
               border: 2px solid hsl(var(--border)) !important;
-              border-radius: 12px 12px 0 0 !important;
               margin-right: 4px !important;
               cursor: pointer !important;
               transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -2014,6 +2043,14 @@ export default function ApiDocsPage() {
                 padding: 2px 6px !important;
               }
 
+              /* Увеличиваем кнопки копирования на мобильных */
+              .swagger-ui .copy-to-clipboard {
+                padding: 12px 18px !important;
+                font-size: 13px !important;
+                min-width: 90px !important;
+                gap: 4px !important;
+              }
+
               /* Увеличиваем отступы в схемах на мобильных */
               .swagger-ui table.model {
                 font-size: 12px !important;
@@ -2044,6 +2081,13 @@ export default function ApiDocsPage() {
 
               .swagger-ui .info .description {
                 font-size: 13px !important;
+              }
+
+              /* Увеличиваем кнопки копирования на очень маленьких экранах */
+              .swagger-ui .copy-to-clipboard {
+                padding: 10px 14px !important;
+                font-size: 12px !important;
+                min-width: 75px !important;
               }
 
               .swagger-ui table.model {
