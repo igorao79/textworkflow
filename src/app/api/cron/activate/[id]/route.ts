@@ -116,7 +116,7 @@ export async function POST(
     }
 
     // Сначала активируем workflow в базе данных
-    const workflow = getWorkflow(workflowId);
+    const workflow = await getWorkflow(workflowId);
     if (!workflow) {
       console.log('❌ API /cron/activate: Workflow not found:', workflowId);
       return NextResponse.json({ error: 'Workflow not found' }, { status: 404 });
@@ -127,7 +127,7 @@ export async function POST(
     if (!workflow.isActive) {
       console.log('🔄 API /cron/activate: Activating workflow in database:', workflowId);
       const updatedWorkflow = { ...workflow, isActive: true, updatedAt: new Date() };
-      updateWorkflow(workflowId, updatedWorkflow);
+      await updateWorkflow(workflowId, updatedWorkflow);
       console.log('✅ API /cron/activate: Workflow activated in database');
     } else {
       console.log('ℹ️ API /cron/activate: Workflow already active');

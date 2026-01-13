@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     switch (req.method) {
       case 'GET':
-        const workflow = getWorkflow(id);
+        const workflow = await getWorkflow(id);
         if (!workflow) {
           return res.status(404).json({ error: 'Workflow not found' });
         }
@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
 
       case 'PUT':
-        const updatedWorkflow = updateWorkflow(id, req.body);
+        const updatedWorkflow = await updateWorkflow(id, req.body);
         if (!updatedWorkflow) {
           return res.status(404).json({ error: 'Workflow not found' });
         }
@@ -84,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
 
       case 'DELETE':
-        const deleted = deleteWorkflow(id);
+        const deleted = await deleteWorkflow(id);
         if (!deleted) {
           return res.status(404).json({ error: 'Workflow not found' });
         }

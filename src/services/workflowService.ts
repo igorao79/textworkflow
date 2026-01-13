@@ -1,9 +1,6 @@
 import { Resend } from 'resend';
 import axios from 'axios';
 import { Telegraf } from 'telegraf';
-import { Pool } from 'pg';
-import fs from 'fs';
-import path from 'path';
 import {
   Workflow,
   WorkflowAction,
@@ -16,34 +13,36 @@ import {
   TransformActionConfig
 } from '@/types/workflow';
 
+interface WorkflowRow {
+  id: string;
+  name: string;
+  description: string | null;
+  trigger_type: string;
+  trigger_config: any; // JSONB can contain any structure
+  actions: WorkflowAction[];
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface ExecutionRow {
+  id: string;
+  workflow_id: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  started_at: Date;
+  completed_at: Date | null;
+  error: string | null;
+  result: Record<string, unknown> | null;
+}
+
 // Инициализация сервисов (только если есть API ключи)
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const telegramBot = process.env.TELEGRAM_BOT_TOKEN ? new Telegraf(process.env.TELEGRAM_BOT_TOKEN) : null;
 
-// Инициализация подключения к PostgreSQL
-const dbPool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+// Подключение к PostgreSQL через динамический импорт из lib/db
 
-// Обработчик ошибок подключения к БД
-dbPool?.on('error', (err: Error) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-// Папка для хранения данных
-const DATA_DIR = path.join(process.cwd(), 'data');
-const WORKFLOWS_FILE = path.join(DATA_DIR, 'workflows.json');
-const EXECUTIONS_FILE = path.join(DATA_DIR, 'executions.json');
-
-// Создаем папку data если её нет
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+// Все данные хранятся только в внешних сервисах (PostgreSQL + Redis)
+// Никаких локальных файлов или in-memory структур
 
 // Функция отправки уведомлений об ошибках
 async function sendErrorNotification(workflowId: string, error: unknown, execution: WorkflowExecution) {
@@ -108,39 +107,89 @@ export async function pauseWorkflowExecution(workflowId: string, duration: numbe
 }
 
 // Функции для загрузки/сохранения данных
-function loadWorkflows(): Workflow[] {
+async function loadWorkflows(): Promise<Workflow[]> {
   try {
-    if (fs.existsSync(WORKFLOWS_FILE)) {
-      const data = fs.readFileSync(WORKFLOWS_FILE, 'utf8');
-      const parsed = JSON.parse(data);
-      // Преобразуем даты обратно в объекты Date
-      return parsed.map((workflow: Omit<Workflow, 'createdAt' | 'updatedAt'> & {
-        createdAt: string;
-        updatedAt: string;
-      }) => ({
-        ...workflow,
-        createdAt: new Date(workflow.createdAt),
-        updatedAt: new Date(workflow.updatedAt)
-      }));
-    }
+    const { sql } = await import('../lib/db');
+    const workflowsData = await sql(`
+      SELECT
+        id,
+        name,
+        description,
+        trigger_type,
+        trigger_config,
+        actions,
+        is_active,
+        created_at,
+        updated_at
+      FROM workflows
+      ORDER BY created_at DESC
+    `);
+
+    const workflows: Workflow[] = (workflowsData as WorkflowRow[]).map((row: WorkflowRow) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description || undefined,
+      trigger: {
+        id: `${row.id}-trigger`,
+        type: row.trigger_type as 'webhook' | 'cron' | 'email',
+        config: row.trigger_config
+      },
+      actions: row.actions,
+      isActive: row.is_active,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at)
+    }));
+
+    console.log(`✅ Loaded ${workflows.length} workflows from database`);
+    return workflows;
+    return workflows;
   } catch (error) {
-    console.error('Error loading workflows:', error);
+    console.error('❌ Failed to load workflows from database:', error);
+    throw error;
   }
-  return [];
 }
 
-export function saveWorkflows(workflows: Workflow[]): void {
+export async function saveWorkflows(workflows: Workflow[]): Promise<void> {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    // Сохраняем в БД
+    const { sql } = await import('../lib/db');
+    for (const workflow of workflows) {
+      try {
+        await sql(`
+          INSERT INTO workflows (id, name, description, trigger_type, trigger_config, actions, is_active, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            description = EXCLUDED.description,
+            trigger_type = EXCLUDED.trigger_type,
+            trigger_config = EXCLUDED.trigger_config,
+            actions = EXCLUDED.actions,
+            is_active = EXCLUDED.is_active,
+            updated_at = CURRENT_TIMESTAMP
+        `, [
+          workflow.id,
+          workflow.name,
+          workflow.description || null,
+          workflow.trigger.type,
+          JSON.stringify(workflow.trigger.config),
+          JSON.stringify(workflow.actions),
+          workflow.isActive,
+          workflow.createdAt.toISOString(),
+          workflow.updatedAt.toISOString()
+        ]);
+      } catch (dbError) {
+        console.warn('Failed to save workflow to DB:', workflow.id, dbError);
+      }
     }
-    fs.writeFileSync(WORKFLOWS_FILE, JSON.stringify(workflows, null, 2));
+
+    console.log(`💾 Saved ${workflows.length} workflows to database`);
   } catch (error) {
-    console.error('Error saving workflows:', error);
+    console.error('❌ Failed to save workflows to database:', error);
+    throw error;
   }
 }
 
-async function loadExecutions(): Promise<WorkflowExecution[]> {
+async function loadExecutions(includeLogs = false): Promise<WorkflowExecution[]> {
   try {
     // Сначала пробуем загрузить из БД
     try {
@@ -162,10 +211,14 @@ async function loadExecutions(): Promise<WorkflowExecution[]> {
 
       const executions: WorkflowExecution[] = [];
 
-      for (const execData of executionsData) {
-        // Загружаем логи для каждого execution
+      // Загружаем логи только если запрошено (для оптимизации dashboard)
+      let logsByExecution = new Map<string, WorkflowExecutionLog[]>();
+
+      if (includeLogs && (executionsData as ExecutionRow[]).length > 0) {
+        const executionIds = (executionsData as ExecutionRow[]).map((exec: ExecutionRow) => exec.id);
         const logsData = await sql(`
           SELECT
+            execution_id,
             id,
             timestamp,
             level,
@@ -173,62 +226,44 @@ async function loadExecutions(): Promise<WorkflowExecution[]> {
             action_id,
             data
           FROM workflow_execution_logs
-          WHERE execution_id = $1
-          ORDER BY timestamp ASC
-        `, [execData.id]);
+          WHERE execution_id = ANY($1)
+          ORDER BY execution_id, timestamp ASC
+        `, [executionIds]);
 
-        const logs: WorkflowExecutionLog[] = logsData.map((log: {
-          id: string;
-          timestamp: string;
-          level: string;
-          message: string;
-          action_id: string | null;
-          data: unknown;
-        }) => ({
-          id: log.id,
-          timestamp: new Date(log.timestamp),
-          level: log.level as 'info' | 'warning' | 'error',
-          message: log.message,
-          actionId: log.action_id || undefined,
-          data: log.data
-        }));
+        // Группируем логи по execution_id
+        logsByExecution = new Map<string, WorkflowExecutionLog[]>();
+        for (const log of logsData) {
+          const logs = logsByExecution.get(log.execution_id) || [];
+          logs.push({
+            id: log.id,
+            timestamp: new Date(log.timestamp),
+            level: log.level as 'info' | 'warning' | 'error',
+            message: log.message,
+            actionId: log.action_id || undefined,
+            data: log.data
+          });
+          logsByExecution.set(log.execution_id, logs);
+        }
+      }
 
+      for (const execData of executionsData as ExecutionRow[]) {
         executions.push({
           id: execData.id,
           workflowId: execData.workflow_id,
           status: execData.status,
           startedAt: new Date(execData.started_at),
           completedAt: execData.completed_at ? new Date(execData.completed_at) : undefined,
-          error: execData.error,
-          result: execData.result,
-          logs
+          error: execData.error || undefined,
+          result: execData.result || undefined,
+          logs: includeLogs ? (logsByExecution.get(execData.id) || []) : [], // Логи только если запрошены
         });
       }
 
       console.log(`✅ Loaded ${executions.length} executions from database`);
       return executions;
     } catch (dbError) {
-      console.warn('Database not available, falling back to file storage:', dbError);
-    }
-
-    // Fallback: загружаем из файлов
-    if (fs.existsSync(EXECUTIONS_FILE)) {
-      const data = fs.readFileSync(EXECUTIONS_FILE, 'utf8');
-      const parsed = JSON.parse(data);
-      // Преобразуем даты обратно в объекты Date
-      return parsed.map((execution: Omit<WorkflowExecution, 'startedAt' | 'completedAt' | 'logs'> & {
-        startedAt: string;
-        completedAt?: string;
-        logs: (Omit<WorkflowExecutionLog, 'timestamp'> & { timestamp: string })[];
-      }) => ({
-        ...execution,
-        startedAt: new Date(execution.startedAt),
-        completedAt: execution.completedAt ? new Date(execution.completedAt) : undefined,
-        logs: execution.logs.map((log: Omit<WorkflowExecutionLog, 'timestamp'> & { timestamp: string }) => ({
-          ...log,
-          timestamp: new Date(log.timestamp)
-        }))
-      }));
+      console.error('❌ Failed to load executions from database:', dbError);
+      throw dbError;
     }
   } catch (error) {
     console.error('Error loading executions:', error);
@@ -286,84 +321,24 @@ async function saveExecutions(executions: WorkflowExecution[]): Promise<void> {
       console.log(`✅ Saved ${executions.length} executions to database`);
       return;
     } catch (dbError) {
-      console.warn('Database not available, falling back to file storage:', dbError);
+      console.error('❌ Failed to save executions to database:', dbError);
+      throw dbError;
     }
-
-    // Fallback: сохраняем в файлы
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    fs.writeFileSync(EXECUTIONS_FILE, JSON.stringify(executions, null, 2));
   } catch (error) {
     console.error('Error saving executions:', error);
+    throw error;
   }
 }
 
-async function updateExecutionInFile(updatedExecution: WorkflowExecution): Promise<void> {
-  try {
-    // Сначала пробуем обновить в БД
-    try {
-      const { sql } = await import('../lib/db');
+// updateExecutionInFile удалена - теперь используется saveExecutionResults
 
-      // Обновляем execution
-      await sql(`
-        UPDATE workflow_executions SET
-          status = $1,
-          completed_at = $2,
-          error = $3,
-          result = $4,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $5
-      `, [
-        updatedExecution.status,
-        updatedExecution.completedAt?.toISOString() || null,
-        updatedExecution.error || null,
-        updatedExecution.result ? JSON.stringify(updatedExecution.result) : null,
-        updatedExecution.id
-      ]);
-
-      // Обновляем логи (удаляем старые и вставляем новые)
-      await sql('DELETE FROM workflow_execution_logs WHERE execution_id = $1', [updatedExecution.id]);
-
-      for (const log of updatedExecution.logs) {
-        await sql(`
-          INSERT INTO workflow_execution_logs (
-            id, execution_id, timestamp, level, message, action_id, data
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `, [
-          log.id,
-          updatedExecution.id,
-          log.timestamp.toISOString(),
-          log.level,
-          log.message,
-          log.actionId || null,
-          log.data ? JSON.stringify(log.data) : null
-        ]);
-      }
-
-      console.log(`✅ Updated execution ${updatedExecution.id} in database`);
-      return;
-    } catch (dbError) {
-      console.warn('Database not available, falling back to file storage:', dbError);
-    }
-
-    // Fallback: обновляем в файлах
-    const executions = await loadExecutions();
-    const index = executions.findIndex(e => e.id === updatedExecution.id);
-    if (index !== -1) {
-      executions[index] = updatedExecution;
-      await saveExecutions(executions);
-      console.log(`✅ Updated execution ${updatedExecution.id} in file`);
-    } else {
-      console.warn(`⚠️ Execution ${updatedExecution.id} not found for update`);
-    }
-  } catch (error) {
-    console.error('Error updating execution in file:', error);
-  }
+// Сохраняет один execution в БД
+export async function saveExecutionResult(execution: WorkflowExecution): Promise<void> {
+  await saveExecutions([execution]);
 }
 
 // Хранилище workflow с загрузкой из файлов
-const workflows: Workflow[] = loadWorkflows();
+// Данные всегда загружаются из БД при каждом запросе
 
 export async function executeWorkflow(
   workflowId: string,
@@ -371,7 +346,7 @@ export async function executeWorkflow(
 ): Promise<WorkflowExecution> {
   console.log(`🔄 WorkflowService: executeWorkflow called for ${workflowId} with trigger:`, triggerData);
 
-  const workflow = workflows.find(w => w.id === workflowId);
+  const workflow = await getWorkflow(workflowId);
   if (!workflow) {
     console.error(`❌ WorkflowService: Workflow ${workflowId} not found`);
     throw new Error(`Workflow ${workflowId} not found`);
@@ -411,7 +386,7 @@ export async function executeWorkflow(
 
     // Логируем завершение и обновляем в БД/файле
     addLog(execution, 'info', 'Workflow execution completed successfully');
-    await updateExecutionInFile(execution);
+    await saveExecutionResult(execution);
 
   } catch (error: unknown) {
     execution.status = 'failed';
@@ -419,7 +394,7 @@ export async function executeWorkflow(
     execution.completedAt = new Date();
 
     addLog(execution, 'error', `Workflow execution failed: ${execution.error}`);
-    await updateExecutionInFile(execution);
+    await saveExecutionResult(execution);
 
     console.error(`Workflow ${workflowId} failed:`, error);
 
@@ -569,11 +544,10 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
     throw new Error('Table name is required for database operations');
   }
 
-  let client;
   try {
-    console.log('🔌 Connecting to database...');
-    client = await dbPool.connect();
-    console.log('✅ Database connection established');
+    const { sql } = await import('../lib/db');
+
+    console.log('🔌 Database connection established');
 
     switch (operation) {
       case 'select': {
@@ -598,17 +572,17 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
         console.log('🔧 Executing SELECT query:', query);
         console.log('📊 WHERE values:', values);
 
-        const result = await client.query(query, values);
+        const result: Record<string, unknown>[] = await sql(query, values);
 
         console.log('✅ SELECT completed:', {
-          foundRows: result.rowCount,
-          returnedData: result.rows
+          foundRows: result.length,
+          returnedData: result
         });
 
         data.dbResult = {
           operation: 'select',
-          rows: result.rows,
-          rowCount: result.rowCount
+          rows: result,
+          rowCount: result.length
         };
         break;
       }
@@ -629,19 +603,19 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
         console.log('🔧 Executing INSERT query:', query);
         console.log('📊 Values:', values);
 
-        const result = await client.query(query, values);
+        const result: Record<string, unknown>[] = await sql(query, values);
 
         console.log('✅ INSERT completed:', {
-          affectedRows: result.rowCount,
-          returnedRows: result.rows.length,
-          firstRow: result.rows[0]
+          affectedRows: result.length,
+          returnedRows: result.length,
+          firstRow: result[0]
         });
 
         data.dbResult = {
           operation: 'insert',
-          rows: result.rows,
-          rowCount: result.rowCount,
-          insertId: result.rows[0]?.id || null
+          rows: result,
+          rowCount: result.length,
+          insertId: result[0]?.id || null
         };
         break;
       }
@@ -672,17 +646,17 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
         console.log('📊 SET values:', Object.values(actionData));
         console.log('🔍 WHERE values:', Object.values(where));
 
-        const result = await client.query(query, values);
+        const result = await sql(query, values);
 
         console.log('✅ UPDATE completed:', {
-          affectedRows: result.rowCount,
-          updatedRows: result.rows.length
+          affectedRows: result.length,
+          updatedRows: result.length
         });
 
         data.dbResult = {
           operation: 'update',
-          rows: result.rows,
-          rowCount: result.rowCount
+          rows: result,
+          rowCount: result.length
         };
         break;
       }
@@ -703,17 +677,17 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
         console.log('🔧 Executing DELETE query:', query);
         console.log('🔍 WHERE values:', values);
 
-        const result = await client.query(query, values);
+        const result = await sql(query, values);
 
         console.log('✅ DELETE completed:', {
-          affectedRows: result.rowCount,
-          deletedRows: result.rows.length
+          affectedRows: result.length,
+          deletedRows: result.length
         });
 
         data.dbResult = {
           operation: 'delete',
-          rows: result.rows,
-          rowCount: result.rowCount
+          rows: result,
+          rowCount: result.length
         };
         break;
       }
@@ -750,11 +724,6 @@ async function executeDatabaseAction(config: DatabaseActionConfig, data: Record<
     }
 
     throw new Error(userFriendlyError);
-  } finally {
-    if (client) {
-      console.log('🔌 Releasing database connection');
-      client.release();
-    }
   }
 }
 
@@ -808,7 +777,7 @@ function addLog(
 }
 
 // CRUD операции для workflow
-export function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt'>): Workflow {
+export async function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt'>): Promise<Workflow> {
   const newWorkflow: Workflow = {
     ...workflow,
     id: `wf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -816,12 +785,16 @@ export function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'up
     updatedAt: new Date(),
   };
 
+  const workflows = await getWorkflows();
   workflows.push(newWorkflow);
-  saveWorkflows(workflows);
+  await saveWorkflows(workflows);
   return newWorkflow;
 }
 
-export function getWorkflows(): Workflow[] {
+export async function getWorkflows(): Promise<Workflow[]> {
+  // Всегда загружаем свежие данные из БД
+  const workflows = await loadWorkflows();
+
   // Сортируем по дате создания в обратном порядке (новые первыми)
   return workflows.sort((a, b) => {
     const aTime = new Date(a.createdAt).getTime();
@@ -830,32 +803,44 @@ export function getWorkflows(): Workflow[] {
   });
 }
 
-export function getWorkflow(id: string): Workflow | undefined {
+export async function getWorkflow(id: string): Promise<Workflow | undefined> {
+  const workflows = await getWorkflows();
   return workflows.find(w => w.id === id);
 }
 
-export function updateWorkflow(id: string, updates: Partial<Workflow>): Workflow | null {
+export async function updateWorkflow(id: string, updates: Partial<Workflow>): Promise<Workflow | null> {
+  const workflows = await getWorkflows();
   const index = workflows.findIndex(w => w.id === id);
   if (index === -1) return null;
 
   workflows[index] = { ...workflows[index], ...updates, updatedAt: new Date() };
-  saveWorkflows(workflows);
+  await saveWorkflows(workflows);
   return workflows[index];
 }
 
-export function deleteWorkflow(id: string): boolean {
+export async function deleteWorkflow(id: string): Promise<boolean> {
+  const workflows = await getWorkflows();
   const index = workflows.findIndex(w => w.id === id);
   if (index === -1) return false;
 
+  // Удаляем из БД
+  try {
+    const { sql } = await import('../lib/db');
+    await sql('DELETE FROM workflows WHERE id = $1', [id]);
+    console.log(`🗑️ Deleted workflow ${id} from database`);
+  } catch (dbError) {
+    console.warn('Failed to delete workflow from DB:', dbError);
+  }
+
   workflows.splice(index, 1);
-  saveWorkflows(workflows);
+  await saveWorkflows(workflows);
   return true;
 }
 
 // Операции с executions
-export async function getExecutions(workflowId?: string): Promise<WorkflowExecution[]> {
+export async function getExecutions(workflowId?: string, includeLogs = false): Promise<WorkflowExecution[]> {
   // Читаем актуальные данные из БД/файла при каждом запросе
-  const executions = await loadExecutions();
+  const executions = await loadExecutions(includeLogs);
 
   const filteredExecutions = workflowId
     ? executions.filter(e => e.workflowId === workflowId)
@@ -870,6 +855,6 @@ export async function getExecutions(workflowId?: string): Promise<WorkflowExecut
 }
 
 export async function getExecution(id: string): Promise<WorkflowExecution | undefined> {
-  const executions = await loadExecutions();
+  const executions = await loadExecutions(true); // Загружаем логи для детального просмотра
   return executions.find((e) => e.id === id);
 }

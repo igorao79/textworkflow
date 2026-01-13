@@ -1,3 +1,16 @@
+-- Создание таблицы для workflows
+CREATE TABLE IF NOT EXISTS workflows (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    trigger_type VARCHAR(50) NOT NULL,
+    trigger_config JSONB NOT NULL,
+    actions JSONB NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Создание таблицы для workflow executions
 CREATE TABLE IF NOT EXISTS workflow_executions (
     id VARCHAR(255) PRIMARY KEY,
@@ -29,6 +42,8 @@ CREATE TABLE IF NOT EXISTS workflow_execution_logs (
 );
 
 -- Индексы для производительности
+CREATE INDEX IF NOT EXISTS idx_workflows_is_active ON workflows(is_active);
+CREATE INDEX IF NOT EXISTS idx_workflows_created_at ON workflows(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_workflow_executions_workflow_id ON workflow_executions(workflow_id);
 CREATE INDEX IF NOT EXISTS idx_workflow_executions_status ON workflow_executions(status);
 CREATE INDEX IF NOT EXISTS idx_workflow_executions_started_at ON workflow_executions(started_at DESC);

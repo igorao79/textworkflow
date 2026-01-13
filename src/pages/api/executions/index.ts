@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getExecutions, getExecution } from '@/services/workflowService';
-import { workflowQueue } from '@/lib/queue';
 
 /**
  * @swagger
@@ -68,14 +67,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ error: 'Missing workflowId' });
         }
 
-        // Добавляем задачу в очередь
-        const job = await workflowQueue.add({
-          workflowId,
-          triggerData: triggerData || {}
-        });
+        // Добавляем задачу в Redis-очередь
+        const { getQueueService } = await import('@/lib/queue-service');
+        const queueService = getQueueService();
+        const { jobId } = await queueService.addJob(workflowId, triggerData || {});
 
         res.status(201).json({
-          jobId: job.id,
+          jobId,
           message: 'Workflow execution queued successfully'
         });
         break;

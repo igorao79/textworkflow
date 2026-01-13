@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getWorkflow } from '@/services/workflowService';
-import { workflowQueue } from '@/lib/queue';
 
 // Простой in-memory cache для предотвращения дублирования webhook вызовов
 const webhookCooldowns = new Map<string, number>();
@@ -68,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Проверяем, существует ли workflow
-    const workflow = getWorkflow(workflowId);
+    const workflow = await getWorkflow(workflowId);
     if (!workflow) {
       return res.status(404).json({ error: 'Workflow not found' });
     }
@@ -92,19 +91,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Обновляем timestamp последнего вызова
     webhookCooldowns.set(workflowId, now);
 
-    // Добавляем задачу в очередь
-    const job = await workflowQueue.add({
-      workflowId,
-      triggerData: {
-        method: req.method,
-        headers: req.headers,
+    // Добавляем задачу в Redis-очередь
+    const { getQueueService } = await import('@/lib/queue-service');
+    const queueService = getQueueService();
+    const { jobId } = await queueService.addJob(workflowId, {
+      method: req.method,
+      headers: req.headers,
         body: req.body,
         query: req.query,
         timestamp: new Date().toISOString()
       }
     });
 
-    console.log(`Webhook triggered for workflow ${workflowId}, job ID: ${job.id}`);
+    console.log(`Webhook triggered for workflow ${workflowId}, job ID: ${jobId}`);
 
     res.status(200).json({
       message: 'Webhook received, workflow execution queued',

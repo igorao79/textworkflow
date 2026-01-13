@@ -1,49 +1,13 @@
 import * as cron from 'node-cron';
-import fs from 'fs';
-import path from 'path';
-import { executeWorkflow, getWorkflows, saveWorkflows, getExecutions } from './workflowService';
+import { executeWorkflow, getWorkflows, saveWorkflows, saveExecutionResult, getExecutions } from './workflowService';
 import { WorkflowExecution, Workflow } from '../types/workflow';
-import { addTask } from '../lib/queue-visualization';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const EXECUTIONS_FILE = path.join(DATA_DIR, 'executions.json');
+// Все данные загружаются через API из внешних сервисов
 
-function loadExecutions(): WorkflowExecution[] {
+async function updateExecutionInFile(updatedExecution: WorkflowExecution): Promise<void> {
   try {
-    if (fs.existsSync(EXECUTIONS_FILE)) {
-      const data = fs.readFileSync(EXECUTIONS_FILE, 'utf8');
-      const parsed = JSON.parse(data);
-      return parsed.map((execution: WorkflowExecution) => ({
-        ...execution,
-        startedAt: new Date(execution.startedAt),
-        completedAt: execution.completedAt ? new Date(execution.completedAt) : undefined,
-      }));
-    }
-  } catch (error) {
-    console.error('Error loading executions:', error);
-  }
-  return [];
-}
-
-function saveExecutions(executions: WorkflowExecution[]): void {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    fs.writeFileSync(EXECUTIONS_FILE, JSON.stringify(executions, null, 2));
-  } catch (error) {
-    console.error('Error saving executions:', error);
-  }
-}
-
-function updateExecutionInFile(updatedExecution: WorkflowExecution): void {
-  try {
-    const executions = loadExecutions();
-    const index = executions.findIndex(e => e.id === updatedExecution.id);
-    if (index !== -1) {
-      executions[index] = updatedExecution;
-      saveExecutions(executions);
-    }
+    // Используем saveExecutionResult вместо прямого обновления
+    await saveExecutionResult(updatedExecution);
   } catch (error) {
     console.error('Error updating execution in file:', error);
   }
@@ -52,18 +16,9 @@ function updateExecutionInFile(updatedExecution: WorkflowExecution): void {
 const runningTasks = new Map<string, cron.ScheduledTask>();
 let isFirstStart = true;
 
-// Функция для выполнения cron workflow с отслеживанием в PQueue
+// Функция для выполнения cron workflow
 async function executeWorkflowWithQueueTracking(workflow: Workflow, timezone: string): Promise<void> {
   console.log(`🔄 EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING START for workflow ${workflow.id} at ${new Date().toISOString()}`);
-
-  // Добавляем задачу в PQueue для отображения в статистике очереди
-  const taskId = addTask(`Cron workflow: ${workflow.name || workflow.id}`, 1);
-  console.log(`📋 PQUEUE TASK ADDED: ${taskId} for workflow ${workflow.id}`);
-
-  // Добавляем небольшую задержку, чтобы задача была видна в статистике
-  console.log(`⏳ WAITING 5 seconds before executing workflow...`);
-  await new Promise(resolve => setTimeout(resolve, 5000)); // 5 секунд
-  console.log(`✅ WAIT COMPLETE, starting workflow execution`);
 
   await executeWorkflow(workflow.id, {
     trigger: 'cron' as const,
@@ -74,13 +29,13 @@ async function executeWorkflowWithQueueTracking(workflow: Workflow, timezone: st
   console.log(`✅ EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING COMPLETE for workflow ${workflow.id}`);
 }
 
-function resetAllCronTasks(): void {
+async function resetAllCronTasks(): Promise<void> {
   console.log('🔄 CronService: Resetting all cron tasks on server startup...');
 
   try {
     // Деактивируем все cron workflow ТОЛЬКО при первом запуске сервера
     if (isFirstStart) {
-      const workflows = getWorkflows();
+      const workflows = await getWorkflows();
       let resetCount = 0;
 
       const updatedWorkflows = workflows.map(workflow => {
@@ -111,11 +66,11 @@ function resetAllCronTasks(): void {
   }
 }
 
-export function startCronScheduler() {
+export async function startCronScheduler() {
   console.log('🔄 CronService: Starting cron scheduler...');
 
   // Сбрасываем все cron задачи при запуске сервера (только при первом запуске)
-  resetAllCronTasks();
+  await resetAllCronTasks();
 
   // Только проверяем дубликаты каждые 5 секунд
   cron.schedule('*/5 * * * * *', async () => {
@@ -201,7 +156,7 @@ export function createCronTask(workflow: Workflow): boolean {
         console.log(`🔍 CronService: Checking running executions for workflow ${workflow.id}`);
 
         // Проверяем, не выполняется ли уже этот workflow
-        const executions = loadExecutions();
+        const executions = await getExecutions();
         const runningExecutions = executions.filter((e: WorkflowExecution) =>
           e.workflowId === workflow.id &&
           (e.status === 'running' || (e.status === 'completed' && new Date(e.startedAt).getTime() > Date.now() - 30000)) // Не старше 30 секунд
@@ -263,7 +218,7 @@ async function checkAndStopDuplicateTasks() {
   const executions = await getExecutions();
 
   // Группируем executions по workflowId
-  const executionsByWorkflow = executions.reduce((acc, execution) => {
+  const executionsByWorkflow = executions.reduce((acc: Record<string, WorkflowExecution[]>, execution: WorkflowExecution) => {
     if (!acc[execution.workflowId]) {
       acc[execution.workflowId] = [];
     }
@@ -273,11 +228,11 @@ async function checkAndStopDuplicateTasks() {
 
   // Проверяем каждый workflow
   for (const [, workflowExecutions] of Object.entries(executionsByWorkflow)) {
-    const runningExecutions = workflowExecutions.filter(e => e.status === 'running');
+    const runningExecutions = (workflowExecutions as WorkflowExecution[]).filter((e: WorkflowExecution) => e.status === 'running');
 
             if (runningExecutions.length > 1) {
               // Оставляем только самую свежую execution, остальные помечаем как failed
-              const sortedExecutions = runningExecutions.sort((a, b) =>
+              const sortedExecutions = runningExecutions.sort((a: WorkflowExecution, b: WorkflowExecution) =>
                 new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
               );
 
@@ -294,5 +249,7 @@ async function checkAndStopDuplicateTasks() {
 
 // Инициализируем cron scheduler при запуске
 if (typeof window === 'undefined') { // Только на сервере
-  startCronScheduler();
+  startCronScheduler().catch(error => {
+    console.error('❌ Failed to start cron scheduler:', error);
+  });
 }

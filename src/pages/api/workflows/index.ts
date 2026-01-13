@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (req.method) {
       case 'GET':
         console.log('📡 /api/workflows - Fetching workflows...');
-        const workflows = getWorkflows();
+        const workflows = await getWorkflows();
         console.log(`📡 /api/workflows - Returning ${workflows.length} workflows`);
         res.status(200).json(workflows);
         break;
@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        const workflow = createWorkflow({
+        const workflow = await createWorkflow({
           name,
           description,
           trigger,

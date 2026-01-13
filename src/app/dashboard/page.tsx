@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Workflow, WorkflowExecution, CronTriggerConfig } from '@/types/workflow';
 import { Activity, Play, Clock, CheckCircle, XCircle, AlertTriangle, Pause, FileText, Trash2, Loader2 } from 'lucide-react';
-import { getQueueState } from '@/lib/queue-visualization';
+// Убрали импорт getQueueState - теперь используем API
 import { Tooltip, ResponsiveContainer, PieChart, Pie } from 'recharts';
 
 export default function DashboardPage() {
@@ -26,8 +26,7 @@ export default function DashboardPage() {
     totalJobs: number;
     cronTasks?: number;
   } | null>(null);
-  const [pQueueTasks, setPQueueTasks] = useState<any[]>([]);
-  const [pQueueStats, setPQueueStats] = useState<any>(null);
+  const [pQueueTasks, setPQueueTasks] = useState<Array<{id: string; task: string; status: string; startTime?: number; endTime?: number; error?: string}>>([]);
   const [cronTasks, setCronTasks] = useState<Array<{
     workflowId: string;
     isRunning: boolean;
@@ -92,7 +91,7 @@ export default function DashboardPage() {
     const timeout = setTimeout(() => {
       console.warn('Dashboard loading timeout, forcing loading=false');
       setLoading(false);
-    }, 30000); // 30 секунд timeout для продакшена
+    }, 10000); // 10 секунд timeout
 
     try {
       // Простая загрузка без AbortController - даем запросам время выполниться
@@ -163,13 +162,12 @@ export default function DashboardPage() {
 
       // Загружаем состояние PQueue для визуализации
       try {
-        const pQueueState = getQueueState();
+        // Получаем состояние очереди через API
+        const pQueueState = await fetch('/api/queue/state').then(res => res.json());
         setPQueueTasks(pQueueState.tasks.slice(0, 5)); // Показываем только последние 5 задач
-        setPQueueStats(pQueueState.queueStats);
       } catch (error) {
         console.warn('Failed to load PQueue state:', error);
         setPQueueTasks([]);
-        setPQueueStats(null);
       }
 
       // Загружаем cron задачи отдельно
@@ -198,19 +196,13 @@ export default function DashboardPage() {
     const queueInterval = setInterval(async () => {
       try {
         // Обновляем PQueue состояние
-        const pQueueState = getQueueState();
+        // Получаем состояние очереди через API
+        const pQueueState = await fetch('/api/queue/state').then(res => res.json());
         setPQueueTasks(prev => {
           const newTasks = pQueueState.tasks.slice(0, 5);
           // Проверяем, изменились ли данные
           if (JSON.stringify(prev) !== JSON.stringify(newTasks)) {
             return newTasks;
-          }
-          return prev;
-        });
-        setPQueueStats((prev: any) => {
-          // Проверяем, изменились ли данные
-          if (JSON.stringify(prev) !== JSON.stringify(pQueueState.queueStats)) {
-            return pQueueState.queueStats;
           }
           return prev;
         });
@@ -701,7 +693,7 @@ export default function DashboardPage() {
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-muted-foreground">Активные задачи:</div>
                       <div className="space-y-1 max-h-32 overflow-y-auto">
-                        {pQueueTasks.slice(0, 3).map((task: any, index: number) => (
+                        {pQueueTasks.slice(0, 3).map((task: {id: string; task: string; status: string; startTime?: number; endTime?: number; error?: string}, index: number) => (
                           <div key={task.id || index} className="flex items-center gap-2 text-xs p-2 bg-muted/50 rounded">
                             {task.status === 'running' ? (
                               <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
