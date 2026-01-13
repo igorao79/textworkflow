@@ -1353,19 +1353,23 @@ export default function ApiDocsPage() {
               background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) !important;
               color: hsl(var(--primary-foreground)) !important;
               border: none !important;
-              padding: 10px 16px !important;
-              font-size: 14px !important;
+              padding: 8px 12px !important;
+              font-size: 12px !important;
               font-weight: 600 !important;
               cursor: pointer !important;
               transition: all 0.3s ease !important;
               text-transform: uppercase !important;
               letter-spacing: 0.5px !important;
-              min-width: 80px !important;
+              min-width: 60px !important;
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
-              gap: 6px !important;
-              position: relative !important;
+              gap: 4px !important;
+              position: absolute !important;
+              top: 8px !important;
+              right: 50px !important;
+              z-index: 10 !important;
+              flex-shrink: 0 !important;
               overflow: hidden !important;
             }
 
