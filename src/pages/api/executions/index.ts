@@ -53,9 +53,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(`📡 ${req.method} /api/executions - Starting request`);
     switch (req.method) {
       case 'GET':
-        const { workflowId: queryWorkflowId } = req.query;
+        const { workflowId: queryWorkflowId, includeLogs } = req.query;
         console.log('📡 /api/executions - Fetching executions...');
-        const executions = await getExecutions(queryWorkflowId as string);
+        const executions = await getExecutions(queryWorkflowId as string, includeLogs === 'true');
         console.log(`📡 /api/executions - Returning ${executions.length} executions`);
         console.log('📡 /api/executions - First execution sample:', executions[0]);
         res.status(200).json(executions);

@@ -97,7 +97,7 @@ export default function DashboardPage() {
       // Простая загрузка без AbortController - даем запросам время выполниться
       const [workflowsRes, executionsRes, queueStatsRes] = await Promise.allSettled([
         fetch('/api/workflows'),
-        fetch('/api/executions'),
+        fetch('/api/executions?includeLogs=true'),
         fetch('/api/queue/stats')
       ]);
 
@@ -222,7 +222,7 @@ export default function DashboardPage() {
         }
 
         // Обновляем список executions для актуальной статистики
-        const executionsRes = await fetch('/api/executions');
+        const executionsRes = await fetch('/api/executions?includeLogs=true');
         if (executionsRes.ok) {
           const executionsData = await executionsRes.json();
           setExecutions(prev => {
@@ -312,10 +312,8 @@ export default function DashboardPage() {
     // Если передан Date объект, используем его, иначе парсим строку
     const dateObj = typeof date === 'string' ? new Date(date) : date;
 
-    // Добавляем 3 часа к UTC времени для Moscow timezone
-    const mskDate = new Date(dateObj.getTime() + (3 * 60 * 60 * 1000));
-
-    return mskDate.toLocaleString('ru-RU', {
+    // Браузер автоматически покажет время в локальном часовом поясе пользователя
+    return dateObj.toLocaleString('ru-RU', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
