@@ -308,8 +308,21 @@ export default function DashboardPage() {
     );
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleString('ru-RU');
+  const formatDate = (date: string | Date) => {
+    // Если передан Date объект, используем его, иначе парсим строку
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+    // Добавляем 3 часа к UTC времени для Moscow timezone
+    const mskDate = new Date(dateObj.getTime() + (3 * 60 * 60 * 1000));
+
+    return mskDate.toLocaleString('ru-RU', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   const getTriggerTypeLabel = (type: string) => {
@@ -853,8 +866,8 @@ export default function DashboardPage() {
                         </p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <span>Действий: {workflow.actions.length}</span>
-                          <span>Создан: {formatDate(workflow.createdAt.toString())}</span>
-                          <span>Обновлен: {formatDate(workflow.updatedAt.toString())}</span>
+                          <span>Создан: {formatDate(workflow.createdAt)}</span>
+                          <span>Обновлен: {formatDate(workflow.updatedAt)}</span>
                         </div>
                       </div>
                     ))}
@@ -962,9 +975,9 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
                           <span>ID: {execution.id.slice(-8)}</span>
-                          <span>Начало: {formatDate(execution.startedAt.toString())}</span>
+                          <span>Начало: {formatDate(execution.startedAt)}</span>
                           {execution.completedAt && (
-                            <span>Завершение: {formatDate(execution.completedAt.toString())}</span>
+                            <span>Завершение: {formatDate(execution.completedAt)}</span>
                           )}
                         </div>
                         {execution.error && (
@@ -996,7 +1009,7 @@ export default function DashboardPage() {
                               {execution.logs.map((log) => (
                                 <div key={log.id} className="text-xs">
                                   <span className="font-mono">
-                                    {formatDate(log.timestamp.toString())}
+                                    {formatDate(log.timestamp)}
                                   </span>
                                   <span className={`ml-2 px-1 rounded ${
                                     log.level === 'error' ? 'bg-red-100 text-red-800' :
