@@ -61,10 +61,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Создаем workflow
-    const workflow = createWorkflow(workflowData);
-    console.log('Workflow created:', workflow.id);
+    console.log('🚀 About to create workflow with data:', {
+      name: workflowData.name,
+      trigger: workflowData.trigger?.type,
+      actionsCount: workflowData.actions?.length,
+      hasId: 'id' in workflowData
+    });
+
+    let workflow;
+    try {
+      workflow = await createWorkflow(workflowData);
+      console.log('✅ Workflow created:', { id: workflow?.id, name: workflow?.name, type: typeof workflow });
+    } catch (createError) {
+      console.error('❌ Failed to create workflow:', createError);
+      return res.status(500).json({
+        error: 'Workflow creation failed',
+        details: createError instanceof Error ? createError.message : 'Unknown error'
+      });
+    }
 
     // Выполняем workflow синхронно (без очереди)
+    if (!workflow || !workflow.id) {
+      console.error('❌ Workflow creation returned invalid result:', workflow);
+      return res.status(500).json({
+        error: 'Workflow creation failed',
+        details: 'Invalid workflow object returned'
+      });
+    }
+
     try {
       console.log(`🚀 Executing workflow ${workflow.id}...`);
       const { executeWorkflow } = await import('@/services/workflowService');

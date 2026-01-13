@@ -18,7 +18,7 @@ interface WorkflowRow {
   name: string;
   description: string | null;
   trigger_type: string;
-  trigger_config: any; // JSONB can contain any structure
+  trigger_config: Record<string, unknown>; // JSONB can contain any structure
   actions: WorkflowAction[];
   is_active: boolean;
   created_at: Date;
@@ -109,6 +109,7 @@ export async function pauseWorkflowExecution(workflowId: string, duration: numbe
 // Функции для загрузки/сохранения данных
 async function loadWorkflows(): Promise<Workflow[]> {
   try {
+    console.log('🔍 loadWorkflows: Starting to load workflows from database');
     const { sql } = await import('../lib/db');
     const workflowsData = await sql(`
       SELECT
@@ -124,6 +125,7 @@ async function loadWorkflows(): Promise<Workflow[]> {
       FROM workflows
       ORDER BY created_at DESC
     `);
+    console.log(`🔍 loadWorkflows: Found ${workflowsData.length} workflows in database`);
 
     const workflows: Workflow[] = (workflowsData as WorkflowRow[]).map((row: WorkflowRow) => ({
       id: row.id,
@@ -142,52 +144,14 @@ async function loadWorkflows(): Promise<Workflow[]> {
 
     console.log(`✅ Loaded ${workflows.length} workflows from database`);
     return workflows;
-    return workflows;
   } catch (error) {
     console.error('❌ Failed to load workflows from database:', error);
-    throw error;
+    // Fallback: return empty array if database is not available
+    console.log('🔄 Falling back to empty workflows array');
+    return [];
   }
 }
 
-export async function saveWorkflows(workflows: Workflow[]): Promise<void> {
-  try {
-    // Сохраняем в БД
-    const { sql } = await import('../lib/db');
-    for (const workflow of workflows) {
-      try {
-        await sql(`
-          INSERT INTO workflows (id, name, description, trigger_type, trigger_config, actions, is_active, created_at, updated_at)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          ON CONFLICT (id) DO UPDATE SET
-            name = EXCLUDED.name,
-            description = EXCLUDED.description,
-            trigger_type = EXCLUDED.trigger_type,
-            trigger_config = EXCLUDED.trigger_config,
-            actions = EXCLUDED.actions,
-            is_active = EXCLUDED.is_active,
-            updated_at = CURRENT_TIMESTAMP
-        `, [
-          workflow.id,
-          workflow.name,
-          workflow.description || null,
-          workflow.trigger.type,
-          JSON.stringify(workflow.trigger.config),
-          JSON.stringify(workflow.actions),
-          workflow.isActive,
-          workflow.createdAt.toISOString(),
-          workflow.updatedAt.toISOString()
-        ]);
-      } catch (dbError) {
-        console.warn('Failed to save workflow to DB:', workflow.id, dbError);
-      }
-    }
-
-    console.log(`💾 Saved ${workflows.length} workflows to database`);
-  } catch (error) {
-    console.error('❌ Failed to save workflows to database:', error);
-    throw error;
-  }
-}
 
 async function loadExecutions(includeLogs = false): Promise<WorkflowExecution[]> {
   try {
@@ -778,6 +742,13 @@ function addLog(
 
 // CRUD операции для workflow
 export async function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt' | 'updatedAt'>): Promise<Workflow> {
+  console.log('🔧 createWorkflow called with:', {
+    name: workflow.name,
+    trigger: workflow.trigger?.type,
+    actionsCount: workflow.actions?.length,
+    hasIsActive: 'isActive' in workflow
+  });
+
   const newWorkflow: Workflow = {
     ...workflow,
     id: `wf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -785,10 +756,37 @@ export async function createWorkflow(workflow: Omit<Workflow, 'id' | 'createdAt'
     updatedAt: new Date(),
   };
 
-  const workflows = await getWorkflows();
-  workflows.push(newWorkflow);
-  await saveWorkflows(workflows);
-  return newWorkflow;
+  console.log('🔧 Created workflow with id:', newWorkflow.id);
+
+  try {
+    const { sql } = await import('../lib/db');
+
+    await sql(`
+      INSERT INTO workflows (
+        id, name, description,
+        trigger_type, trigger_config,
+        actions, is_active,
+        created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `, [
+      newWorkflow.id,
+      newWorkflow.name,
+      newWorkflow.description || null,
+      newWorkflow.trigger.type,
+      JSON.stringify(newWorkflow.trigger.config),
+      JSON.stringify(newWorkflow.actions),
+      newWorkflow.isActive,
+      newWorkflow.createdAt.toISOString(),
+      newWorkflow.updatedAt.toISOString()
+    ]);
+
+    console.log('✅ Workflow saved to database:', { id: newWorkflow.id, name: newWorkflow.name });
+    return newWorkflow;
+
+  } catch (dbError) {
+    console.error('❌ Database error in createWorkflow:', dbError);
+    throw new Error(`Failed to save workflow to database: ${dbError instanceof Error ? dbError.message : String(dbError)}`);
+  }
 }
 
 export async function getWorkflows(): Promise<Workflow[]> {
@@ -804,37 +802,75 @@ export async function getWorkflows(): Promise<Workflow[]> {
 }
 
 export async function getWorkflow(id: string): Promise<Workflow | undefined> {
+  console.log(`🔍 getWorkflow: Looking for workflow with id: ${id}`);
   const workflows = await getWorkflows();
-  return workflows.find(w => w.id === id);
+  const workflow = workflows.find(w => w.id === id);
+  console.log(`🔍 getWorkflow: ${workflow ? 'Found' : 'Not found'} workflow with id: ${id}`);
+  return workflow;
 }
 
 export async function updateWorkflow(id: string, updates: Partial<Workflow>): Promise<Workflow | null> {
-  const workflows = await getWorkflows();
-  const index = workflows.findIndex(w => w.id === id);
-  if (index === -1) return null;
+  try {
+    const { sql } = await import('../lib/db');
 
-  workflows[index] = { ...workflows[index], ...updates, updatedAt: new Date() };
-  await saveWorkflows(workflows);
-  return workflows[index];
+    // Сначала получаем текущий воркфлоу
+    const currentWorkflow = await getWorkflow(id);
+    if (!currentWorkflow) return null;
+
+    const updatedWorkflow: Workflow = {
+      ...currentWorkflow,
+      ...updates,
+      updatedAt: new Date()
+    };
+
+    // Обновляем в БД
+    await sql(`
+      UPDATE workflows SET
+        name = $2,
+        description = $3,
+        trigger_type = $4,
+        trigger_config = $5,
+        actions = $6,
+        is_active = $7,
+        updated_at = $8
+      WHERE id = $1
+    `, [
+      id,
+      updatedWorkflow.name,
+      updatedWorkflow.description || null,
+      updatedWorkflow.trigger.type,
+      JSON.stringify(updatedWorkflow.trigger.config),
+      JSON.stringify(updatedWorkflow.actions),
+      updatedWorkflow.isActive,
+      updatedWorkflow.updatedAt.toISOString()
+    ]);
+
+    console.log('✅ Workflow updated in database:', { id, name: updatedWorkflow.name });
+    return updatedWorkflow;
+
+  } catch (dbError) {
+    console.error('❌ Database error in updateWorkflow:', dbError);
+    throw new Error(`Failed to update workflow in database: ${dbError instanceof Error ? dbError.message : String(dbError)}`);
+  }
 }
 
 export async function deleteWorkflow(id: string): Promise<boolean> {
-  const workflows = await getWorkflows();
-  const index = workflows.findIndex(w => w.id === id);
-  if (index === -1) return false;
-
-  // Удаляем из БД
   try {
     const { sql } = await import('../lib/db');
+
+    // Проверяем, существует ли воркфлоу
+    const existingWorkflow = await getWorkflow(id);
+    if (!existingWorkflow) return false;
+
+    // Удаляем из БД
     await sql('DELETE FROM workflows WHERE id = $1', [id]);
     console.log(`🗑️ Deleted workflow ${id} from database`);
-  } catch (dbError) {
-    console.warn('Failed to delete workflow from DB:', dbError);
-  }
+    return true;
 
-  workflows.splice(index, 1);
-  await saveWorkflows(workflows);
-  return true;
+  } catch (dbError) {
+    console.error('❌ Database error in deleteWorkflow:', dbError);
+    throw new Error(`Failed to delete workflow from database: ${dbError instanceof Error ? dbError.message : String(dbError)}`);
+  }
 }
 
 // Операции с executions

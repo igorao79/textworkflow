@@ -19,6 +19,31 @@ async function createExecutionsTable() {
       )
     `);
 
+    // Исправление типов колонок, если таблицы уже существуют с неправильными типами
+    try {
+      // Проверяем и исправляем тип id в workflow_executions
+      const execIdColumn = await sql(`
+        SELECT data_type FROM information_schema.columns
+        WHERE table_name = 'workflow_executions' AND column_name = 'id'
+      `);
+      if (execIdColumn.length > 0 && execIdColumn[0].data_type !== 'character varying') {
+        console.log('🔧 Fixing workflow_executions.id type');
+        await sql(`ALTER TABLE workflow_executions ALTER COLUMN id TYPE VARCHAR(255)`);
+      }
+
+      // Проверяем и исправляем тип workflow_id в workflow_executions
+      const workflowIdColumn = await sql(`
+        SELECT data_type FROM information_schema.columns
+        WHERE table_name = 'workflow_executions' AND column_name = 'workflow_id'
+      `);
+      if (workflowIdColumn.length > 0 && workflowIdColumn[0].data_type !== 'character varying') {
+        console.log('🔧 Fixing workflow_executions.workflow_id type');
+        await sql(`ALTER TABLE workflow_executions ALTER COLUMN workflow_id TYPE VARCHAR(255)`);
+      }
+    } catch (alterError) {
+      console.log('ℹ️ Schema fix may not be needed or failed, continuing...');
+    }
+
     // Создание таблицы workflow_execution_logs
     await sql(`
       CREATE TABLE IF NOT EXISTS workflow_execution_logs (
@@ -31,6 +56,41 @@ async function createExecutionsTable() {
         data JSONB NULL
       )
     `);
+
+    // Исправление типов колонок в workflow_execution_logs
+    try {
+      // Проверяем и исправляем тип id в workflow_execution_logs
+      const logsIdColumn = await sql(`
+        SELECT data_type FROM information_schema.columns
+        WHERE table_name = 'workflow_execution_logs' AND column_name = 'id'
+      `);
+      if (logsIdColumn.length > 0 && logsIdColumn[0].data_type !== 'character varying') {
+        console.log('🔧 Fixing workflow_execution_logs.id type');
+        await sql(`ALTER TABLE workflow_execution_logs ALTER COLUMN id TYPE VARCHAR(255)`);
+      }
+
+      // Проверяем и исправляем тип execution_id в workflow_execution_logs
+      const executionIdColumn = await sql(`
+        SELECT data_type FROM information_schema.columns
+        WHERE table_name = 'workflow_execution_logs' AND column_name = 'execution_id'
+      `);
+      if (executionIdColumn.length > 0 && executionIdColumn[0].data_type !== 'character varying') {
+        console.log('🔧 Fixing workflow_execution_logs.execution_id type');
+        await sql(`ALTER TABLE workflow_execution_logs ALTER COLUMN execution_id TYPE VARCHAR(255)`);
+      }
+
+      // Проверяем и исправляем тип action_id в workflow_execution_logs
+      const actionIdColumn = await sql(`
+        SELECT data_type FROM information_schema.columns
+        WHERE table_name = 'workflow_execution_logs' AND column_name = 'action_id'
+      `);
+      if (actionIdColumn.length > 0 && actionIdColumn[0].data_type !== 'character varying') {
+        console.log('🔧 Fixing workflow_execution_logs.action_id type');
+        await sql(`ALTER TABLE workflow_execution_logs ALTER COLUMN action_id TYPE VARCHAR(255)`);
+      }
+    } catch (alterError) {
+      console.log('ℹ️ Logs schema fix may not be needed or failed, continuing...');
+    }
 
     // Создание индексов
     await sql(`CREATE INDEX IF NOT EXISTS idx_workflow_executions_workflow_id ON workflow_executions(workflow_id)`);

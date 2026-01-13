@@ -1,5 +1,5 @@
 import * as cron from 'node-cron';
-import { executeWorkflow, getWorkflows, saveWorkflows, saveExecutionResult, getExecutions } from './workflowService';
+import { executeWorkflow, getWorkflows, updateWorkflow, saveExecutionResult, getExecutions } from './workflowService';
 import { WorkflowExecution, Workflow } from '../types/workflow';
 
 // Все данные загружаются через API из внешних сервисов
@@ -38,21 +38,20 @@ async function resetAllCronTasks(): Promise<void> {
       const workflows = await getWorkflows();
       let resetCount = 0;
 
-      const updatedWorkflows = workflows.map(workflow => {
+      // Деактивируем cron воркфлоу индивидуально
+      for (const workflow of workflows) {
         if (workflow.trigger.type === 'cron' && workflow.isActive) {
           console.log(`🔄 CronService: Deactivating cron workflow: ${workflow.name} (${workflow.id})`);
-          resetCount++;
-          return {
-            ...workflow,
-            isActive: false,
-            updatedAt: new Date()
-          };
+          try {
+            await updateWorkflow(workflow.id, { isActive: false });
+            resetCount++;
+          } catch (updateError) {
+            console.error(`❌ Failed to deactivate workflow ${workflow.id}:`, updateError);
+          }
         }
-        return workflow;
-      });
+      }
 
       if (resetCount > 0) {
-        saveWorkflows(updatedWorkflows);
         console.log(`✅ CronService: Successfully reset ${resetCount} cron tasks`);
       } else {
         console.log('ℹ️ CronService: No active cron tasks to reset');

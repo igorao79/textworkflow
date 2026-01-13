@@ -26,23 +26,35 @@ export function WorkflowForm() {
 
     try {
       // Отправляем данные на сервер для создания и запуска workflow
+      const dataToSend = {
+        workflowData: {
+          ...workflowData,
+          name: workflowData.name || `Workflow ${Date.now()}`,
+          isActive: true
+        },
+        triggerData: {
+          name: 'Workflow User',
+          email: 'noreply@workflow.com',
+          message: 'Workflow executed successfully'
+        }
+      };
+
+      console.log('📤 Sending data to API:', {
+        workflowData: {
+          name: dataToSend.workflowData.name,
+          trigger: dataToSend.workflowData.trigger?.type,
+          actionsCount: dataToSend.workflowData.actions?.length,
+          hasId: 'id' in dataToSend.workflowData
+        },
+        triggerData: !!dataToSend.triggerData
+      });
+
       const response = await fetch('/api/workflows/run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          workflowData: {
-            ...workflowData,
-            name: workflowData.name || `Workflow ${Date.now()}`,
-            isActive: true
-          },
-          triggerData: {
-            name: 'Workflow User',
-            email: 'noreply@workflow.com',
-            message: 'Workflow executed successfully'
-          }
-        }),
+        body: JSON.stringify(dataToSend),
       });
 
       const result = await response.json();
