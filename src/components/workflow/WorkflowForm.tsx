@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkflowEditor } from './WorkflowEditor';
 import { Workflow } from '@/types/workflow';
-import { notifySuccess } from '@/services/notificationService';
+import { notifySuccess, notifyError } from '@/services/notificationService';
 
 export function WorkflowForm() {
 
@@ -17,14 +17,14 @@ export function WorkflowForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [executionCompleted, setExecutionCompleted] = useState(false);
+  const [executionHasError, setExecutionHasError] = useState(false);
 
-  const handleExecutionSuccess = React.useCallback(() => {
-    setExecutionCompleted(true);
-  }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setIsSubmitting(true);
+    setExecutionCompleted(false);
+    setExecutionHasError(false);
 
     console.log('🚀 handleSubmit called, sending workflow to API...');
     console.log('📋 Workflow data:', workflowData);
@@ -40,7 +40,8 @@ export function WorkflowForm() {
         triggerData: {
           name: 'Workflow User',
           email: 'noreply@workflow.com',
-          message: 'Workflow executed successfully'
+          message: 'Workflow executed successfully',
+          userId: 'test-user-123' // Временное значение для тестирования
         }
       };
 
@@ -71,16 +72,28 @@ export function WorkflowForm() {
       });
 
       if (!response.ok) {
-        throw new Error(result.error || result.details || 'Failed to create and run workflow');
+        // Workflow execution failed
+        const errorMessage = result.error || result.details || 'Workflow execution failed';
+        console.error(`❌ Workflow execution failed:`, errorMessage);
+
+        // Устанавливаем флаги завершения с ошибкой для UI
+        setExecutionCompleted(true);
+        setExecutionHasError(true);
+
+        // Отправляем уведомление об ошибке
+        notifyError(
+          'Ошибка выполнения workflow',
+          `Workflow "${workflowData.name || `Workflow ${result.workflowId?.slice(-8) || 'unknown'}`}" завершен с ошибкой: ${errorMessage}`
+        );
+
+        return; // Не продолжаем выполнение
       }
 
       console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
 
-      // Устанавливаем флаг успешного выполнения для UI
+      // Устанавливаем флаги успешного выполнения для UI
       setExecutionCompleted(true);
-
-      // Вызываем callback для обновления UI в WorkflowEditor
-      handleExecutionSuccess();
+      setExecutionHasError(false);
 
       // Отправляем уведомление об успешном выполнении
       notifySuccess(
@@ -131,6 +144,7 @@ export function WorkflowForm() {
             isSubmitting={isSubmitting}
             setIsSubmitting={setIsSubmitting}
             executionCompleted={executionCompleted}
+            executionHasError={executionHasError}
           />
         </CardContent>
       </Card>

@@ -8,6 +8,8 @@ import {
   WorkflowExecutionLog,
   EmailActionConfig,
   EmailTriggerConfig,
+  WebhookTriggerConfig,
+  CronTriggerConfig,
   HttpActionConfig,
   TelegramActionConfig,
   DatabaseActionConfig,
@@ -19,7 +21,7 @@ interface WorkflowRow {
   name: string;
   description: string | null;
   trigger_type: string;
-  trigger_config: any; // JSONB can contain any structure
+  trigger_config: WebhookTriggerConfig | CronTriggerConfig | EmailTriggerConfig; // JSONB can contain trigger config
   actions: WorkflowAction[];
   is_active: boolean;
   created_at: Date;
@@ -135,7 +137,7 @@ async function loadWorkflows(): Promise<Workflow[]> {
       trigger: {
         id: `${row.id}-trigger`,
         type: row.trigger_type as 'webhook' | 'cron' | 'email',
-        config: row.trigger_config as any
+        config: row.trigger_config
       },
       actions: row.actions,
       isActive: row.is_active,
@@ -478,12 +480,47 @@ async function executeEmailAction(config: EmailActionConfig, data: Record<string
   }
 }
 
+// Функция для замены переменных в строках типа ${variable}
+function replaceVariables(text: string, data: Record<string, unknown>): string {
+  return text.replace(/\$\{([^}]+)\}/g, (match, variableName) => {
+    const value = data[variableName];
+    return value !== undefined ? String(value) : match;
+  });
+}
+
 async function executeHttpAction(config: HttpActionConfig, data: Record<string, unknown>): Promise<void> {
+  // Обрабатываем переменные в URL
+  const processedUrl = replaceVariables(config.url, data);
+
+  // Обрабатываем переменные в headers
+  const processedHeaders = config.headers ? {} as Record<string, string> : undefined;
+  if (config.headers && processedHeaders) {
+    for (const [key, value] of Object.entries(config.headers)) {
+      processedHeaders[key] = replaceVariables(value, data);
+    }
+  }
+
+  // Обрабатываем переменные в body (если это строка)
+  let processedBody = config.body;
+  if (typeof config.body === 'string') {
+    processedBody = replaceVariables(config.body, data);
+  } else if (config.body && typeof config.body === 'object') {
+    // Для объектов также обрабатываем переменные в строковых значениях
+    processedBody = JSON.parse(replaceVariables(JSON.stringify(config.body), data));
+  }
+
+  console.log(`🌐 Executing HTTP request to: ${processedUrl}`);
+  console.log(`📋 Request details:`, {
+    method: config.method,
+    headers: processedHeaders,
+    body: processedBody
+  });
+
   const response = await axios({
     method: config.method,
-    url: config.url,
-    headers: config.headers,
-    data: config.body,
+    url: processedUrl,
+    headers: processedHeaders,
+    data: processedBody,
     timeout: config.timeout || 30000,
   });
 

@@ -35,6 +35,7 @@ interface WorkflowEditorProps {
   isSubmitting?: boolean;
   setIsSubmitting?: (submitting: boolean) => void;
   executionCompleted?: boolean;
+  executionHasError?: boolean;
 }
 
 // Компонент для отображения выполнения workflow
@@ -46,6 +47,7 @@ function ExecutionMonitorModal({
   isSubmitting,
   setIsSubmitting,
   executionCompleted = false,
+  executionHasError = false,
   isExecuting = false,
   setIsExecuting
 }: {
@@ -56,6 +58,7 @@ function ExecutionMonitorModal({
   isSubmitting?: boolean;
   setIsSubmitting?: (submitting: boolean) => void;
   executionCompleted?: boolean;
+  executionHasError?: boolean;
   isExecuting?: boolean;
   setIsExecuting?: (executing: boolean) => void;
 }) {
@@ -141,7 +144,7 @@ function ExecutionMonitorModal({
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
 
-      // Устанавливаем статус завершения даже при ошибке
+      // Устанавливаем статус завершения с ошибкой
       setIsSubmitting?.(false);
       setIsExecuting?.(false);
       setExecutionProgress(100);
@@ -167,7 +170,7 @@ function ExecutionMonitorModal({
       }
       // Не устанавливаем isSubmitting здесь, чтобы не конфликтовать с успешным выполнением
     }
-  }, [setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
+  }, [setIsSubmitting, isSubmitting, hasStartedExecution, actions, executionProgress, setIsExecuting, setExecutionProgress, setExecutionSteps]);
 
   // Гарантируем корректное отображение завершения (без уведомлений)
   React.useEffect(() => {
@@ -179,7 +182,7 @@ function ExecutionMonitorModal({
         setIsExecuting?.(false);
       }
     }
-  }, [executionProgress, isSubmitting, hasStartedExecution, setIsSubmitting]);
+  }, [executionProgress, isSubmitting, hasStartedExecution, setIsSubmitting, setIsExecuting]);
 
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {
@@ -203,7 +206,7 @@ function ExecutionMonitorModal({
       setExecutionSteps([]);
       setExecutionProgress(0);
     }
-  }, [isOpen]);
+  }, [isOpen, setIsExecuting, setExecutionSteps, setExecutionProgress]);
 
 
 
@@ -236,6 +239,10 @@ function ExecutionMonitorModal({
               </div>
             ) : isSubmitting ? (
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            ) : executionHasError ? (
+              <div className="rounded-full h-12 w-12 bg-red-500 mx-auto mb-4 flex items-center justify-center">
+                <RotateCcw className="w-6 h-6 text-white" />
+              </div>
             ) : (
               <div className="rounded-full h-12 w-12 bg-green-500 mx-auto mb-4 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -246,7 +253,9 @@ function ExecutionMonitorModal({
                 ? 'Готов к запуску'
                 : isSubmitting || !executionCompleted
                   ? 'Выполнение workflow'
-                  : 'Workflow выполнен!'
+                  : executionHasError
+                    ? 'Workflow завершен с ошибкой'
+                    : 'Workflow выполнен!'
               }
             </p>
             <p className="text-sm mt-2">
@@ -254,7 +263,9 @@ function ExecutionMonitorModal({
                 ? 'Нажмите кнопку для запуска workflow'
                 : isSubmitting || !executionCompleted
                   ? 'Пожалуйста, подождите завершения всех операций'
-                  : 'Все действия успешно выполнены'
+                  : executionHasError
+                    ? 'Во время выполнения произошла ошибка'
+                    : 'Все действия успешно выполнены'
               }
             </p>
           </div>
@@ -382,7 +393,7 @@ const validateAction = (action: WorkflowAction): boolean => {
   }
 };
 
-export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSubmitting, setIsSubmitting, executionCompleted = false }: WorkflowEditorProps) {
+export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSubmitting, setIsSubmitting, executionCompleted = false, executionHasError = false }: WorkflowEditorProps) {
   const actionCounterRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showExecutionMonitor, setShowExecutionMonitor] = useState(false);
@@ -784,6 +795,7 @@ export function WorkflowEditor({ workflowData, onWorkflowChange, onSubmit, isSub
         actions={workflowData.actions}
         isExecuting={isExecuting}
         executionCompleted={executionCompleted}
+        executionHasError={executionHasError}
         setIsExecuting={setIsExecuting}
         isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting}
