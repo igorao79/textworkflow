@@ -1,38 +1,36 @@
-# Workflow Builder
+# FlowForge - Workflow Builder
 
-Современный визуальный конструктор автоматизированных процессов (workflow) с drag-and-drop интерфейсом.
+Современный визуальный конструктор автоматизированных процессов (workflow) с drag-and-drop интерфейсом. Полностью serverless решение для автоматизации бизнес-процессов.
 
 ## 🚀 Возможности
 
 - **Визуальный редактор workflow** с drag-and-drop интерфейсом
-- **Три типа триггеров**: Webhook, Cron расписание, Email
+- **Четыре типа триггеров**: Webhook, Cron расписание (QStash), Email, Manual
 - **Пять типов действий**:
   - HTTP запросы
   - Отправка Email (через Resend)
   - Отправка Telegram сообщений
-  - Операции с базой данных
+  - Операции с базой данных (PostgreSQL)
   - Трансформация данных
-- **Очередь задач** с Bull.js
+- **Serverless очередь задач** с Upstash Redis
+- **Cron задачи** через QStash (production) и node-cron (development)
+- **PostgreSQL база данных** (Neon)
 - **Логирование** выполнения шагов
 - **Обработка ошибок** с retry и уведомлениями
-- **REST API** с Swagger документацией
-- **Адаптивный дизайн** с черно-красной палитрой
-
-## 🛠️ Технологии
-
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **UI**: Shadcn/ui, Tailwind CSS
-- **Drag & Drop**: @dnd-kit
-- **Очередь**: Bull.js, Redis
-- **Email**: Resend
-- **Telegram**: Telegraf
-- **API**: REST с Swagger документацией
+- **REST API** с интерактивной Swagger документацией
+- **Адаптивный дизайн** с темной палитрой
+- **Полная serverless архитектура** (Vercel + Upstash + QStash + Neon)
 
 ## 📋 Предварительные требования
 
 - Node.js 18+
-- Redis (для очереди задач)
 - npm или yarn
+- Аккаунты в сервисах:
+  - [Neon](https://neon.tech) (PostgreSQL database)
+  - [Upstash](https://upstash.com) (Redis)
+  - [QStash](https://upstash.com/qstash) (Cron jobs)
+  - [Resend](https://resend.com) (Email, опционально)
+  - [Vercel](https://vercel.com) (Deployment)
 
 ## 🚀 Быстрый старт
 
@@ -47,49 +45,101 @@
    npm install
    ```
 
-3. **Настройте переменные окружения (опционально)**
+3. **Создайте файл переменных окружения**
    ```bash
-   cp env-example.txt .env.local
+   # Создайте файл .env.local и добавьте следующие переменные:
+   touch .env.local
    ```
 
-   Для тестирования можно оставить API ключи пустыми. Отредактируйте `.env.local` при необходимости:
+   Скопируйте в `.env.local`:
    ```env
-   RESEND_API_KEY=your_resend_api_key_here
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+   # Database (Neon PostgreSQL)
+   DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+
+   # Redis (Upstash)
+   UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=your-redis-token
+
+   # QStash (Cron Jobs)
+   QSTASH_TOKEN=your-qstash-token
+   QSTASH_CURRENT_SIGNING_KEY=your-current-signing-key
+   QSTASH_NEXT_SIGNING_KEY=your-next-signing-key
+
+   # App Configuration
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+   # Optional: Email (Resend)
+   RESEND_API_KEY=your-resend-api-key
+
+   # Optional: Telegram
+   TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+   TELEGRAM_ERROR_CHAT_ID=your-chat-id
+
+   # Optional: Error notifications
+   ERROR_NOTIFICATION_EMAIL=your-email@example.com
    ```
 
-   **Примечание:** Без API ключей будут работать только базовые функции workflow. Email и Telegram действия будут возвращать ошибки.
+   **Как получить API ключи:**
+   - **Neon**: Зарегистрируйтесь на [neon.tech](https://neon.tech), создайте проект
+   - **Upstash**: Зарегистрируйтесь на [upstash.com](https://upstash.com), создайте Redis базу
+   - **QStash**: Используйте тот же аккаунт Upstash, перейдите в раздел QStash
+   - **Resend**: Зарегистрируйтесь на [resend.com](https://resend.com)
+   - **Telegram**: Создайте бота через [@BotFather](https://t.me/botfather) в Telegram
 
-4. **Хранение данных:**
-   ```
-   Данные сохраняются в папке /data/:
-   - workflows.json - созданные workflow
-   - executions.json - история выполнений
-
-   Данные сохраняются между перезапусками сервера.
-   ```
-
-5. **Запустите приложение:**
+4. **Настройте базу данных**
    ```bash
-   # На macOS с Homebrew
-   brew services start redis
+   # Создайте таблицы в PostgreSQL
+   npm run db:setup
 
-   # На Ubuntu/Debian
-   sudo systemctl start redis-server
+   # Или вручную выполните SQL скрипты:
+   # create-tables.sql, executions-schema.sql
+   ```
 
-   # Или используйте Docker
-   docker run -d -p 6379:6379 redis:alpine
+3. **Настройте переменные окружения**
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Обязательные переменные:
+   ```env
+   # Database
+   DATABASE_URL=postgresql://user:password@host/database
+
+   # Redis (Upstash)
+   UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=your-redis-token
+
+   # QStash (для cron задач)
+   QSTASH_TOKEN=your-qstash-token
+   QSTASH_CURRENT_SIGNING_KEY=your-current-signing-key
+   QSTASH_NEXT_SIGNING_KEY=your-next-signing-key
+
+   # App URL (для production)
+   NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
+   ```
+
+   Опциональные переменные:
+   ```env
+   # Email (Resend)
+   RESEND_API_KEY=your-resend-api-key
+
+   # Telegram
+   TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+   TELEGRAM_ERROR_CHAT_ID=your-chat-id
+
+   # Error notifications
+   ERROR_NOTIFICATION_EMAIL=your-email@example.com
+   ```
+
+4. **Настройте базу данных**
+   ```bash
+   # Создайте таблицы в Neon
+   npm run db:setup
    ```
 
 5. **Запустите приложение**
    ```bash
-   # Полный запуск (Next.js + Worker + Cron)
-   npm run dev:full
-
-   # Или по отдельности:
-   npm run dev              # Next.js приложение
-   npm run queue:worker     # Обработчик очереди
-   npm run cron:runner      # Cron задачи
+   npm run dev
    ```
 
 6. **Откройте браузер**
@@ -116,53 +166,122 @@
 http://localhost:3000/api-docs
 ```
 
-### Webhook триггеры
+### API Endpoints
 
-Для webhook триггеров используйте endpoint:
-```
-POST /api/webhooks/{workflowId}
-```
+#### Основные операции
+- `GET/POST /api/workflows` - Управление workflows
+- `GET/POST /api/executions` - Запуск и мониторинг выполнений
+- `POST /api/webhooks/{workflowId}` - Webhook триггеры
+
+#### Cron задачи (QStash)
+- `POST /api/cron/activate/{workflowId}` - Активация cron расписания
+- `POST /api/cron/deactivate/{workflowId}` - Деактивация cron
+- `POST /api/qstash/webhook` - Обработчик QStash webhook
+
+#### Очередь задач
+- `GET /api/queue/stats` - Статистика очереди
+- `POST /api/queue/process` - Обработка следующей задачи
+- `POST /api/queue/pause` - Управление паузой очереди
+
+#### Система уведомлений
+- Email через Resend (опционально)
+- Telegram боты (опционально)
+- Автоматические уведомления об ошибках
+
+### Особенности QStash интеграции
+
+**Production режим:**
+- Используется QStash для надежных cron задач
+- Webhook endpoint: `/api/qstash/webhook`
+- Поддержка retry и timeout
+
+**Development режим:**
+- Используется node-cron как fallback
+- Не требует внешних сервисов
+- Работает локально
+
+**Переключение режимов:**
+- Production: `NEXT_PUBLIC_APP_URL` установлен и не localhost
+- Development: `NODE_ENV=development` или localhost URL
 
 ## 🏗️ Архитектура
 
 ```
 src/
-├── app/                 # Next.js App Router
-│   ├── api/            # API endpoints
-│   ├── api-docs/       # Swagger документация
-│   └── globals.css     # Стили с черно-красной палитрой
-├── components/         # React компоненты
-│   ├── ui/            # Shadcn/ui компоненты
-│   └── workflow/      # Компоненты workflow
-├── lib/               # Утилиты и конфигурации
-│   └── queue.ts       # Bull.js очередь
-├── services/          # Бизнес-логика
-│   └── workflowService.ts
-├── types/            # TypeScript типы
-└── utils/            # Вспомогательные функции
+├── app/                    # Next.js App Router
+│   ├── api/               # API endpoints
+│   │   ├── cron/          # Управление cron задачами
+│   │   ├── qstash/        # QStash интеграция
+│   │   ├── queue/         # Управление очередью
+│   │   └── workflows/     # CRUD операции с workflows
+│   ├── api-docs/          # Swagger документация
+│   ├── dashboard/         # Главная панель
+│   └── globals.css        # Темные стили
+├── components/            # React компоненты
+│   ├── ui/               # Shadcn/ui компоненты
+│   └── workflow/         # Компоненты редактора workflow
+├── lib/                  # Утилиты и сервисы
+│   ├── db.ts            # PostgreSQL подключение (Neon)
+│   ├── queue-service.ts # Upstash Redis очередь
+│   └── utils.ts         # Вспомогательные функции
+├── services/             # Бизнес-логика
+│   ├── workflowService.ts   # Основная логика workflow
+│   ├── qstashService.ts     # QStash интеграция
+│   ├── cronService.ts       # Cron задачи
+│   └── notificationService.ts # Уведомления
+├── types/               # TypeScript типы
+├── workers/             # Worker threads для тяжелых задач
+└── middleware.ts        # CORS и другие middleware
 
-scripts/               # Скрипты для запуска
-├── worker.js         # Обработчик очереди
-└── cron-runner.js    # Cron задачи
+scripts/                  # Скрипты настройки
+├── create-executions-table.ts
+├── migrate-executions-to-db.ts
+└── setup-workflows.js
 ```
 
 ## 🔧 Конфигурация
 
 ### Переменные окружения
 
-| Переменная | Описание | Значение по умолчанию |
-|------------|----------|----------------------|
-| `RESEND_API_KEY` | API ключ Resend для отправки email | - |
-| `TELEGRAM_BOT_TOKEN` | Токен Telegram бота | - |
-| `REDIS_URL` | URL Redis сервера | `redis://127.0.0.1:6379` |
-| `FROM_EMAIL` | Email отправителя | `noreply@yourdomain.com` |
+| Переменная | Описание | Обязательно |
+|------------|----------|-------------|
+| `DATABASE_URL` | PostgreSQL URL (Neon) | ✅ |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL | ✅ |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis токен | ✅ |
+| `QSTASH_TOKEN` | QStash API токен | ✅ |
+| `QSTASH_CURRENT_SIGNING_KEY` | Текущий ключ подписи QStash | ✅ |
+| `QSTASH_NEXT_SIGNING_KEY` | Следующий ключ подписи QStash | ✅ |
+| `NEXT_PUBLIC_APP_URL` | URL приложения (production) | ✅ |
+| `RESEND_API_KEY` | Resend API ключ для email | ❌ |
+| `TELEGRAM_BOT_TOKEN` | Telegram бот токен | ❌ |
+| `TELEGRAM_ERROR_CHAT_ID` | ID чата для уведомлений | ❌ |
+| `ERROR_NOTIFICATION_EMAIL` | Email для уведомлений об ошибках | ❌ |
 
-### Настройка Redis
+### Настройка сервисов
 
-По умолчанию используется локальный Redis. Для продакшена настройте внешний Redis:
+#### 1. Neon (PostgreSQL)
+```bash
+# Создайте проект в Neon
+# Получите DATABASE_URL из dashboard
+```
 
-```env
-REDIS_URL=redis://username:password@host:port
+#### 2. Upstash Redis
+```bash
+# Создайте Redis базу в Upstash
+# Получите UPSTASH_REDIS_REST_URL и UPSTASH_REDIS_REST_TOKEN
+```
+
+#### 3. QStash (Cron Jobs)
+```bash
+# Создайте проект в QStash (через Upstash dashboard)
+# Получите токены из раздела QStash
+```
+
+#### 4. Vercel (Deployment)
+```bash
+# Создайте проект на Vercel
+# Добавьте все переменные окружения
+# Разверните приложение
 ```
 
 ## 📊 Мониторинг
@@ -172,54 +291,103 @@ REDIS_URL=redis://username:password@host:port
 Логи выполнения workflow доступны через API:
 ```
 GET /api/executions?workflowId={id}
+GET /api/executions/{executionId}
 ```
 
 ### Статус очереди
 
-Для мониторинга Bull.js очереди можно использовать:
-- Bull Dashboard
-- Redis CLI: `redis-cli monitor`
+Мониторинг Upstash Redis очереди:
+```
+GET /api/queue/stats          # Статистика очереди
+GET /api/queue/state          # Детальное состояние
+POST /api/queue/process       # Ручная обработка задач
+```
+
+### QStash Dashboard
+
+Для мониторинга cron задач используйте:
+- [QStash Dashboard](https://console.upstash.com/qstash)
+- Проверка webhook логов
+- Мониторинг доставки сообщений
+
+### Database Monitoring
+
+PostgreSQL метрики доступны в:
+- [Neon Dashboard](https://console.neon.tech)
+- Connection pooling stats
+- Query performance monitoring
 
 ## 🚀 Деплой
 
-### Vercel
+### Vercel (Рекомендуемый)
 
-1. Подключите репозиторий к Vercel
-2. Добавьте переменные окружения
-3. Настройте Redis (например, Upstash)
-4. Деплой
+1. **Подключите репозиторий к Vercel**
+   ```bash
+   # Создайте проект на Vercel
+   # Подключите GitHub репозиторий
+   ```
 
-### Docker
+2. **Настройте переменные окружения в Vercel**
+   - Добавьте все обязательные переменные из раздела конфигурации
+   - Установите `NODE_ENV=production`
+   - Установите `NEXT_PUBLIC_APP_URL` на ваш Vercel URL
 
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
+3. **Database Migrations**
+   ```bash
+   # Выполните миграции перед деплоем
+   npm run db:setup
+   ```
+
+4. **Деплой**
+   - Vercel автоматически развернет приложение
+   - QStash будет работать в production режиме
+   - Upstash Redis будет использоваться для очередей
+
+### Локальная разработка
+
+Для локальной разработки с Vercel-like окружением:
+
+```bash
+# Установите Vercel CLI
+npm i -g vercel
+
+# Локальный development
+vercel dev
 ```
 
-## 🤝 Contributing
+### Production URLs
 
-1. Fork проект
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit изменения (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
+После деплоя обновите `NEXT_PUBLIC_APP_URL` в переменных окружения Vercel на актуальный URL вашего приложения.
 
-## 📄 Лицензия
+## 🔧 Troubleshooting
 
-Этот проект лицензирован под MIT License - см. файл [LICENSE](LICENSE) для деталей.
+### Проблемы с очередью
 
-## 📞 Поддержка
+**"Ожидают 1" не обрабатывается:**
+```bash
+# Проверьте статус очереди
+curl https://your-app.vercel.app/api/queue/stats
 
-Если у вас возникли вопросы или проблемы:
-1. Проверьте [Issues](issues) на GitHub
-2. Создайте новый issue с детальным описанием
-3. Свяжитесь с командой разработчиков
+# Обработайте задачу вручную
+curl -X POST https://your-app.vercel.app/api/queue/process
+```
 
----
+**QStash не работает:**
+- Проверьте `QSTASH_TOKEN` и signing keys
+- Убедитесь что `NEXT_PUBLIC_APP_URL` корректный
+- Проверьте логи в QStash dashboard
 
-Создано с ❤️ для автоматизации рабочих процессов
+### Database Issues
+
+**Connection errors:**
+- Проверьте `DATABASE_URL` в Vercel
+- Убедитесь что Neon database доступна
+- Проверьте connection limits
+
+### CORS Issues
+
+**API недоступен:**
+- Проверьте `NEXT_PUBLIC_APP_URL` в API документации
+- Убедитесь что CORS настроен правильно
+- Используйте HTTPS в production
+
