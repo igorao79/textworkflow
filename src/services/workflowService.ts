@@ -558,6 +558,8 @@ async function executeTelegramAction(config: TelegramActionConfig, data: Record<
 
     console.log(`📤 Sending Telegram message to chat ${chatId}:`, message);
     console.log(`📤 Message config - parseMode: ${config.parseMode}`);
+    console.log(`📤 Trigger data source:`, data.source || 'unknown');
+    console.log(`📤 Workflow trigger type:`, data.trigger || 'unknown');
 
     const result = await telegramBot.telegram.sendMessage(
       chatId,
@@ -566,6 +568,7 @@ async function executeTelegramAction(config: TelegramActionConfig, data: Record<
     );
 
     console.log('✅ Telegram message sent successfully, result:', result);
+    console.log('✅ Message sent to chat:', chatId);
   } catch (error) {
     console.error('❌ Telegram sending error:', error);
     console.error('❌ Error details:', (error as Error)?.message, (error as Error)?.stack);
