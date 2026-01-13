@@ -55,6 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           id: 'test-cron',
           name: 'Test Cron',
           trigger: {
+            id: 'test-cron-trigger',
             type: 'cron' as const,
             config: {
               schedule: '*/5 * * * *',

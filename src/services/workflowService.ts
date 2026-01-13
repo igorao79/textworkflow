@@ -7,6 +7,7 @@ import {
   WorkflowExecution,
   WorkflowExecutionLog,
   EmailActionConfig,
+  EmailTriggerConfig,
   HttpActionConfig,
   TelegramActionConfig,
   DatabaseActionConfig,
