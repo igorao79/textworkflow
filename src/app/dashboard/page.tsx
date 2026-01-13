@@ -52,35 +52,27 @@ export default function DashboardPage() {
   const loadCronTasks = async () => {
     try {
       setCronTasksLoading(true);
+      console.log('🔄 Loading cron tasks from server...');
+
       const response = await fetch('/api/cron');
       if (response.ok) {
         const cronTasksData = await response.json();
-        setCronTasks((prev: Array<{
-          workflowId: string;
-          isRunning: boolean;
-          nextExecution: Date | null;
-        }>) => {
-          // Проверяем, изменились ли данные
-          if (JSON.stringify(prev) !== JSON.stringify(cronTasksData)) {
-            return cronTasksData;
-          }
-          return prev;
-        });
+        console.log('📋 Server cron tasks:', cronTasksData);
+
+        // Всегда обновляем состояние, игнорируя предыдущее
+        // Это гарантирует синхронизацию с сервером
+        setCronTasks(cronTasksData);
+
+        console.log('✅ Cron tasks state updated from server');
       } else {
+        console.warn('⚠️ Failed to load cron tasks from server, resetting to empty');
         // Если API недоступен, сбрасываем статусы
-        setCronTasks((prev: Array<{
-          workflowId: string;
-          isRunning: boolean;
-          nextExecution: Date | null;
-        }>) => prev.length > 0 ? [] : prev);
+        setCronTasks([]);
       }
     } catch (error) {
-      console.error('Error loading cron tasks:', error);
-      setCronTasks((prev: Array<{
-        workflowId: string;
-        isRunning: boolean;
-        nextExecution: Date | null;
-      }>) => prev.length > 0 ? [] : prev);
+      console.error('❌ Error loading cron tasks:', error);
+      // В случае ошибки тоже сбрасываем состояние
+      setCronTasks([]);
     } finally {
       setCronTasksLoading(false);
     }
@@ -100,6 +92,8 @@ export default function DashboardPage() {
         fetch('/api/executions?includeLogs=true'),
         fetch('/api/queue/stats')
       ]);
+
+      // Cron задачи загружаются отдельно в useEffect
 
       // Обрабатываем результаты с Promise.allSettled
       if (workflowsRes.status === 'fulfilled' && workflowsRes.value.ok) {
@@ -182,10 +176,11 @@ export default function DashboardPage() {
       clearTimeout(timeout);
       setLoading(false);
     }
-  }, [cronTasks]);
+  }, [cronTasks.length]); // Зависит от количества cron задач для синхронизации
 
   useEffect(() => {
     loadData();
+    loadCronTasks(); // Загружаем cron задачи при первой загрузке
 
     // Автообновление cron задач каждые 30 секунд
     const cronInterval = setInterval(() => {
