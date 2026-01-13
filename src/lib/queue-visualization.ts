@@ -32,14 +32,33 @@ export async function getQueueState(): Promise<{
   try {
     console.log('📊 getQueueState called via API');
 
-    // Получаем данные через API
-    const response = await fetch('/api/queue/visualization');
+    // Получаем данные через API /api/queue/stats
+    const response = await fetch('/api/queue/stats');
     if (!response.ok) {
       throw new Error(`API returned ${response.status}`);
     }
 
-    const result = await response.json();
-    console.log('📊 Dashboard: Received queue stats from API:', result);
+    const stats = await response.json();
+    console.log('📊 Dashboard: Received queue stats from API:', stats);
+
+    // Преобразуем в формат, ожидаемый компонентом
+    const result = {
+      tasks: [], // Пустой массив задач для совместимости
+      queueStats: {
+        size: stats.waiting + stats.active,
+        pending: stats.waiting,
+        concurrency: 5, // Фиксированное значение
+        isPaused: stats.paused,
+        timeout: 300000 // 5 минут
+      },
+      taskStats: {
+        pending: stats.waiting,
+        running: stats.active,
+        completed: stats.completedCount,
+        failed: stats.failedCount,
+        total: stats.totalJobs
+      }
+    };
 
     return result;
   } catch (error) {
