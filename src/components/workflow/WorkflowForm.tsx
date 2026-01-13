@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkflowEditor } from './WorkflowEditor';
 import { Workflow } from '@/types/workflow';
+import { notifySuccess } from '@/services/notificationService';
 
 export function WorkflowForm() {
 
@@ -70,6 +71,12 @@ export function WorkflowForm() {
       }
 
       console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
+
+      // Отправляем уведомление об успешном выполнении
+      notifySuccess(
+        'Workflow выполнен',
+        `Workflow "${workflowData.name || `Workflow ${result.workflowId.slice(-8)}`}" успешно выполнен`
+      );
 
       // Активируем workflow для email триггера
       if (workflowData.trigger.type === 'email') {

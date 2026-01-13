@@ -57,6 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log('📡 /api/executions - Fetching executions...');
         const executions = await getExecutions(queryWorkflowId as string);
         console.log(`📡 /api/executions - Returning ${executions.length} executions`);
+        console.log('📡 /api/executions - First execution sample:', executions[0]);
         res.status(200).json(executions);
         break;
 

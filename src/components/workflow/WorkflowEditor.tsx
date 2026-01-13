@@ -126,7 +126,7 @@ function ExecutionMonitorModal({
       setIsSubmitting?.(false);
       setIsExecuting(false);
 
-      // Уведомление будет отправлено автоматически через useEffect при достижении 100%
+      // Уведомление об успехе будет отправлено в WorkflowForm.tsx при получении ответа от API
 
     } catch (error) {
       console.error('❌ Workflow execution failed:', error);
@@ -160,27 +160,17 @@ function ExecutionMonitorModal({
     }
   }, [setIsSubmitting, isSubmitting, hasStartedExecution, actions]);
 
-  // Гарантируем корректное отображение завершения и уведомление
+  // Гарантируем корректное отображение завершения (без уведомлений)
   React.useEffect(() => {
-    if (executionProgress === 100 && hasStartedExecution && !successNotificationSent) {
+    if (executionProgress === 100 && hasStartedExecution) {
       // Если прогресс 100%, гарантируем правильное состояние
       if (isSubmitting) {
         console.log('🔧 Fixing completion state: progress 100%, but still submitting');
         setIsSubmitting?.(false);
         setIsExecuting(false);
       }
-
-      // Гарантируем отправку уведомления об успехе (только один раз)
-      if (!isSubmitting) {
-        console.log('📢 Guaranteed success notification for 100% progress');
-        setSuccessNotificationSent(true);
-        notifySuccess(
-          'Workflow выполнен',
-          `Все ${actions.length} действий завершены успешно`
-        );
-      }
     }
-  }, [executionProgress, isSubmitting, hasStartedExecution, successNotificationSent, setIsSubmitting, actions.length]);
+  }, [executionProgress, isSubmitting, hasStartedExecution, setIsSubmitting]);
 
   // Автоматически закрываем модальное окно после завершения выполнения
   React.useEffect(() => {

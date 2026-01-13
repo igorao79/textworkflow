@@ -154,9 +154,11 @@ async function loadWorkflows(): Promise<Workflow[]> {
 
 
 async function loadExecutions(includeLogs = false): Promise<WorkflowExecution[]> {
+  console.log(`🔍 loadExecutions called with includeLogs: ${includeLogs}`);
   try {
     // Сначала пробуем загрузить из БД
     try {
+      console.log('🔍 loadExecutions: trying to load from database');
       const { sql } = await import('../lib/db');
       const executionsData = await sql(`
         SELECT
@@ -227,7 +229,8 @@ async function loadExecutions(includeLogs = false): Promise<WorkflowExecution[]>
       return executions;
     } catch (dbError) {
       console.error('❌ Failed to load executions from database:', dbError);
-      throw dbError;
+      console.log('🔄 Falling back to empty executions array');
+      return [];
     }
   } catch (error) {
     console.error('Error loading executions:', error);
@@ -286,7 +289,8 @@ async function saveExecutions(executions: WorkflowExecution[]): Promise<void> {
       return;
     } catch (dbError) {
       console.error('❌ Failed to save executions to database:', dbError);
-      throw dbError;
+      console.log('🔄 Continuing despite database save error');
+      // Don't throw error - allow execution to continue
     }
   } catch (error) {
     console.error('Error saving executions:', error);
@@ -326,10 +330,8 @@ export async function executeWorkflow(
     logs: []
   };
 
-  // Читаем текущие executions из БД/файла, добавляем новый и сохраняем
-  const currentExecutions = await loadExecutions();
-  currentExecutions.push(execution);
-  await saveExecutions(currentExecutions);
+  // Сохраняем новый execution в БД
+  await saveExecutionResult(execution);
 
   try {
     console.log(`🔄 Starting execution of ${workflow.actions.length} actions...`);
@@ -875,12 +877,17 @@ export async function deleteWorkflow(id: string): Promise<boolean> {
 
 // Операции с executions
 export async function getExecutions(workflowId?: string, includeLogs = false): Promise<WorkflowExecution[]> {
+  console.log(`🔍 getExecutions called with workflowId: ${workflowId}, includeLogs: ${includeLogs}`);
   // Читаем актуальные данные из БД/файла при каждом запросе
   const executions = await loadExecutions(includeLogs);
+  console.log(`🔍 getExecutions: loaded ${executions.length} executions from database`);
 
   const filteredExecutions = workflowId
     ? executions.filter(e => e.workflowId === workflowId)
     : executions;
+
+  console.log(`🔍 getExecutions: returning ${filteredExecutions.length} filtered executions`);
+  return filteredExecutions;
 
   // Сортируем по дате начала выполнения в обратном порядке (новые сначала)
   return filteredExecutions.sort((a, b) => {

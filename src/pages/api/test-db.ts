@@ -31,6 +31,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('📊 Workflows count:', workflowCount);
     }
 
+    // Check executions if requested
+    if (req.method === 'GET' && req.query.check === 'executions') {
+      try {
+        // Test direct DB query
+        const executions = await sql(`
+          SELECT COUNT(*) as total FROM workflow_executions
+        `);
+        const totalInDB = executions[0].total;
+
+        const logs = await sql(`
+          SELECT COUNT(*) as count
+          FROM workflow_execution_logs
+        `);
+
+        // Test getExecutions function
+        const { getExecutions } = await import('@/services/workflowService');
+        const loadedExecutions = await getExecutions();
+
+        return res.status(200).json({
+          totalInDB: totalInDB,
+          loadedByGetExecutions: loadedExecutions.length,
+          logsCount: logs[0].count,
+          isSame: totalInDB === loadedExecutions.length
+        });
+      } catch (error) {
+        return res.status(500).json({
+          error: 'Failed to check executions',
+          details: error instanceof Error ? error.message : String(error)
+        });
+      }
+    }
+
     // Fix schema if needed
     if (req.method === 'POST') {
       console.log('🔧 Attempting to fix database schema...');
