@@ -79,6 +79,9 @@ async function resetAllCronTasks(): Promise<void> {
 
 export async function startCronScheduler() {
   console.log('🔄 CronService: Starting cron scheduler...');
+  console.log('🔧 Environment:', process.env.NODE_ENV);
+  console.log('🔧 isFirstStart:', isFirstStart);
+  console.log('🔧 Current running tasks:', runningTasks.size);
 
   // В dev режиме всегда сбрасываем cron задачи при запуске (из-за hot reload)
   const isDev = process.env.NODE_ENV === 'development';
@@ -293,6 +296,7 @@ export function createCronTask(workflow: Workflow): boolean {
         const triggerTime = new Date().toISOString();
         console.log(`⏰ CRON TASK TRIGGERED for workflow ${workflow.id} at ${triggerTime}`);
         console.log(`📋 Current runningTasks state:`, Array.from(runningTasks.keys()));
+        console.log(`🔧 Production check - environment: ${process.env.NODE_ENV}`);
 
         // Проверяем, что задача все еще активна (не была остановлена)
         if (!runningTasks.has(workflow.id)) {
@@ -329,6 +333,7 @@ export function createCronTask(workflow: Workflow): boolean {
     console.log(`📋 CronService: Total running tasks after creation: ${runningTasks.size}`);
     console.log(`📅 Final schedule: ${schedule} (timezone: ${timezone})`);
     console.log(`🚀 Cron task scheduled successfully - waiting for next execution`);
+    console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
 
     // Логируем время следующего выполнения
     try {
@@ -486,7 +491,12 @@ async function checkAndStopDuplicateTasks() {
 
 // Инициализируем cron scheduler при запуске
 if (typeof window === 'undefined') { // Только на сервере
-  startCronScheduler().catch(error => {
-    console.error('❌ Failed to start cron scheduler:', error);
-  });
+  console.log('🚀 Initializing cron scheduler on server startup...');
+
+  // Добавляем небольшую задержку для гарантии инициализации
+  setTimeout(() => {
+    startCronScheduler().catch(error => {
+      console.error('❌ Failed to start cron scheduler:', error);
+    });
+  }, 1000);
 }

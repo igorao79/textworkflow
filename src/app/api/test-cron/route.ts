@@ -7,29 +7,29 @@ export async function GET() {
     console.log('🧪 Testing cron functionality');
 
     // Импортируем функции для тестирования
-    const { getActiveCronTasks } = await import('@/services/cronService');
+    const { getActiveQStashSchedules } = await import('@/services/qstashService');
     const { getWorkflows } = await import('@/services/workflowService');
 
-    const activeTasks = getActiveCronTasks();
+    const activeSchedules = await getActiveQStashSchedules();
     const workflows = await getWorkflows();
     const cronWorkflows = workflows.filter(w => w.trigger.type === 'cron');
 
-    console.log('📊 Cron test results:', {
-      activeTasks: activeTasks.length,
+    console.log('📊 QStash test results:', {
+      activeSchedules: activeSchedules.length,
       totalWorkflows: workflows.length,
       cronWorkflows: cronWorkflows.length
     });
 
     // Дополнительная информация о внутреннем состоянии
     const internalState = {
-      activeTasksCount: activeTasks.length,
+      activeSchedulesCount: activeSchedules.length,
       cronWorkflowsCount: cronWorkflows.length
     };
 
     return NextResponse.json({
       success: true,
       data: {
-        activeTasks,
+        activeSchedules,
         totalWorkflows: workflows.length,
         cronWorkflows: cronWorkflows.length,
         cronWorkflowsDetails: cronWorkflows.map(w => ({
@@ -72,21 +72,24 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'create') {
-      console.log('🔧 Creating test cron task for workflow:', workflowId);
-      const { createCronTask } = await import('@/services/cronService');
-      const created = createCronTask(workflow);
+      console.log('🔧 Creating test QStash schedule for workflow:', workflowId);
+      const { createQStashSchedule } = await import('@/services/qstashService');
+
+      // Используем cron выражение для тестирования (каждую минуту)
+      const cronExpression = '* * * * *';
+      const schedule = await createQStashSchedule(workflowId, cronExpression);
 
       return NextResponse.json({
         success: true,
         action: 'create',
-        created,
+        schedule,
         workflow: {
           id: workflow.id,
           name: workflow.name,
           trigger: workflow.trigger
         }
       });
-    } else     if (action === 'trigger') {
+    } else if (action === 'trigger') {
       console.log('🚀 Manually triggering cron workflow:', workflowId);
 
       try {

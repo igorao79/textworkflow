@@ -137,32 +137,56 @@ export async function POST(
     const updatedWorkflowCheck = await getWorkflow(workflowId);
     console.log('🔍 API /cron/activate: Workflow status after update:', { id: updatedWorkflowCheck?.id, isActive: updatedWorkflowCheck?.isActive });
 
-    // Если это cron workflow, управляем cron задачами
+    // Если это cron workflow, создаем QStash schedule
     if (workflow.trigger.type === 'cron') {
-      // Останавливаем существующую задачу для этого workflow перед активацией новой
-      const { stopCronTask, createCronTask } = await import('@/services/cronService');
-      stopCronTask(workflowId);
-
-      // Создаем новую cron задачу для данного workflow
-      console.log('🚀 API /cron/activate: Creating cron task for workflow:', workflow.id);
+      console.log('🚀 API /cron/activate: Creating QStash schedule for workflow:', workflow.id);
 
       try {
-        const created = createCronTask(workflow);
-        console.log('🚀 API /cron/activate: createCronTask returned:', created);
-        if (created) {
-          console.log('✅ API /cron/activate: Cron task created successfully');
-        } else {
-          console.log('❌ API /cron/activate: createCronTask returned false - this usually means invalid cron schedule');
+        // Импортируем QStash сервис
+        const { createQStashSchedule, deleteQStashSchedule } = await import('@/services/qstashService');
+
+        // Сначала удаляем существующее расписание (если есть)
+        await deleteQStashSchedule(workflowId);
+
+        // Получаем cron выражение из конфигурации
+        const cronConfig = workflow.trigger.config as { schedule?: string };
+        let cronExpression = cronConfig.schedule;
+
+        if (!cronExpression) {
+          console.error('❌ No cron schedule found in workflow configuration');
           return NextResponse.json({
-            error: 'Failed to create cron task',
-            details: 'Invalid cron schedule or workflow configuration'
+            error: 'No cron schedule configured',
+            details: 'Workflow must have a cron schedule'
           }, { status: 400 });
         }
-      } catch (cronError) {
-        console.error('💥 API /cron/activate: createCronTask threw exception:', cronError);
+
+        // Конвертируем простой формат в cron выражение (если нужно)
+        if (cronExpression === '1') {
+          cronExpression = '* * * * *'; // каждая минута
+          console.log('🔄 Converted special format "1" to cron expression "* * * * *"');
+        } else if (cronExpression === '11') {
+          cronExpression = '0 * * * *'; // каждый час
+          console.log('🔄 Converted special format "11" to cron expression "0 * * * *"');
+        } else if (cronExpression === '111') {
+          cronExpression = '0 0 * * *'; // каждый день в полночь
+          console.log('🔄 Converted special format "111" to cron expression "0 0 * * *"');
+        } else if (cronExpression === '1111') {
+          cronExpression = '0 0 * * 1'; // каждый понедельник
+          console.log('🔄 Converted special format "1111" to cron expression "0 0 * * 1"');
+        }
+
+        console.log(`📅 Final cron expression: ${cronExpression}`);
+
+        // Создаем QStash schedule
+        const schedule = await createQStashSchedule(workflowId, cronExpression);
+
+        console.log('✅ API /cron/activate: QStash schedule created successfully:', schedule.scheduleId);
+
+      } catch (qstashError) {
+        console.error('💥 API /cron/activate: Failed to create QStash schedule:', qstashError);
         return NextResponse.json({
-          error: 'Failed to create cron task',
-          details: cronError instanceof Error ? cronError.message : 'Unknown error'
+          error: 'Failed to create QStash schedule',
+          details: qstashError instanceof Error ? qstashError.message : 'Unknown error'
         }, { status: 500 });
       }
     }

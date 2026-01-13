@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stopCronTask } from '@/services/cronService';
+import { deleteQStashSchedule } from '@/services/qstashService';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,28 +13,25 @@ export async function DELETE(
   try {
     const resolvedParams = await params;
     const workflowId = resolvedParams.id;
-    const url = new URL(request.url);
-    const clearQueue = url.searchParams.get('clearQueue') === 'true';
 
-    console.log('🔥 Deactivating cron for workflowId:', workflowId, clearQueue ? '(with queue cleanup)' : '(cron only)');
+    console.log('🔥 Deactivating QStash schedule for workflowId:', workflowId);
 
     if (!workflowId) {
       return NextResponse.json({ error: 'Workflow ID is required' }, { status: 400 });
     }
 
-    const stopped = await stopCronTask(workflowId, clearQueue);
-    if (stopped) {
-      console.log('✅ Cron task deactivated for workflow:', workflowId);
+    const deleted = await deleteQStashSchedule(workflowId);
+    if (deleted) {
+      console.log('✅ QStash schedule deactivated for workflow:', workflowId);
       return NextResponse.json({
-        message: `Cron task deactivated for workflow ${workflowId}${clearQueue ? ' (queue cleared)' : ''}`,
+        message: `QStash schedule deactivated for workflow ${workflowId}`,
         success: true,
-        stopped: true,
-        queueCleared: clearQueue
+        stopped: true
       });
     } else {
-      console.log('⚠️ Cron task deactivation returned false for workflow:', workflowId);
+      console.log('⚠️ QStash schedule deactivation returned false for workflow:', workflowId);
       return NextResponse.json({
-        error: 'Failed to deactivate cron task',
+        error: 'Failed to deactivate QStash schedule',
         success: false,
         stopped: false
       }, { status: 500 });
