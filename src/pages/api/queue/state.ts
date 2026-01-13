@@ -8,13 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('📡 API /queue/state called');
 
-    // Получаем данные через API /api/queue/stats (как в queue-visualization.ts)
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/queue/stats`);
-    if (!response.ok) {
-      throw new Error(`API returned ${response.status}`);
-    }
-
-    const stats = await response.json();
+    // Получаем данные через внутренний импорт (избегаем NEXT_PUBLIC_ переменных в serverless)
+    const { getQueueStats } = await import('@/lib/queue-stats');
+    const stats = await getQueueStats();
     console.log('📊 API /queue/state received stats:', stats);
 
     // Преобразуем в формат, ожидаемый компонентом

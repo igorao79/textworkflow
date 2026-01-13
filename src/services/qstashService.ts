@@ -188,7 +188,38 @@ export async function deleteQStashSchedule(workflowId: string): Promise<boolean>
 }
 
 export async function getActiveQStashSchedules(): Promise<QStashSchedule[]> {
-  console.log(`📋 Getting active QStash schedules: ${activeSchedules.size}`);
+  try {
+    // Сначала пробуем получить schedules из QStash API
+    const client = getQStashClient();
+
+    console.log('📡 Fetching schedules from QStash API...');
+    const schedulesResponse = await client.schedules.list();
+
+    if (schedulesResponse && Array.isArray(schedulesResponse)) {
+      const apiSchedules = schedulesResponse.map((schedule) => ({
+        scheduleId: schedule.scheduleId,
+        workflowId: schedule.label ? schedule.label.replace('workflow-', '') : 'unknown',
+        cron: schedule.cron,
+        destination: schedule.destination,
+        created: true
+      }));
+
+      console.log(`📋 Found ${apiSchedules.length} schedules in QStash API`);
+
+      // Синхронизируем локальную карту с API (используем workflowId как ключ, как в createQStashSchedule)
+      activeSchedules.clear();
+      apiSchedules.forEach(schedule => {
+        activeSchedules.set(schedule.workflowId, schedule);
+      });
+
+      return apiSchedules;
+    }
+  } catch (error) {
+    console.warn('⚠️ Failed to fetch schedules from QStash API, using local cache:', error);
+  }
+
+  // Fallback: возвращаем локальную карту
+  console.log(`📋 Using local cache: ${activeSchedules.size} active QStash schedules`);
   return Array.from(activeSchedules.values());
 }
 
