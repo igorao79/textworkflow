@@ -108,7 +108,9 @@ export async function createQStashSchedule(workflowId: string, cronExpression: s
     }
 
     // Создаем URL для webhook - это будет наш API endpoint
-    const destinationUrl = `${appUrl}/api/qstash/webhook`;
+    // Убираем слэш в конце appUrl, если он есть
+    const cleanAppUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
+    const destinationUrl = `${cleanAppUrl}/api/qstash/webhook`;
 
     console.log(`📍 Webhook destination: ${destinationUrl}`);
 
