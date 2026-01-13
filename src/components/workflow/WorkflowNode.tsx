@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,32 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
   const [isDraggingState, setIsDraggingState] = React.useState(false);
   const [dialogKey, setDialogKey] = React.useState(0);
   const [initialConfig, setInitialConfig] = React.useState<WorkflowAction['config'] | null>(null);
+  const [urlError, setUrlError] = React.useState<string>('');
+
+  // Функция валидации URL
+  const validateUrl = (url: string): boolean => {
+    if (!url || url.trim() === '') {
+      setUrlError('URL не может быть пустым');
+      return false;
+    }
+
+    try {
+      const urlObj = new URL(url);
+      if (!urlObj.protocol.startsWith('http')) {
+        setUrlError('URL должен начинаться с http:// или https://');
+        return false;
+      }
+      if (!urlObj.hostname || urlObj.hostname.length < 3) {
+        setUrlError('Некорректное доменное имя');
+        return false;
+      }
+      setUrlError('');
+      return true;
+    } catch (error) {
+      setUrlError('Некорректный формат URL');
+      return false;
+    }
+  };
 
   // Обновляем tempConfig при изменении action.config
   React.useEffect(() => {
@@ -81,6 +107,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
   const handleNodeClick = () => {
     // Не открываем модалку если элемент перетаскивается
     if (isDraggingState) return;
+    setUrlError(''); // Сбрасываем ошибку URL при открытии
     setIsDialogOpen(true);
   };
 
@@ -93,6 +120,14 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
 
 
   const handleSave = () => {
+    // Валидация URL для HTTP actions
+    if (action.type === 'http') {
+      const httpConfig = tempConfig as HttpActionConfig;
+      if (!validateUrl(httpConfig.url || '')) {
+        return; // Не сохраняем если URL некорректный
+      }
+    }
+
     console.log('Action config being saved:', {
       type: action.type,
       config: tempConfig
@@ -106,6 +141,7 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
   const handleCancel = () => {
     setTempConfig(action.config); // Сбрасываем изменения
     setInitialConfig(action.config); // Сбрасываем начальные значения
+    setUrlError(''); // Сбрасываем ошибку URL
     setIsDialogOpen(false);
     setDialogKey(prev => prev + 1); // Принудительно перерендериваем Dialog
   };
@@ -247,9 +283,22 @@ export function WorkflowNode({ action, index, onUpdate, onDelete }: WorkflowNode
                 <Input
                   id={`http-url-${action.id}`}
                   value={httpConfig.url || ''}
-                  onChange={(e) => updateTempConfig({ url: e.target.value })}
+                  onChange={(e) => {
+                    const newUrl = e.target.value;
+                    updateTempConfig({ url: newUrl });
+                    // Валидируем URL при изменении
+                    if (newUrl.trim() !== '') {
+                      validateUrl(newUrl);
+                    } else {
+                      setUrlError('');
+                    }
+                  }}
                   placeholder="https://api.example.com"
+                  className={urlError ? 'border-red-500' : ''}
                 />
+                {urlError && (
+                  <p className="text-sm text-red-500 mt-1">{urlError}</p>
+                )}
               </div>
             </div>
           </div>
