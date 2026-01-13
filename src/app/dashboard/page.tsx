@@ -92,7 +92,7 @@ export default function DashboardPage() {
     const timeout = setTimeout(() => {
       console.warn('Dashboard loading timeout, forcing loading=false');
       setLoading(false);
-    }, 10000); // 10 секунд timeout
+    }, 30000); // 30 секунд timeout для продакшена
 
     try {
       // Простая загрузка без AbortController - даем запросам время выполниться
@@ -104,28 +104,48 @@ export default function DashboardPage() {
 
       // Обрабатываем результаты с Promise.allSettled
       if (workflowsRes.status === 'fulfilled' && workflowsRes.value.ok) {
-        const workflowsData = await workflowsRes.value.json();
-        setWorkflows(Array.isArray(workflowsData) ? workflowsData : []);
-        setCurrentWorkflowsPage(1);
+        try {
+          const workflowsData = await workflowsRes.value.json();
+          setWorkflows(Array.isArray(workflowsData) ? workflowsData : []);
+          setCurrentWorkflowsPage(1);
+          console.log('✅ Workflows loaded successfully:', workflowsData.length);
+        } catch (parseError) {
+          console.error('❌ Failed to parse workflows response:', parseError);
+          setWorkflows([]);
+        }
       } else {
-        console.warn('Failed to load workflows:', workflowsRes.status === 'rejected' ? workflowsRes.reason : 'Response not ok');
+        const errorMsg = workflowsRes.status === 'rejected' ? workflowsRes.reason : `HTTP ${workflowsRes.value?.status}`;
+        console.warn('⚠️ Failed to load workflows:', errorMsg);
         setWorkflows([]);
       }
 
       if (executionsRes.status === 'fulfilled' && executionsRes.value.ok) {
-        const executionsData = await executionsRes.value.json();
-        setExecutions(Array.isArray(executionsData) ? executionsData : []);
-        setCurrentExecutionsPage(1);
+        try {
+          const executionsData = await executionsRes.value.json();
+          setExecutions(Array.isArray(executionsData) ? executionsData : []);
+          setCurrentExecutionsPage(1);
+          console.log('✅ Executions loaded successfully:', executionsData.length);
+        } catch (parseError) {
+          console.error('❌ Failed to parse executions response:', parseError);
+          setExecutions([]);
+        }
       } else {
-        console.warn('Failed to load executions:', executionsRes.status === 'rejected' ? executionsRes.reason : 'Response not ok');
+        const errorMsg = executionsRes.status === 'rejected' ? executionsRes.reason : `HTTP ${executionsRes.value?.status}`;
+        console.warn('⚠️ Failed to load executions:', errorMsg);
         setExecutions([]);
       }
 
       if (queueStatsRes.status === 'fulfilled' && queueStatsRes.value.ok) {
-        const queueStatsData = await queueStatsRes.value.json();
-        setQueueStats(queueStatsData);
+        try {
+          const queueStatsData = await queueStatsRes.value.json();
+          setQueueStats(queueStatsData);
+          console.log('✅ Queue stats loaded successfully:', queueStatsData);
+        } catch (parseError) {
+          console.error('❌ Failed to parse queue stats response:', parseError);
+        }
       } else {
-        console.warn('Failed to load queue stats:', queueStatsRes.status === 'rejected' ? queueStatsRes.reason : 'Response not ok');
+        const errorMsg = queueStatsRes.status === 'rejected' ? queueStatsRes.reason : `HTTP ${queueStatsRes.value?.status}`;
+        console.warn('⚠️ Failed to load queue stats:', errorMsg);
         // Fallback значения для queue stats
         setQueueStats({
           waiting: 0,

@@ -51,11 +51,13 @@ import { workflowQueue } from '@/lib/queue';
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    console.log(`📡 ${req.method} /api/executions`);
+    console.log(`📡 ${req.method} /api/executions - Starting request`);
     switch (req.method) {
       case 'GET':
         const { workflowId: queryWorkflowId } = req.query;
+        console.log('📡 /api/executions - Fetching executions...');
         const executions = await getExecutions(queryWorkflowId as string);
+        console.log(`📡 /api/executions - Returning ${executions.length} executions`);
         res.status(200).json(executions);
         break;
 

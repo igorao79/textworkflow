@@ -45,10 +45,12 @@ import '@/services/cronService'; // Инициализируем cron scheduler
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    console.log(`📡 ${req.method} /api/workflows`);
+    console.log(`📡 ${req.method} /api/workflows - Starting request`);
     switch (req.method) {
       case 'GET':
+        console.log('📡 /api/workflows - Fetching workflows...');
         const workflows = getWorkflows();
+        console.log(`📡 /api/workflows - Returning ${workflows.length} workflows`);
         res.status(200).json(workflows);
         break;
 

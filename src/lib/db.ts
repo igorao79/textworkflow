@@ -19,11 +19,18 @@ const pool = new Pool({
 });
 
 export const sql = async (query: string, params?: unknown[]) => {
-  const client = await pool.connect();
   try {
-    const result = await client.query(query, params);
-    return result.rows;
-  } finally {
-    client.release();
+    const client = await pool.connect();
+    try {
+      console.log(`🔗 Executing query: ${query.substring(0, 50)}...`);
+      const result = await client.query(query, params);
+      console.log(`🔗 Query completed, returned ${result.rows.length} rows`);
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('🔗 Database query error:', error);
+    throw error;
   }
 };
