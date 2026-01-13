@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WorkflowEditor } from './WorkflowEditor';
 import { Workflow } from '@/types/workflow';
@@ -16,7 +16,11 @@ export function WorkflowForm() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [executionCompleted, setExecutionCompleted] = useState(false);
 
+  const handleExecutionSuccess = React.useCallback(() => {
+    setExecutionCompleted(true);
+  }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -72,6 +76,12 @@ export function WorkflowForm() {
 
       console.log(`✅ Workflow выполнен успешно! ID: ${result.workflowId}`);
 
+      // Устанавливаем флаг успешного выполнения для UI
+      setExecutionCompleted(true);
+
+      // Вызываем callback для обновления UI в WorkflowEditor
+      handleExecutionSuccess();
+
       // Отправляем уведомление об успешном выполнении
       notifySuccess(
         'Workflow выполнен',
@@ -120,6 +130,7 @@ export function WorkflowForm() {
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             setIsSubmitting={setIsSubmitting}
+            executionCompleted={executionCompleted}
           />
         </CardContent>
       </Card>
