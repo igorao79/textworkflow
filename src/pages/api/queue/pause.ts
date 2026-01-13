@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { pauseQueue, resumeQueue } from '@/lib/queue';
+import { getQueueService } from '@/lib/queue-service';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -9,14 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { action } = req.body;
 
-    if (action === 'pause') {
-      await pauseQueue();
-      res.status(200).json({ message: 'Queue paused successfully' });
-    } else if (action === 'resume') {
-      await resumeQueue();
-      res.status(200).json({ message: 'Queue resumed successfully' });
+    // QueueService не поддерживает pause/resume операции
+    if (action === 'pause' || action === 'resume') {
+      res.status(400).json({ error: 'Pause/resume operations not supported by current queue implementation' });
     } else {
-      res.status(400).json({ error: 'Invalid action. Use "pause" or "resume"' });
+      res.status(400).json({ error: 'Invalid action. No actions supported by current queue implementation' });
     }
   } catch (error) {
     console.error('Error managing queue:', error);

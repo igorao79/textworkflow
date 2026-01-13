@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       }
     } catch (error) {
-      console.log('⚠️ Could not check/fix workflows.id:', error.message);
+      console.log('⚠️ Could not check/fix workflows.id:', error instanceof Error ? error.message : String(error));
     }
 
     // Fix workflow_executions columns
@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
       } catch (error) {
-        console.log(`⚠️ Could not check/fix workflow_executions.${col}:`, error.message);
+        console.log(`⚠️ Could not check/fix workflow_executions.${col}:`, error instanceof Error ? error.message : String(error));
       }
     }
 
@@ -77,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
       } catch (error) {
-        console.log(`⚠️ Could not check/fix workflow_execution_logs.${col}:`, error.message);
+        console.log(`⚠️ Could not check/fix workflow_execution_logs.${col}:`, error instanceof Error ? error.message : String(error));
       }
     }
 

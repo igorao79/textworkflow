@@ -97,17 +97,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { jobId } = await queueService.addJob(workflowId, {
       method: req.method,
       headers: req.headers,
-        body: req.body,
-        query: req.query,
-        timestamp: new Date().toISOString()
-      }
+      body: req.body,
+      query: req.query,
+      timestamp: new Date().toISOString()
     });
 
     console.log(`Webhook triggered for workflow ${workflowId}, job ID: ${jobId}`);
 
     res.status(200).json({
       message: 'Webhook received, workflow execution queued',
-      jobId: job.id
+      jobId: jobId
     });
 
   } catch (error) {

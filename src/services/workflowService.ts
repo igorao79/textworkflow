@@ -18,7 +18,7 @@ interface WorkflowRow {
   name: string;
   description: string | null;
   trigger_type: string;
-  trigger_config: Record<string, unknown>; // JSONB can contain any structure
+  trigger_config: any; // JSONB can contain any structure
   actions: WorkflowAction[];
   is_active: boolean;
   created_at: Date;
@@ -134,7 +134,7 @@ async function loadWorkflows(): Promise<Workflow[]> {
       trigger: {
         id: `${row.id}-trigger`,
         type: row.trigger_type as 'webhook' | 'cron' | 'email',
-        config: row.trigger_config
+        config: row.trigger_config as any
       },
       actions: row.actions,
       isActive: row.is_active,
@@ -335,6 +335,28 @@ export async function executeWorkflow(
 
   try {
     console.log(`🔄 Starting execution of ${workflow.actions.length} actions...`);
+
+    // Специальная обработка email триггера - отправляем тестовое письмо
+    if (workflow.trigger.type === 'email') {
+      console.log('📧 Email trigger detected, sending test email...');
+      try {
+        const emailConfig = workflow.trigger.config as EmailTriggerConfig;
+        const testRecipient = emailConfig.to || (typeof triggerData.email === 'string' ? triggerData.email : 'test@example.com');
+
+        await executeEmailAction({
+          to: testRecipient,
+          subject: `Email триггер: ${workflow.name}`,
+          body: `Тестовое сообщение от email триггера ${workflow.name}\n\nДанные: ${JSON.stringify(triggerData, null, 2)}`,
+          from: emailConfig.from
+        } as EmailActionConfig, triggerData);
+
+        addLog(execution, 'info', `Email trigger test sent to ${testRecipient}`);
+        console.log('✅ Email trigger test sent successfully');
+      } catch (emailError) {
+        console.error('❌ Failed to send email trigger test:', emailError);
+        addLog(execution, 'error', `Failed to send email trigger test: ${emailError instanceof Error ? emailError.message : String(emailError)}`);
+      }
+    }
 
     // Выполняем действия workflow последовательно
     for (let i = 0; i < workflow.actions.length; i++) {

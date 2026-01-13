@@ -134,7 +134,7 @@ export async function POST(
     }
 
     // Проверяем, что workflow действительно активен после обновления
-    const updatedWorkflowCheck = getWorkflow(workflowId);
+    const updatedWorkflowCheck = await getWorkflow(workflowId);
     console.log('🔍 API /cron/activate: Workflow status after update:', { id: updatedWorkflowCheck?.id, isActive: updatedWorkflowCheck?.isActive });
 
     // Если это cron workflow, управляем cron задачами

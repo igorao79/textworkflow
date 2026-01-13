@@ -86,10 +86,13 @@ export function WorkflowForm() {
             method: 'POST',
           });
 
+          const activateResult = await activateResponse.json();
+          console.log('📧 Email trigger activation response:', activateResult);
+
           if (activateResponse.ok) {
             console.log('✅ Email trigger workflow activated successfully');
           } else {
-            console.warn('⚠️ Failed to activate email trigger workflow');
+            console.warn('⚠️ Failed to activate email trigger workflow:', activateResult);
           }
         } catch (activateError) {
           console.warn('⚠️ Error activating email trigger workflow:', activateError);

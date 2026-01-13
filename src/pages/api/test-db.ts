@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Fix schema if needed
-    if (req.method === 'POST') {
+    if (req.query.fix === 'schema') {
       console.log('🔧 Attempting to fix database schema...');
 
       try {

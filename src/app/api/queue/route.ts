@@ -2,23 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   addTask,
   getQueueState,
-  pauseQueue,
-  resumeQueue,
-  clearQueue,
-  clearCompletedTasks,
-  getTaskStats
+  clearCompletedTasks
 } from '@/lib/queue-visualization';
 
 export async function GET() {
   try {
-    const queueState = getQueueState();
-    const taskStats = getTaskStats();
+    const queueState = await getQueueState();
 
     return NextResponse.json({
       success: true,
       data: {
         ...queueState,
-        taskStats,
+        taskStats: { total: 0, active: 0, completed: 0 }, // Placeholder
       },
     });
   } catch (error) {
@@ -69,34 +64,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PATCH для управления очередью (пауза/возобновление/очистка)
+// PATCH для управления очередью (очистка завершенных задач)
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
     const { action, maxAge } = body;
 
     switch (action) {
-      case 'pause':
-        await pauseQueue();
-        return NextResponse.json({
-          success: true,
-          message: 'Очередь приостановлена',
-        });
-
-      case 'resume':
-        await resumeQueue();
-        return NextResponse.json({
-          success: true,
-          message: 'Очередь возобновлена',
-        });
-
-      case 'clear':
-        await clearQueue();
-        return NextResponse.json({
-          success: true,
-          message: 'Очередь очищена',
-        });
-
       case 'clear-completed':
         const removedCount = clearCompletedTasks(maxAge);
         return NextResponse.json({
@@ -108,7 +82,7 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: 'Неизвестное действие. Доступные действия: pause, resume, clear, clear-completed',
+            error: 'Неизвестное действие. Доступные действия: clear-completed',
           },
           { status: 400 }
         );
