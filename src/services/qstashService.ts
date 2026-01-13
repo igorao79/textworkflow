@@ -235,13 +235,27 @@ export async function processQStashWebhook(payload: QStashWebhookPayload): Promi
     const { executeWorkflow } = await import('./workflowService');
 
     console.log('🔄 Calling executeWorkflow...');
-    await executeWorkflow(workflowId, {
-      trigger: 'cron',
-      timestamp: timestamp || new Date().toISOString(),
-      source: 'qstash'
-    });
 
-    console.log(`✅ Workflow ${workflowId} executed successfully from QStash`);
+    try {
+      await executeWorkflow(workflowId, {
+        trigger: 'cron',
+        timestamp: timestamp || new Date().toISOString(),
+        source: 'qstash'
+      });
+
+      console.log(`✅ Workflow ${workflowId} executed successfully from QStash`);
+    } catch (executionError) {
+      // Если workflow не найден или уже удален - логируем предупреждение вместо падения
+      if (executionError instanceof Error && executionError.message.includes('not found')) {
+        console.warn(`⚠️ Workflow ${workflowId} not found or deleted, skipping execution`);
+        console.warn('📋 This can happen if workflow was deleted but QStash schedule is still active');
+        console.warn('🔧 Solution: Delete old schedules in QStash dashboard or recreate workflow');
+        return; // Не бросаем ошибку, просто выходим
+      }
+
+      // Для других ошибок - бросаем дальше
+      throw executionError;
+    }
 
   } catch (error) {
     console.error('❌ Failed to process QStash webhook:', error);
