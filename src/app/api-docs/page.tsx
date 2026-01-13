@@ -87,7 +87,7 @@ export default function ApiDocsPage() {
     servers: [
       {
         url: process.env.NODE_ENV === 'production'
-          ? 'https://your-domain.com'
+          ? 'https://textworkflow.vercel.app'
           : 'http://localhost:3000',
         description: 'API сервер'
       }
