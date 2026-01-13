@@ -220,6 +220,34 @@ export default function DashboardPage() {
             return prev;
           });
         }
+
+        // Обновляем список executions для актуальной статистики
+        const executionsRes = await fetch('/api/executions');
+        if (executionsRes.ok) {
+          const executionsData = await executionsRes.json();
+          setExecutions(prev => {
+            // Проверяем, изменились ли данные
+            if (JSON.stringify(prev) !== JSON.stringify(executionsData)) {
+              console.log('📊 Dashboard: Updated executions list:', executionsData.length);
+              return executionsData;
+            }
+            return prev;
+          });
+        }
+
+        // Обновляем список workflows (мог измениться статус)
+        const workflowsRes = await fetch('/api/workflows');
+        if (workflowsRes.ok) {
+          const workflowsData = await workflowsRes.json();
+          setWorkflows(prev => {
+            // Проверяем, изменились ли данные
+            if (JSON.stringify(prev) !== JSON.stringify(workflowsData)) {
+              console.log('📊 Dashboard: Updated workflows list:', workflowsData.length);
+              return workflowsData;
+            }
+            return prev;
+          });
+        }
       } catch (error) {
         console.warn('Failed to update queue state:', error);
       }

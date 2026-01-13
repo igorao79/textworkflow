@@ -144,14 +144,26 @@ export async function POST(
       stopCronTask(workflowId);
 
       // Создаем новую cron задачу для данного workflow
-      console.log('🚀 API /cron/activate: About to call createCronTask for workflow:', workflow.id);
-      const created = createCronTask(workflow);
-      console.log('🚀 API /cron/activate: createCronTask returned:', created);
-      if (created) {
-        console.log('✅ API /cron/activate: Cron task created successfully');
-      } else {
-        console.log('❌ API /cron/activate: Failed to create cron task - returning 500');
-        return NextResponse.json({ error: 'Failed to create cron task' }, { status: 500 });
+      console.log('🚀 API /cron/activate: Creating cron task for workflow:', workflow.id);
+
+      try {
+        const created = createCronTask(workflow);
+        console.log('🚀 API /cron/activate: createCronTask returned:', created);
+        if (created) {
+          console.log('✅ API /cron/activate: Cron task created successfully');
+        } else {
+          console.log('❌ API /cron/activate: createCronTask returned false - this usually means invalid cron schedule');
+          return NextResponse.json({
+            error: 'Failed to create cron task',
+            details: 'Invalid cron schedule or workflow configuration'
+          }, { status: 400 });
+        }
+      } catch (cronError) {
+        console.error('💥 API /cron/activate: createCronTask threw exception:', cronError);
+        return NextResponse.json({
+          error: 'Failed to create cron task',
+          details: cronError instanceof Error ? cronError.message : 'Unknown error'
+        }, { status: 500 });
       }
     }
 

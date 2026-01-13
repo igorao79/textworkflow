@@ -49,11 +49,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { getExecutions } = await import('@/services/workflowService');
         const loadedExecutions = await getExecutions();
 
+        // Test cron validation
+        const { createCronTask } = await import('@/services/cronService');
+        const testWorkflow = {
+          id: 'test-cron',
+          name: 'Test Cron',
+          trigger: {
+            type: 'cron' as const,
+            config: {
+              schedule: '*/5 * * * *',
+              timezone: 'Europe/Moscow'
+            }
+          },
+          actions: [],
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const cronResult = createCronTask(testWorkflow);
+
         return res.status(200).json({
           totalInDB: totalInDB,
           loadedByGetExecutions: loadedExecutions.length,
           logsCount: logs[0].count,
-          isSame: totalInDB === loadedExecutions.length
+          isSame: totalInDB === loadedExecutions.length,
+          cronTest: {
+            schedule: '*/5 * * * *',
+            result: cronResult
+          }
         });
       } catch (error) {
         return res.status(500).json({

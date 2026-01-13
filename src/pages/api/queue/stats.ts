@@ -26,22 +26,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { getActiveCronTasks } = await import('@/services/cronService');
     const activeCronTasks = getActiveCronTasks();
 
+    // Получаем статистику executions из базы данных
+    const { getExecutions } = await import('@/services/workflowService');
+    const allExecutions = await getExecutions();
+
+    const executionStats = allExecutions.reduce((acc, exec) => {
+      if (exec.status === 'completed') acc.completed++;
+      else if (exec.status === 'failed') acc.failed++;
+      else if (exec.status === 'running') acc.running++;
+      return acc;
+    }, { completed: 0, failed: 0, running: 0 });
+
     // Формируем ответ в старом формате для совместимости
     const combinedStats = {
       waiting: waiting,
-      active: active + activeCronTasks.length,
-      completedCount: completed,
-      failedCount: failed,
+      active: active + activeCronTasks.length + executionStats.running,
+      completedCount: completed + executionStats.completed,
+      failedCount: failed + executionStats.failed,
       paused: false,
-      completed: completed,
-      failed: failed,
+      completed: completed + executionStats.completed,
+      failed: failed + executionStats.failed,
       retries: 0,
       totalJobs: waiting + active + completed + failed,
       pQueueActive: active,
       pQueueCompleted: completed,
       pQueueFailed: failed,
       activeCronTasks: activeCronTasks.length,
-      recentCronTasks: 0, // Пока не считаем
+      dbCompleted: executionStats.completed,
+      dbFailed: executionStats.failed,
+      dbRunning: executionStats.running,
     };
 
     console.log('API /queue/stats: Returning stats:', combinedStats);

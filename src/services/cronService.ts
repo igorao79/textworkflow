@@ -134,19 +134,74 @@ export function createCronTask(workflow: Workflow): boolean {
     }
 
     const cronConfig = workflow.trigger.config as { schedule?: string; timezone?: string };
-    const schedule = cronConfig.schedule;
+    let schedule = cronConfig.schedule;
     const timezone = cronConfig.timezone || 'Europe/Moscow';
 
-    console.log(`📅 CronService: Workflow ${workflow.id} - schedule: "${schedule}", timezone: "${timezone}"`);
+    console.log(`📅 CronService: Workflow ${workflow.id} - raw schedule: "${schedule}", timezone: "${timezone}"`);
+    console.log(`📅 CronService: Raw trigger config:`, JSON.stringify(workflow.trigger.config, null, 2));
 
     if (!schedule) {
       console.warn(`⚠️ CronService: Workflow ${workflow.id} has cron trigger but no schedule`);
       return false;
     }
 
+    if (typeof schedule !== 'string') {
+      console.warn(`⚠️ CronService: Workflow ${workflow.id} schedule is not a string:`, typeof schedule, schedule);
+      return false;
+    }
+
+    if (schedule.trim() === '') {
+      console.warn(`⚠️ CronService: Workflow ${workflow.id} schedule is empty`);
+      return false;
+    }
+
+    // Конвертируем специальный формат в cron выражение
+    schedule = schedule.trim();
+    if (schedule === '1') {
+      schedule = '* * * * *'; // каждая минута
+      console.log(`🔄 CronService: Converted special format "1" to cron expression "* * * * *"`);
+    } else if (schedule === '11') {
+      schedule = '0 * * * *'; // каждый час
+      console.log(`🔄 CronService: Converted special format "11" to cron expression "0 * * * *"`);
+    } else if (schedule === '111') {
+      schedule = '0 0 * * *'; // каждый день в полночь
+      console.log(`🔄 CronService: Converted special format "111" to cron expression "0 0 * * *"`);
+    } else if (schedule === '1111') {
+      schedule = '0 0 * * 1'; // каждый понедельник
+      console.log(`🔄 CronService: Converted special format "1111" to cron expression "0 0 * * 1"`);
+    }
+
+    console.log(`📅 CronService: Final schedule: "${schedule}"`);
+
     let task;
     try {
-      console.log(`🔧 CronService: Creating cron job with schedule: "${schedule}"`);
+      console.log(`🔧 CronService: Creating cron job with schedule: "${schedule}" and timezone: "${timezone}"`);
+      console.log(`🔧 CronService: Validating cron schedule before creating job...`);
+
+      // Проверяем валидность cron выражения
+      let scheduleToValidate = schedule;
+      const hasSeconds = schedule.split(' ').length === 6;
+      if (hasSeconds) {
+        scheduleToValidate = schedule.split(' ').slice(1).join(' ');
+      }
+
+      if (!cron.validate(scheduleToValidate)) {
+        console.error(`❌ CronService: Invalid cron schedule: "${schedule}" (validated as: "${scheduleToValidate}")`);
+        return false;
+      }
+
+      console.log(`✅ CronService: Cron schedule "${schedule}" is valid`);
+
+      // Проверяем, является ли это 6-полевым выражением (с секундами)
+      const isSixFieldCron = schedule.split(' ').length === 6;
+      if (isSixFieldCron) {
+        console.log(`🔧 CronService: Detected 6-field cron expression, converting to 5-field`);
+        // Убираем первое поле (секунды) для node-cron
+        const fiveFieldSchedule = schedule.split(' ').slice(1).join(' ');
+        console.log(`🔧 CronService: Converted "${schedule}" to "${fiveFieldSchedule}"`);
+        schedule = fiveFieldSchedule;
+      }
+
       task = cron.schedule(schedule, async (): Promise<void> => {
         console.log(`⏰ CRON TASK TRIGGERED for workflow ${workflow.id} at ${new Date().toISOString()}`);
         console.log(`📅 Schedule: "${schedule}", Workflow: ${workflow.name || workflow.id}`);
