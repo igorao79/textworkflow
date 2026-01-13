@@ -498,17 +498,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-blue-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">В работе</p>
-                  <p className="text-2xl font-bold">{stats.runningExecutions}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* Статистика очереди */}
@@ -529,26 +519,48 @@ export default function DashboardPage() {
                       variant="outline"
                       size="sm"
                       onClick={async () => {
+                        if (cronTasksLoading) return; // Предотвращаем множественные клики
+
                         const runningCount = cronTasks.filter(task => task.isRunning).length;
                         if (confirm(`Остановить все ${runningCount} активных cron задач?`)) {
                           try {
                             setCronTasksLoading(true);
+                            console.log('🛑 Stopping all cron tasks');
+
                             const response = await fetch('/api/cron', {
                               method: 'DELETE'
                             });
+
+                            const responseData = await response.json();
+                            console.log('🛑 Stop all cron response:', response.status, responseData);
+
                             if (response.ok) {
+                              console.log('✅ All cron tasks stopped successfully');
                               // Обновляем статус всех задач на неактивные
                               setCronTasks(prev => prev.map(task => ({ ...task, isRunning: false })));
+
+                              // Также обновляем статусы workflows в списке workflows
+                              setWorkflows(prev => prev.map(w =>
+                                w.trigger.type === 'cron' ? { ...w, isActive: false } : w
+                              ));
+                            } else {
+                              console.error('❌ Failed to stop all cron tasks:', responseData);
+                              alert('Ошибка при остановке всех cron задач: ' + (responseData.error || 'Неизвестная ошибка'));
                             }
                           } catch (error) {
-                            console.error('Error stopping all cron tasks:', error);
+                            console.error('💥 Exception stopping all cron tasks:', error);
+                            alert('Ошибка при остановке всех cron задач');
                           } finally {
                             setCronTasksLoading(false);
                           }
                         }
                       }}
                     >
-                      <Pause className="w-4 h-4 mr-1" />
+                      {cronTasksLoading ? (
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Pause className="w-4 h-4 mr-1" />
+                      )}
                       Остановить все
                     </Button>
                   )}
@@ -582,10 +594,14 @@ export default function DashboardPage() {
                               <Button
                                 variant="default"
                                 size="sm"
+                                disabled={cronTasksLoading}
                                 onClick={async () => {
+                                  if (cronTasksLoading) return; // Предотвращаем множественные клики
+
                                   console.log('🔥 Dashboard: Starting cron activation for workflow:', workflow.id);
 
                                   try {
+                                    setCronTasksLoading(true);
                                     console.log('📡 Dashboard: Sending request to /api/cron/activate/' + workflow.id);
 
                                     // Отправляем запрос на сервер для активации cron задачи
@@ -629,36 +645,65 @@ export default function DashboardPage() {
                                   } catch (error) {
                                     console.error('💥 Dashboard: Exception during cron activation:', error);
                                     alert('Ошибка при активации cron задачи');
+                                  } finally {
+                                    setCronTasksLoading(false);
                                   }
                                 }}
                               >
-                                <Play className="w-4 h-4 mr-1 sm:mr-2" />
+                                {cronTasksLoading ? (
+                                  <Loader2 className="w-4 h-4 mr-1 sm:mr-2 animate-spin" />
+                                ) : (
+                                  <Play className="w-4 h-4 mr-1 sm:mr-2" />
+                                )}
                                 <span className="hidden sm:inline">Запустить</span>
                               </Button>
                             ) : (
                               <Button
                                 variant="outline"
                                 size="sm"
+                                disabled={cronTasksLoading}
                                 onClick={async () => {
+                                  if (cronTasksLoading) return; // Предотвращаем множественные клики
+
                                   try {
                                     setCronTasksLoading(true);
+                                    console.log('🛑 Stopping cron task for workflow:', workflow.id);
+
                                     const response = await fetch(`/api/cron/deactivate/${workflow.id}`, {
                                       method: 'DELETE'
                                     });
+
+                                    const responseData = await response.json();
+                                    console.log('🛑 Stop cron response:', response.status, responseData);
+
                                     if (response.ok) {
+                                      console.log('✅ Cron task stopped successfully for workflow:', workflow.id);
                                       // Обновляем статус задачи на неактивную
                                       setCronTasks(prev => prev.map(t =>
                                         t.workflowId === workflow.id ? { ...t, isRunning: false } : t
                                       ));
+
+                                      // Также обновляем статус workflow в списке workflows
+                                      setWorkflows(prev => prev.map(w =>
+                                        w.id === workflow.id ? { ...w, isActive: false } : w
+                                      ));
+                                    } else {
+                                      console.error('❌ Failed to stop cron task:', responseData);
+                                      alert('Ошибка при остановке cron задачи: ' + (responseData.error || 'Неизвестная ошибка'));
                                     }
                                   } catch (error) {
-                                    console.error('Error stopping cron task:', error);
+                                    console.error('💥 Exception stopping cron task:', error);
+                                    alert('Ошибка при остановке cron задачи');
                                   } finally {
                                     setCronTasksLoading(false);
                                   }
                                 }}
                               >
-                                <Pause className="w-4 h-4 mr-1" />
+                                {cronTasksLoading ? (
+                                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                ) : (
+                                  <Pause className="w-4 h-4 mr-1" />
+                                )}
                                 Остановить
                               </Button>
                             )}

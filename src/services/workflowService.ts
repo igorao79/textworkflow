@@ -42,6 +42,16 @@ interface ExecutionRow {
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const telegramBot = process.env.TELEGRAM_BOT_TOKEN ? new Telegraf(process.env.TELEGRAM_BOT_TOKEN) : null;
 
+// Логируем статус инициализации
+console.log('🔧 Services initialization:');
+console.log('📧 Resend initialized:', !!resend);
+console.log('📱 Telegram bot initialized:', !!telegramBot);
+if (telegramBot) {
+  console.log('📱 Telegram bot token available, bot ready to send messages');
+} else {
+  console.log('⚠️ Telegram bot not initialized - TELEGRAM_BOT_TOKEN not found');
+}
+
 // Подключение к PostgreSQL через динамический импорт из lib/db
 
 // Все данные хранятся только в внешних сервисах (PostgreSQL + Redis)
@@ -316,6 +326,7 @@ export async function executeWorkflow(
   triggerData: Record<string, unknown>
 ): Promise<WorkflowExecution> {
   console.log(`🔄 WorkflowService: executeWorkflow called for ${workflowId} with trigger:`, triggerData);
+  console.log(`🔄 WorkflowService: Trigger type: ${triggerData.trigger}, timestamp: ${triggerData.timestamp}`);
 
   const workflow = await getWorkflow(workflowId);
   if (!workflow) {
@@ -529,7 +540,11 @@ async function executeHttpAction(config: HttpActionConfig, data: Record<string, 
 }
 
 async function executeTelegramAction(config: TelegramActionConfig, data: Record<string, unknown>): Promise<void> {
+  console.log('📱 executeTelegramAction called with config:', config);
+  console.log('📱 executeTelegramAction called with data:', data);
+
   if (!telegramBot) {
+    console.error('❌ Telegram bot not initialized - TELEGRAM_BOT_TOKEN missing');
     throw new Error('Telegram bot token not configured. Please add TELEGRAM_BOT_TOKEN to your environment variables.');
   }
 
@@ -541,17 +556,19 @@ async function executeTelegramAction(config: TelegramActionConfig, data: Record<
       (typeof data.message === 'string' ? data.message : undefined) ||
       `Сообщение от ${typeof data.name === 'string' ? data.name : 'Workflow'}`;
 
-    console.log(`Sending Telegram message to chat ${chatId}:`, message);
+    console.log(`📤 Sending Telegram message to chat ${chatId}:`, message);
+    console.log(`📤 Message config - parseMode: ${config.parseMode}`);
 
-    await telegramBot.telegram.sendMessage(
+    const result = await telegramBot.telegram.sendMessage(
       chatId,
       message,
       { parse_mode: config.parseMode }
     );
 
-    console.log('Telegram message sent successfully');
+    console.log('✅ Telegram message sent successfully, result:', result);
   } catch (error) {
-    console.error('Telegram sending error:', error);
+    console.error('❌ Telegram sending error:', error);
+    console.error('❌ Error details:', (error as Error)?.message, (error as Error)?.stack);
     throw error;
   }
 }

@@ -89,12 +89,46 @@ export async function updateCronTasks() {
   console.log('ℹ️ CronService: updateCronTasks() is deprecated - cron tasks are managed via API only');
 }
 
-export function stopCronScheduler(): void {
+export async function stopCronScheduler(): Promise<void> {
+  console.log('🛑 Stopping all cron tasks...');
+
+  // Останавливаем все активные задачи
   for (const [, task] of runningTasks) {
-    task.stop();
+    try {
+      task.stop();
+      console.log('✅ Cron task stopped');
+    } catch (error) {
+      console.error('❌ Error stopping cron task:', error);
+    }
   }
 
+  // Очищаем Map с задачами
   runningTasks.clear();
+
+  // Деактивируем все cron workflows в базе данных
+  try {
+    const { getWorkflows, updateWorkflow } = await import('./workflowService');
+    const workflows = await getWorkflows();
+    let deactivatedCount = 0;
+
+    for (const workflow of workflows) {
+      if (workflow.trigger.type === 'cron' && workflow.isActive) {
+        try {
+          await updateWorkflow(workflow.id, { isActive: false });
+          deactivatedCount++;
+          console.log(`✅ Deactivated cron workflow: ${workflow.id}`);
+        } catch (updateError) {
+          console.error(`❌ Failed to deactivate workflow ${workflow.id}:`, updateError);
+        }
+      }
+    }
+
+    console.log(`✅ StopCronScheduler: Deactivated ${deactivatedCount} cron workflows`);
+  } catch (error) {
+    console.error('❌ Error deactivating cron workflows:', error);
+  }
+
+  console.log('✅ All cron tasks stopped and workflows deactivated');
 }
 
 export function getActiveCronTasks() {
@@ -205,23 +239,30 @@ export function createCronTask(workflow: Workflow): boolean {
       task = cron.schedule(schedule, async (): Promise<void> => {
         console.log(`⏰ CRON TASK TRIGGERED for workflow ${workflow.id} at ${new Date().toISOString()}`);
         console.log(`📅 Schedule: "${schedule}", Workflow: ${workflow.name || workflow.id}`);
+        console.log(`🔍 Current timezone: ${timezone}, Server time: ${new Date().toLocaleString('ru-RU')}`);
 
         try {
         console.log(`🔍 CronService: Checking running executions for workflow ${workflow.id}`);
 
-        // Проверяем, не выполняется ли уже этот workflow
-        const executions = await getExecutions();
-        const runningExecutions = executions.filter((e: WorkflowExecution) =>
-          e.workflowId === workflow.id &&
-          (e.status === 'running' || (e.status === 'completed' && new Date(e.startedAt).getTime() > Date.now() - 30000)) // Не старше 30 секунд
-        );
+    // Проверяем, не выполняется ли уже этот workflow
+    const executions = await getExecutions();
+    const runningExecutions = executions.filter((e: WorkflowExecution) =>
+      e.workflowId === workflow.id &&
+      (e.status === 'running' || (e.status === 'completed' && new Date(e.startedAt).getTime() > Date.now() - 30000)) // Не старше 30 секунд
+    );
 
-        console.log(`📊 CronService: Found ${runningExecutions.length} recent executions for workflow ${workflow.id}`);
+    console.log(`📊 CronService: Found ${runningExecutions.length} recent executions for workflow ${workflow.id}`);
 
-        if (runningExecutions.length > 0) {
-          console.log(`⏰ CronService: Skipping cron execution for ${workflow.id} - ${runningExecutions.length} executions still running or recently completed`);
-          return;
-        }
+    if (runningExecutions.length > 0) {
+      console.log(`⏰ CronService: Skipping cron execution for ${workflow.id} - ${runningExecutions.length} executions still running or recently completed`);
+      console.log(`📋 Recent executions details:`, runningExecutions.map(e => ({
+        id: e.id,
+        status: e.status,
+        startedAt: e.startedAt,
+        completedAt: e.completedAt
+      })));
+      return;
+    }
 
         console.log(`🚀 CronService: Starting workflow execution for ${workflow.id}`);
 
@@ -252,13 +293,33 @@ export function createCronTask(workflow: Workflow): boolean {
   }
 }
 
-export function stopCronTask(workflowId: string) {
+export async function stopCronTask(workflowId: string): Promise<boolean> {
+  console.log(`🛑 Stopping cron task for workflow: ${workflowId}`);
+
   const task = runningTasks.get(workflowId);
   if (task) {
-    task.stop();
-    runningTasks.delete(workflowId);
-    return true;
+    try {
+      task.stop();
+      runningTasks.delete(workflowId);
+      console.log(`✅ Cron task stopped for workflow: ${workflowId}`);
+
+      // Деактивируем workflow в базе данных
+      try {
+        const { updateWorkflow } = await import('./workflowService');
+        await updateWorkflow(workflowId, { isActive: false });
+        console.log(`✅ Workflow deactivated in database: ${workflowId}`);
+      } catch (updateError) {
+        console.error(`❌ Failed to deactivate workflow ${workflowId}:`, updateError);
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`❌ Error stopping cron task for workflow ${workflowId}:`, error);
+      return false;
+    }
   }
+
+  console.log(`ℹ️ No active cron task found for workflow: ${workflowId}`);
   return false;
 }
 

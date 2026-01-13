@@ -29,7 +29,7 @@ export async function DELETE(request: NextRequest) {
     console.log('🛑 API /cron: Stopping all cron tasks');
 
     const { stopCronScheduler } = await import('@/services/cronService');
-    stopCronScheduler();
+    await stopCronScheduler();
 
     console.log('✅ All cron tasks stopped');
 

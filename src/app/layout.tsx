@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/ui/header";
 import { Plasma } from "@/components/Plasma";
-import { Toaster } from "react-hot-toast";
+import { ToastWrapper } from "@/components/ToastWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,22 +49,7 @@ export default function RootLayout({
         <main>
           {children}
         </main>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            },
-          }}
-          containerStyle={{
-            top: 20,
-            right: 20,
-          }}
-        />
+        <ToastWrapper />
       </body>
     </html>
   );

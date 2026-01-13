@@ -19,7 +19,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Workflow ID is required' }, { status: 400 });
     }
 
-    const stopped = stopCronTask(workflowId);
+    const stopped = await stopCronTask(workflowId);
     if (stopped) {
       console.log('✅ Cron task deactivated for workflow:', workflowId);
       return NextResponse.json({

@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export interface NotificationData {
   type: 'success' | 'error' | 'info' | 'warning';
@@ -18,35 +18,65 @@ class NotificationService {
   sendToast(data: NotificationData) {
     const { type, title, message } = data;
 
-    const toastOptions = {
-      duration: 4000, // Стандартная длительность показа уведомлений
-      style: {
-        border: '1px solid',
-        borderColor: type === 'success' ? '#10b981' :
-                     type === 'error' ? '#ef4444' :
-                     type === 'warning' ? '#f59e0b' : '#3b82f6',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: 'translateX(0)',
-        opacity: 1,
-      },
-      // Настройки анимации для плавного появления справа
-      position: 'top-right' as const,
-    };
+    // Создаем сообщение с красивым форматированием
+    const fullMessage = `${title}: ${message}`;
 
     switch (type) {
       case 'success':
-        toast.success(`${title}: ${message}`, toastOptions);
+        toast.success(fullMessage, {
+          duration: 4000,
+          icon: null,
+          style: {
+            border: '1px solid #10b981',
+            borderRadius: '8px',
+            background: '#1f2937',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: '500',
+          },
+        });
         break;
       case 'error':
-        toast.error(`${title}: ${message}`, toastOptions);
+        toast.error(fullMessage, {
+          duration: 4000,
+          icon: null,
+          style: {
+            border: '1px solid #ef4444',
+            borderRadius: '8px',
+            background: '#1f2937',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: '500',
+          },
+        });
         break;
       case 'warning':
-        toast(`${title}: ${message}`, { ...toastOptions, icon: '⚠️' });
+        toast.warning(fullMessage, {
+          duration: 4000,
+          icon: null,
+          style: {
+            border: '1px solid #f59e0b',
+            borderRadius: '8px',
+            background: '#1f2937',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: '500',
+          },
+        });
         break;
       default:
-        toast(`${title}: ${message}`, toastOptions);
+        toast.info(fullMessage, {
+          duration: 4000,
+          icon: null,
+          style: {
+            border: '1px solid #3b82f6',
+            borderRadius: '8px',
+            background: '#1f2937',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: '500',
+          },
+        });
     }
   }
 

@@ -87,6 +87,13 @@
 /* Плавные анимации для toast уведомлений */
 .Toastify__toast {
   animation: slideInRight 0.3s ease-out, fadeOut 0.4s ease-in 3.6s forwards !important;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.Toastify__toast:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .Toastify__toast-enter {
@@ -95,6 +102,10 @@
 
 .Toastify__toast-exit {
   animation: fadeOut 0.4s ease-in !important;
+}
+
+.Toastify__toast-click-exit {
+  animation: fadeOutClick 0.3s ease-out forwards !important;
 }
 
 @keyframes slideInRight {
@@ -115,6 +126,17 @@
   }
   to {
     transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOutClick {
+  from {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(20px) scale(0.95);
     opacity: 0;
   }
 }
