@@ -671,8 +671,9 @@ export default function DashboardPage() {
                                     const responseData = await response.json();
                                     console.log('🛑 Stop cron response:', response.status, responseData);
 
-                                    if (response.ok) {
-                                      console.log('✅ Cron task stopped successfully for workflow:', workflow.id);
+                                    if (response.ok || response.status === 404) {
+                                      // 404 тоже считаем успехом - задача уже остановлена
+                                      console.log('✅ Cron task stopped successfully for workflow:', workflow.id, response.status === 404 ? '(was already stopped)' : '');
                                       // Обновляем статус задачи на неактивную
                                       setCronTasks(prev => prev.map(t =>
                                         t.workflowId === workflow.id ? { ...t, isRunning: false } : t
@@ -693,6 +694,7 @@ export default function DashboardPage() {
                                     setCronTasksLoading(false);
                                   }
                                 }}
+                                title="Остановить cron планировщик"
                               >
                                 {cronTasksLoading ? (
                                   <Loader2 className="w-4 h-4 mr-1 animate-spin" />

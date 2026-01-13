@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('🧪 Testing cron functionality');
 
     // Импортируем функции для тестирования
-    const { getActiveCronTasks, createCronTask } = await import('@/services/cronService');
+    const { getActiveCronTasks } = await import('@/services/cronService');
     const { getWorkflows } = await import('@/services/workflowService');
 
     const activeTasks = getActiveCronTasks();
@@ -20,6 +20,12 @@ export async function GET(request: NextRequest) {
       cronWorkflows: cronWorkflows.length
     });
 
+    // Дополнительная информация о внутреннем состоянии
+    const internalState = {
+      activeTasksCount: activeTasks.length,
+      cronWorkflowsCount: cronWorkflows.length
+    };
+
     return NextResponse.json({
       success: true,
       data: {
@@ -31,7 +37,8 @@ export async function GET(request: NextRequest) {
           name: w.name,
           isActive: w.isActive,
           trigger: w.trigger
-        }))
+        })),
+        internalState
       }
     });
 
@@ -46,16 +53,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🚀 Testing cron task creation');
-
-    const { workflowId } = await request.json();
+    const body = await request.json();
+    const { workflowId, action } = body;
 
     if (!workflowId) {
       return NextResponse.json({ error: 'Workflow ID is required' }, { status: 400 });
     }
 
     const { getWorkflow } = await import('@/services/workflowService');
-    const { createCronTask } = await import('@/services/cronService');
 
     const workflow = await getWorkflow(workflowId);
     if (!workflow) {
@@ -66,23 +71,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Workflow is not a cron workflow' }, { status: 400 });
     }
 
-    console.log('🔧 Creating test cron task for workflow:', workflowId);
-    const created = createCronTask(workflow);
+    if (action === 'create') {
+      console.log('🔧 Creating test cron task for workflow:', workflowId);
+      const { createCronTask } = await import('@/services/cronService');
+      const created = createCronTask(workflow);
 
-    return NextResponse.json({
-      success: true,
-      created,
-      workflow: {
-        id: workflow.id,
-        name: workflow.name,
-        trigger: workflow.trigger
+      return NextResponse.json({
+        success: true,
+        action: 'create',
+        created,
+        workflow: {
+          id: workflow.id,
+          name: workflow.name,
+          trigger: workflow.trigger
+        }
+      });
+    } else     if (action === 'trigger') {
+      console.log('🚀 Manually triggering cron workflow:', workflowId);
+
+      try {
+        // Имитируем cron выполнение - напрямую вызываем executeWorkflow
+        const { executeWorkflow } = await import('@/services/workflowService');
+
+        await executeWorkflow(workflowId, {
+          trigger: 'cron' as const,
+          timestamp: new Date().toISOString(),
+          timezone: 'Europe/Moscow'
+        });
+
+        return NextResponse.json({
+          success: true,
+          action: 'trigger',
+          message: 'Workflow triggered manually',
+          workflow: {
+            id: workflow.id,
+            name: workflow.name
+          }
+        });
+      } catch (triggerError) {
+        console.error('❌ Manual trigger failed:', triggerError);
+        return NextResponse.json({
+          error: 'Failed to trigger workflow',
+          details: triggerError instanceof Error ? triggerError.message : 'Unknown error'
+        }, { status: 500 });
       }
-    });
+    } else {
+      return NextResponse.json({ error: 'Invalid action. Use "create" or "trigger"' }, { status: 400 });
+    }
 
   } catch (error) {
-    console.error('💥 Error creating test cron task:', error);
+    console.error('💥 Error in test cron API:', error);
     return NextResponse.json(
-      { error: 'Failed to create test cron task', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to process test cron request', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

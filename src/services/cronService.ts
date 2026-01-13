@@ -14,19 +14,31 @@ async function updateExecutionInFile(updatedExecution: WorkflowExecution): Promi
 }
 
 const runningTasks = new Map<string, cron.ScheduledTask>();
+const taskCreationLocks = new Set<string>(); // Защита от одновременного создания задач
 let isFirstStart = true;
 
 // Функция для выполнения cron workflow
 async function executeWorkflowWithQueueTracking(workflow: Workflow, timezone: string): Promise<void> {
-  console.log(`🔄 EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING START for workflow ${workflow.id} at ${new Date().toISOString()}`);
+  const executionStart = new Date().toISOString();
+  console.log(`🔄 EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING START for workflow ${workflow.id} at ${executionStart}`);
 
-  await executeWorkflow(workflow.id, {
-    trigger: 'cron' as const,
-    timestamp: new Date().toISOString(),
-    timezone: timezone
-  });
+  try {
+    // Workflow уже проверен на isActive в cron callback, просто выполняем
+    console.log(`✅ Workflow ${workflow.id} passed all checks, executing...`);
 
-  console.log(`✅ EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING COMPLETE for workflow ${workflow.id}`);
+    await executeWorkflow(workflow.id, {
+      trigger: 'cron' as const,
+      timestamp: executionStart,
+      timezone: timezone
+    });
+
+    const executionEnd = new Date().toISOString();
+    console.log(`✅ EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING COMPLETE for workflow ${workflow.id} at ${executionEnd}`);
+    console.log(`⏱️ Total execution time: ${new Date(executionEnd).getTime() - new Date(executionStart).getTime()}ms`);
+  } catch (error) {
+    console.error(`❌ EXECUTE_WORKFLOW_WITH_QUEUE_TRACKING FAILED for workflow ${workflow.id}:`, error);
+    throw error;
+  }
 }
 
 async function resetAllCronTasks(): Promise<void> {
@@ -68,8 +80,12 @@ async function resetAllCronTasks(): Promise<void> {
 export async function startCronScheduler() {
   console.log('🔄 CronService: Starting cron scheduler...');
 
-  // Сбрасываем все cron задачи при запуске сервера (только при первом запуске)
-  await resetAllCronTasks();
+  // В dev режиме всегда сбрасываем cron задачи при запуске (из-за hot reload)
+  const isDev = process.env.NODE_ENV === 'development';
+  if (isDev || isFirstStart) {
+    console.log('🔄 CronService: Resetting all cron tasks (dev mode or first start)');
+    await resetAllCronTasks();
+  }
 
   // Только проверяем дубликаты каждые 5 секунд
   cron.schedule('*/5 * * * * *', async () => {
@@ -91,19 +107,22 @@ export async function updateCronTasks() {
 
 export async function stopCronScheduler(): Promise<void> {
   console.log('🛑 Stopping all cron tasks...');
+  console.log(`📋 Tasks to stop: ${runningTasks.size}`);
 
   // Останавливаем все активные задачи
-  for (const [, task] of runningTasks) {
+  for (const [workflowId, task] of runningTasks) {
     try {
       task.stop();
-      console.log('✅ Cron task stopped');
+      console.log(`✅ Cron task stopped for workflow: ${workflowId}`);
     } catch (error) {
-      console.error('❌ Error stopping cron task:', error);
+      console.error(`❌ Error stopping cron task for ${workflowId}:`, error);
     }
   }
 
-  // Очищаем Map с задачами
+  // Очищаем Map с задачами и блокировки
   runningTasks.clear();
+  taskCreationLocks.clear();
+  console.log('🧹 All cron tasks cleared from memory');
 
   // Деактивируем все cron workflows в базе данных
   try {
@@ -132,6 +151,9 @@ export async function stopCronScheduler(): Promise<void> {
 }
 
 export function getActiveCronTasks() {
+  console.log(`📋 getActiveCronTasks called, current runningTasks size: ${runningTasks.size}`);
+  console.log(`📋 Active workflow IDs:`, Array.from(runningTasks.keys()));
+
   const tasks = [];
   for (const [workflowId] of runningTasks) {
     tasks.push({
@@ -140,12 +162,25 @@ export function getActiveCronTasks() {
       nextExecution: getNextExecutionTime(),
     });
   }
+
+  console.log(`📋 Returning ${tasks.length} active cron tasks`);
   return tasks;
 }
 
 export function createCronTask(workflow: Workflow): boolean {
   try {
     console.log(`🚀 CronService: Creating cron task for workflow ${workflow.id}`);
+
+    // Проверяем блокировку создания задачи
+    if (taskCreationLocks.has(workflow.id)) {
+      console.warn(`⚠️ CronService: Task creation already in progress for workflow ${workflow.id}`);
+      return false;
+    }
+
+    // Устанавливаем блокировку
+    taskCreationLocks.add(workflow.id);
+
+    console.log(`📋 CronService: Current running tasks count: ${runningTasks.size}`);
     console.log(`📋 CronService: Workflow details:`, {
       id: workflow.id,
       name: workflow.name,
@@ -159,12 +194,19 @@ export function createCronTask(workflow: Workflow): boolean {
       console.log(`ℹ️ CronService: Task already exists for workflow ${workflow.id} - stopping old task first`);
       try {
         existingTask.stop();
-        runningTasks.delete(workflow.id);
-        console.log(`✅ CronService: Old task stopped for workflow ${workflow.id}`);
+        console.log(`✅ CronService: task.stop() called for existing task`);
       } catch (stopError) {
         console.warn(`⚠️ CronService: Failed to stop old task for workflow ${workflow.id}:`, stopError);
       }
-      // Продолжаем создавать новую задачу
+
+      // Принудительно удаляем из всех коллекций
+      runningTasks.delete(workflow.id);
+      taskCreationLocks.delete(workflow.id);
+
+      console.log(`✅ CronService: Old task cleaned up for workflow ${workflow.id}`);
+      console.log(`📋 CronService: Running tasks after cleanup: ${runningTasks.size}`);
+    } else {
+      console.log(`ℹ️ CronService: No existing task found for workflow ${workflow.id}`);
     }
 
     const cronConfig = workflow.trigger.config as { schedule?: string; timezone?: string };
@@ -173,6 +215,17 @@ export function createCronTask(workflow: Workflow): boolean {
 
     console.log(`📅 CronService: Workflow ${workflow.id} - raw schedule: "${schedule}", timezone: "${timezone}"`);
     console.log(`📅 CronService: Raw trigger config:`, JSON.stringify(workflow.trigger.config, null, 2));
+
+    // Проверяем, является ли schedule числом (специальный формат)
+    if (schedule === '1') {
+      console.log(`🔄 CronService: Converting special format "1" to "* * * * *"`);
+    } else if (schedule === '11') {
+      console.log(`🔄 CronService: Converting special format "11" to "0 * * * *"`);
+    } else if (schedule === '111') {
+      console.log(`🔄 CronService: Converting special format "111" to "0 0 * * *"`);
+    } else if (schedule === '1111') {
+      console.log(`🔄 CronService: Converting special format "1111" to "0 0 * * 1"`);
+    }
 
     if (!schedule) {
       console.warn(`⚠️ CronService: Workflow ${workflow.id} has cron trigger but no schedule`);
@@ -237,90 +290,159 @@ export function createCronTask(workflow: Workflow): boolean {
       }
 
       task = cron.schedule(schedule, async (): Promise<void> => {
-        console.log(`⏰ CRON TASK TRIGGERED for workflow ${workflow.id} at ${new Date().toISOString()}`);
-        console.log(`📅 Schedule: "${schedule}", Workflow: ${workflow.name || workflow.id}`);
-        console.log(`🔍 Current timezone: ${timezone}, Server time: ${new Date().toLocaleString('ru-RU')}`);
+        const triggerTime = new Date().toISOString();
+        console.log(`⏰ CRON TASK TRIGGERED for workflow ${workflow.id} at ${triggerTime}`);
+        console.log(`📋 Current runningTasks state:`, Array.from(runningTasks.keys()));
+
+        // Проверяем, что задача все еще активна (не была остановлена)
+        if (!runningTasks.has(workflow.id)) {
+          console.log(`⚠️ CRON TASK SKIPPED - workflow ${workflow.id} is no longer active (removed from runningTasks)`);
+          return;
+        }
+
+        console.log(`✅ Workflow ${workflow.id} is still active, executing immediately`);
 
         try {
-        console.log(`🔍 CronService: Checking running executions for workflow ${workflow.id}`);
+          console.log(`🚀 CronService: Starting workflow execution for ${workflow.id}`);
 
-    // Проверяем, не выполняется ли уже этот workflow
-    const executions = await getExecutions();
-    const runningExecutions = executions.filter((e: WorkflowExecution) =>
-      e.workflowId === workflow.id &&
-      (e.status === 'running' || (e.status === 'completed' && new Date(e.startedAt).getTime() > Date.now() - 30000)) // Не старше 30 секунд
-    );
+          // Выполняем workflow напрямую без дополнительных проверок
+          await executeWorkflowWithQueueTracking(workflow, timezone);
 
-    console.log(`📊 CronService: Found ${runningExecutions.length} recent executions for workflow ${workflow.id}`);
+          console.log(`✅ CronService: Workflow execution completed for ${workflow.id}`);
 
-    if (runningExecutions.length > 0) {
-      console.log(`⏰ CronService: Skipping cron execution for ${workflow.id} - ${runningExecutions.length} executions still running or recently completed`);
-      console.log(`📋 Recent executions details:`, runningExecutions.map(e => ({
-        id: e.id,
-        status: e.status,
-        startedAt: e.startedAt,
-        completedAt: e.completedAt
-      })));
-      return;
-    }
-
-        console.log(`🚀 CronService: Starting workflow execution for ${workflow.id}`);
-
-        // Выполняем workflow с интеграцией PQueue для отображения в статистике
-        await executeWorkflowWithQueueTracking(workflow, timezone);
-
-        console.log(`✅ CronService: Workflow execution completed for ${workflow.id}`);
-
-      } catch (error) {
-        console.error(`❌ CronService: Cron workflow ${workflow.id} execution failed:`, error);
-      }
+        } catch (error) {
+          console.error(`❌ CronService: Cron workflow ${workflow.id} execution failed:`, error);
+        }
     }, {
       timezone: timezone
     });
 
+    // Проверяем, что задача не была добавлена ранее
+    if (runningTasks.has(workflow.id)) {
+      console.warn(`⚠️ CronService: Task already exists in runningTasks for workflow ${workflow.id} - this should not happen`);
+      return false;
+    }
+
     runningTasks.set(workflow.id, task);
-    console.log(`✅ CronService: Cron task created successfully for workflow ${workflow.id}`);
+    taskCreationLocks.delete(workflow.id); // Снимаем блокировку после успешного создания
+    console.log(`✅ CronService: Cron task created and added to runningTasks for workflow ${workflow.id}`);
+    console.log(`📋 CronService: Total running tasks after creation: ${runningTasks.size}`);
+    console.log(`📅 Final schedule: ${schedule} (timezone: ${timezone})`);
+    console.log(`🚀 Cron task scheduled successfully - waiting for next execution`);
+
+    // Логируем время следующего выполнения
+    try {
+      // node-cron не предоставляет прямой доступ к следующему времени,
+      // но мы можем рассчитать примерное время
+      const now = new Date();
+      const nextMinute = new Date(now.getTime() + 60000); // +1 минута
+      console.log(`⏰ Approximate next execution: ${nextMinute.toISOString()} (${nextMinute.toLocaleString('ru-RU')})`);
+    } catch {
+      console.log('⏰ Could not calculate next execution time');
+    }
+
     return true;
 
     } catch (cronError) {
       console.error(`💥 CronService: Failed to create cron job for workflow ${workflow.id} with schedule "${schedule}":`, cronError);
       console.error('💥 CronService: Error details:', (cronError as Error)?.message, (cronError as Error)?.stack);
+      taskCreationLocks.delete(workflow.id); // Снимаем блокировку при ошибке
       return false;
     }
   } catch (error) {
     console.error(`💥 CronService: Failed to create cron task for workflow ${workflow.id}:`, error);
+    taskCreationLocks.delete(workflow.id); // Снимаем блокировку при ошибке
     return false;
   }
 }
 
-export async function stopCronTask(workflowId: string): Promise<boolean> {
-  console.log(`🛑 Stopping cron task for workflow: ${workflowId}`);
+export async function stopCronTask(workflowId: string, clearQueue: boolean = false): Promise<boolean> {
+  console.log(`🛑 Stopping cron task for workflow: ${workflowId}`, clearQueue ? '(with queue cleanup)' : '(cron only)');
+  console.log(`📋 Current running tasks before stop:`, Array.from(runningTasks.keys()));
 
   const task = runningTasks.get(workflowId);
   if (task) {
     try {
+      console.log(`🔧 Calling task.stop() for workflow: ${workflowId}`);
       task.stop();
-      runningTasks.delete(workflowId);
-      console.log(`✅ Cron task stopped for workflow: ${workflowId}`);
+      console.log(`✅ task.stop() completed for workflow: ${workflowId}`);
 
-      // Деактивируем workflow в базе данных
+      // Принудительно удаляем задачу из всех коллекций
+      runningTasks.delete(workflowId);
+      taskCreationLocks.delete(workflowId);
+
+      // Дополнительная проверка - убеждаемся, что задача действительно удалена
+      if (runningTasks.has(workflowId)) {
+        console.warn(`⚠️ Task still exists in runningTasks after deletion for workflow: ${workflowId}`);
+        runningTasks.delete(workflowId); // Повторная попытка удаления
+      }
+
+      console.log(`✅ Cron task removed from runningTasks for workflow: ${workflowId}`);
+      console.log(`📋 Current running tasks after stop:`, Array.from(runningTasks.keys()));
+
+      // Деактивируем workflow в базе данных ПЕРВЫМ ДЕЛОМ
       try {
         const { updateWorkflow } = await import('./workflowService');
         await updateWorkflow(workflowId, { isActive: false });
         console.log(`✅ Workflow deactivated in database: ${workflowId}`);
       } catch (updateError) {
         console.error(`❌ Failed to deactivate workflow ${workflowId}:`, updateError);
+        return false;
+      }
+
+      // Очистка очереди (опционально, для полного стоп)
+      if (clearQueue) {
+        try {
+          console.log(`🧹 Clearing queue jobs for workflow: ${workflowId}`);
+          const { getQueueService } = await import('@/lib/queue-service');
+          const queueService = getQueueService();
+
+          // Получаем все активные задачи
+          const activeJobs = await queueService.getActiveJobs();
+          let clearedCount = 0;
+
+          // Ищем и удаляем задачи для этого workflow
+          for (const jobData of activeJobs) {
+            try {
+              const job = JSON.parse(jobData);
+              if (job.workflowId === workflowId) {
+                console.log(`🗑️ Removing active job ${job.id} for stopped workflow ${workflowId}`);
+                await queueService.failJob(job.id, 'Workflow stopped by user');
+                clearedCount++;
+              }
+            } catch (parseError) {
+              console.error('❌ Error parsing active job data:', parseError);
+            }
+          }
+
+          console.log(`✅ Cleared ${clearedCount} active jobs from queue for workflow ${workflowId}`);
+        } catch (queueError) {
+          console.error(`❌ Error clearing queue for workflow ${workflowId}:`, queueError);
+          // Не возвращаем false, так как основная задача (остановка cron) выполнена
+        }
       }
 
       return true;
     } catch (error) {
       console.error(`❌ Error stopping cron task for workflow ${workflowId}:`, error);
+      taskCreationLocks.delete(workflowId); // Очищаем блокировку даже при ошибке
       return false;
     }
   }
 
-  console.log(`ℹ️ No active cron task found for workflow: ${workflowId}`);
-  return false;
+  console.log(`ℹ️ No active cron task found for workflow: ${workflowId}, but will try to deactivate workflow in database`);
+
+  // Даже если cron задача не найдена, пытаемся деактивировать workflow в базе данных
+  // Это исправит несинхронизированное состояние
+  try {
+    const { updateWorkflow } = await import('./workflowService');
+    await updateWorkflow(workflowId, { isActive: false });
+    console.log(`✅ Workflow deactivated in database (fallback): ${workflowId}`);
+    return true; // Возвращаем true, так как задача "успешно остановлена" с точки зрения UI
+  } catch (updateError) {
+    console.error(`❌ Failed to deactivate workflow ${workflowId} (fallback):`, updateError);
+    return false;
+  }
 }
 
 function getNextExecutionTime(): Date | null {

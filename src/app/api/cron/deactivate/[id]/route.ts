@@ -13,26 +13,31 @@ export async function DELETE(
   try {
     const resolvedParams = await params;
     const workflowId = resolvedParams.id;
-    console.log('🔥 Deactivating cron for workflowId:', workflowId);
+    const url = new URL(request.url);
+    const clearQueue = url.searchParams.get('clearQueue') === 'true';
+
+    console.log('🔥 Deactivating cron for workflowId:', workflowId, clearQueue ? '(with queue cleanup)' : '(cron only)');
 
     if (!workflowId) {
       return NextResponse.json({ error: 'Workflow ID is required' }, { status: 400 });
     }
 
-    const stopped = await stopCronTask(workflowId);
+    const stopped = await stopCronTask(workflowId, clearQueue);
     if (stopped) {
       console.log('✅ Cron task deactivated for workflow:', workflowId);
       return NextResponse.json({
-        message: `Cron task deactivated for workflow ${workflowId}`,
+        message: `Cron task deactivated for workflow ${workflowId}${clearQueue ? ' (queue cleared)' : ''}`,
         success: true,
-        stopped: true
+        stopped: true,
+        queueCleared: clearQueue
       });
     } else {
+      console.log('⚠️ Cron task deactivation returned false for workflow:', workflowId);
       return NextResponse.json({
-        error: 'Cron task not found or already stopped',
+        error: 'Failed to deactivate cron task',
         success: false,
         stopped: false
-      }, { status: 404 });
+      }, { status: 500 });
     }
   } catch (error) {
     console.error('💥 Error stopping cron task:', error);

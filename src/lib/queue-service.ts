@@ -112,6 +112,11 @@ export class QueueService {
     return null;
   }
 
+  // Получение всех активных задач
+  async getActiveJobs(): Promise<string[]> {
+    return await this.redis.lrange('queue:active', 0, -1);
+  }
+
   // Перемещение задачи в неудачные
   async failJob(jobId: string, error?: string) {
     // Находим и удаляем задачу из активных
